@@ -8,14 +8,14 @@
    <modelVersion>4.0.0</modelVersion>
   
    <properties>
-      <dhus.core>1.0.1-6-osf</dhus.core>
+      <dhus.core>1.0.1-8-osf</dhus.core>
       <tomcat.port>8080</tomcat.port>
    </properties>
 
    <artifactId>dhus-web-client</artifactId>
    <groupId>fr.gael.dhus</groupId>
    <packaging>jar</packaging>
-   <version>0.13.5-1-osf</version>
+   <version>0.13.5-4-osf</version>
 
    <name>DHuS - Web Client</name>
 
@@ -184,12 +184,20 @@
    </build>
 
    <repositories>
+   <repository>
+          <id>osf-delivery</id>
+          <name>Releases Repository</name>
+          <url>
+             https://copernicus.serco.eu/repository/nexus/content/repositories/OSF_releases
+          </url>
+      </repository>
       <repository>
-         <id>external dependencies</id>
-<!-- repository https://copernicus.serco.eu/repository/nexus/content/repositories/releases
-     used to proxy gael's resources requires credentials
-     Using alternative source repository. -->
-         <url>https://repository.gael.fr/nexus/content/groups/public</url>
+         <id>osf-public</id>
+         <name>OSF Public Repository</name>
+         <url>
+            https://copernicus.serco.eu/repository/nexus/content/groups/public
+         </url>
+         <layout>default</layout>
       </repository>
    </repositories>
 
@@ -200,10 +208,15 @@
          <name>OSF Releases Repository</name>
          <url>
             https://copernicus.serco.eu/repository/nexus/content/repositories/OSF_releases
+
          </url>
          <layout>default</layout>
       </repository>
-   </distributionManagement>
+      <site>
+         <id>gael-site</id>
+         <url>${site.baseUrl}/</url>
+      </site>
+   </distributionManagement> 
 
    <issueManagement>
       <system>Jira</system>
@@ -211,10 +224,10 @@
    </issueManagement>
 
    <scm>
-      <connection>scm:git:https://github.com/SentinelDataHub/dhus-ajs</connection>
-      <developerConnection>scm:git:https://github.com/SentinelDataHub/dhus-ajs</developerConnection>
+      <connection>scm:git:https://github.com/SercoSPA/DHuS</connection>
+      <developerConnection>scm:git:https://github.com/SercoSPA/DHuS</developerConnection>
       <tag>HEAD</tag>
-      <url>https://github.com/SentinelDataHub/dhus-ajs</url>
+      <url>https://github.com/SercoSPA/DHuS</url>
    </scm>
 
 

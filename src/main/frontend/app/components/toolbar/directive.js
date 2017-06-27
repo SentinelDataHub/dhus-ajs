@@ -54,7 +54,7 @@ angular.module('DHuS-webclient')
             else  {
               scope.setToolbarInfo();
             }
-            scope.userInfo = UserInfoService.userInfo;
+            scope.userInfo = UserInfoService.userInfo;            
 
             scope.redirectHome = function() {
               var location = window.location.href;
@@ -80,6 +80,15 @@ angular.module('DHuS-webclient')
                 scope.newgui_label = ApplicationService.settings.newgui_label;
                 scope.show_userguide = ApplicationService.settings.show_userguide;
                 scope.show_home = ApplicationService.settings.show_home;
+            };
+
+            scope.goToNewUI = function() {
+                var isChrome = !!window.chrome && !!window.chrome.webstore;
+                if(!isChrome) {
+                  alert("Browser not supported. \nThis web application runs only on Google Chrome.");
+                  return;
+                }
+                window.location.href = scope.newgui_link;
             };
           }
         }

@@ -278,8 +278,8 @@
                     <login-dialog></login-dialog>                    
                     <user-button ng-show="userInfo.isLogged"></user-button>
                     </div>
-                    <div ng-show="show_newgui_link" class="row rowminimum"> <div class="col-md-12 col-old-link">
-                    <a href="{{newgui_link}}"><div class="old-link">{{newgui_label}}</div></a>                      
+                    <div ng-show="show_newgui_link" class="row rowminimum"> <div class="col-md-12 col-old-link" ng-click="goToNewUI()">
+                    <div class="old-link">{{newgui_label}}</div>                      
                              </div></div>
                     <div ng-show="!show_newgui_link"class="row rowminimum"> <div class="col-md-12 col-old-link"></div></div>   
 
