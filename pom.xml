@@ -8,14 +8,14 @@
    <modelVersion>4.0.0</modelVersion>
   
    <properties>
-      <dhus.core>1.0.1-8-osf</dhus.core>
+      <dhus.core>1.0.1-12-osf</dhus.core>
       <tomcat.port>8080</tomcat.port>
    </properties>
 
    <artifactId>dhus-web-client</artifactId>
    <groupId>fr.gael.dhus</groupId>
    <packaging>jar</packaging>
-   <version>0.13.5-4-osf</version>
+   <version>0.13.5-8-osf</version>
 
    <name>DHuS - Web Client</name>
 
@@ -224,10 +224,10 @@
    </issueManagement>
 
    <scm>
-      <connection>scm:git:https://github.com/SercoSPA/DHuS</connection>
-      <developerConnection>scm:git:https://github.com/SercoSPA/DHuS</developerConnection>
+      <connection>scm:git:https://github.com/SentinelDataHub/dhus-ajs</connection>
+      <developerConnection>scm:git:https://github.com/SentinelDataHub/dhus-ajs</developerConnection>
       <tag>HEAD</tag>
-      <url>https://github.com/SercoSPA/DHuS</url>
+      <url>https://github.com/SentinelDataHub/dhus-ajs</url>
    </scm>
 
 
