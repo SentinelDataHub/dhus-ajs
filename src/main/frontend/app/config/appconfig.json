@@ -6,7 +6,7 @@
     "version": "Data Hub System #version developed by a Serco and GAEL Systems consortium under a contract with the European Space Agency - Funded by the EU and ESA",
 
     "settings": {
-        "title": "Data Hub System - OSF Installation",
+        "title": "Copernicus Scientific Data Hub",
         "logo": "images/datahub.png",
         "t_and_c": "https://scihub.copernicus.eu/twiki/do/view/SciHubWebPortal/TermsConditions",
         "pagination_limit":[25,50,75,100,125,150],

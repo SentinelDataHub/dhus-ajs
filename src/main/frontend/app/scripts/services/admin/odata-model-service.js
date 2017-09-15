@@ -39,7 +39,7 @@ angular
                   genericListModel.push({
                     id:model[i].Id,
                     label:model[i].Label,          
-                    date:moment(model[i].CreationDate).utc().format('DD-MM-YYYY HH:MM:SS'),
+                    date:moment(model[i].CreationDate).utc().format('YYYY-MM-DD HH.mm.ss'),
                     status:model[i].Status,
                     serviceUrl:model[i].ServiceUrl,
                     serviceLoginUsername:model[i].ServiceLogin,
@@ -47,7 +47,7 @@ angular
                     schedule:model[i].Schedule,
                     remoteIncoming:model[i].RemoteIncoming,
                     copyProduct:model[i].CopyProduct,
-                    lastCreationDate:moment(model[i].LastCreationDate).utc().format('DD-MM-YYYY HH:MM:SS'),
+                    lastCreationDate:moment(model[i].LastCreationDate).utc().format('YYYY-MM-DD HH.mm.ss'),
                     filterParam:model[i].FilterParam,
                     geoFilter:model[i].GeoFilter,
                     sourceCollection:model[i].SourceCollection

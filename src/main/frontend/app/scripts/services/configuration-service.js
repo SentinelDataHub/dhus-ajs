@@ -22,48 +22,37 @@
 'use strict';
 
 angular
-  .module('DHuS-webclient')
-.factory('ConfigurationService', function($q, $http){
-  
-  //var http = $injector.get('$http');
-  return {
-    loaded: false,
-     getConfiguration: function() {
-          // the $http API is based on the deferred/promise APIs exposed by the $q service
-          // so it returns a promise for us by default
-          var self=this;
-          return $http.get('config/appconfig.json')
-              .then(function(response) {
-                  if (response.data) {
-                      self.loaded = true;
-                      return response.data;                            
-                  } else {
-                      // invalid response
-                      return $q.reject(response.data);
-                  }
+    .module('DHuS-webclient')
+    .factory('ConfigurationService', function($q, $http) {
 
-              }, function(response) {
-                  // something went wrong
-                  return $q.reject(response.data);
-              });
-      },
-      isLoaded: function() {
-        return this.loaded;
-      }
+        //var http = $injector.get('$http');
+        return {
+            loaded: false,
 
-  };
-  
-});
+            getConfiguration: function() {
+                // the $http API is based on the deferred/promise APIs exposed by the $q service
+                // so it returns a promise for us by default
+                var self = this;
+                return $http.get('config/appconfig.json')
+                    .then(function(response) {
+                        if (response.data) {
+                            self.loaded = true;
+                            return response.data;
+                            
+                        } else {
+                            // invalid response
+                            return $q.reject(response.data);
+                        }
 
+                    }, function(response) {
+                        // something went wrong
+                        return $q.reject(response.data);
+                    });
+            },
+            isLoaded: function() {
+                return this.loaded;
+            }
 
+        };
 
-
-
-
-
-
-
-
-
-
-
+    });

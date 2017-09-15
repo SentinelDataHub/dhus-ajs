@@ -31,91 +31,91 @@
  */
 
 var DHuSModule = angular
-  .module('DHuS-webclient', [
-    'ngAnimate',
-    'ngAria',
-    'ngCookies',
-    'ngMessages',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch',
-    'ngToast',
-    'ui.bootstrap'
-  ]);
-  DHuSModule.config(function ($routeProvider) {
+    .module('DHuS-webclient', [
+        'ngAnimate',
+        'ngAria',
+        'ngCookies',
+        'ngMessages',
+        'ngResource',
+        'ngRoute',
+        'ngSanitize',
+        'ngTouch',
+        'ngToast',
+        'ui.bootstrap'
+    ]);
+DHuSModule.config(function($routeProvider) {
     $routeProvider
-      .when('/home', {
-        templateUrl: 'sections/main/view.html',
-        controller: 'MainCtrl'
-      })
-      .when('/home/:r', {
-        templateUrl: 'sections/reset-password/view.html',
-        controller: 'ResetPasswordCtrl',
-        resolve : {
-            usercode:  function($route){
-                return $route.current.params.r.replace('r=','');
+        .when('/home', {
+            templateUrl: 'sections/main/view.html',
+            controller: 'MainCtrl'
+        })
+        .when('/home/:r', {
+            templateUrl: 'sections/reset-password/view.html',
+            controller: 'ResetPasswordCtrl',
+            resolve: {
+                usercode: function($route) {
+                    return $route.current.params.r.replace('r=', '');
+                }
             }
-        }
-      })
-      .when('/user-profile', {
-        templateUrl: 'sections/user-profile/view.html',
-        controller: 'UserProfileCtrl'
-           })
-      .when('/self-registration', {
-        templateUrl: 'sections/self-registration/view.html',
-        controller: 'SelfRegistrationCtrl'
-           })
-      .when('/forgot-password', {
-        templateUrl: 'sections/forgot-password/view.html',
-        controller: 'ForgotPasswordCtrl'
-           })
-      .when('/example', {
-        templateUrl: 'sections/example/view.html',
-        controller: 'ExampleCtrl'
-       })
-      .when('/user-cart', {
-        templateUrl: 'sections/user-cart/view.html',
-        controller: 'UserCartCtrl'
-       })
-      .when('/user-searches', {
-        templateUrl: 'sections/user-searches/view.html',
-        controller: 'UserSearchesCtrl'
-       })
-      .when('/terms-conditions', {
-        templateUrl: 'sections/terms-conditions/view.html',
-        controller: 'TermsConditionsCtrl'
-       })
-      .when('/management', {
-        templateUrl: 'sections/management/view.html',
-        controller: 'ManagementCtrl'
-       })
-      .when('/odata-synchronizer', {
-        templateUrl: 'sections/admin-odata-synchronizer/view.html',
-        controller: 'OdataSynchronizerCtrl'
-       })
-	   .when('/upload-product', {
-        templateUrl: 'sections/upload-product/view.html',
-        controller: 'UploadCtrl'
-       })
-     .when('/user-products', {
-        templateUrl: 'sections/user-products/view.html',
-        controller: 'UserProductsCtrl'
-       })
-     // .when('/reset-password/:r', {
-     //    templateUrl: 'sections/reset-password/view.html',
-     //    controller: 'ResetPasswordCtrl',
-     //    resolve : {
-     //        usercode:  function(){
-     //            return $routeParams.r.replace('r=','');
-     //        }
-     //    }
-     //  })
+        })
+        .when('/user-profile', {
+            templateUrl: 'sections/user-profile/view.html',
+            controller: 'UserProfileCtrl'
+        })
+        .when('/self-registration', {
+            templateUrl: 'sections/self-registration/view.html',
+            controller: 'SelfRegistrationCtrl'
+        })
+        .when('/forgot-password', {
+            templateUrl: 'sections/forgot-password/view.html',
+            controller: 'ForgotPasswordCtrl'
+        })
+        .when('/example', {
+            templateUrl: 'sections/example/view.html',
+            controller: 'ExampleCtrl'
+        })
+        .when('/user-cart', {
+            templateUrl: 'sections/user-cart/view.html',
+            controller: 'UserCartCtrl'
+        })
+        .when('/user-searches', {
+            templateUrl: 'sections/user-searches/view.html',
+            controller: 'UserSearchesCtrl'
+        })
+        .when('/terms-conditions', {
+            templateUrl: 'sections/terms-conditions/view.html',
+            controller: 'TermsConditionsCtrl'
+        })
+        .when('/management', {
+            templateUrl: 'sections/management/view.html',
+            controller: 'ManagementCtrl'
+        })
+        .when('/odata-synchronizer', {
+            templateUrl: 'sections/admin-odata-synchronizer/view.html',
+            controller: 'OdataSynchronizerCtrl'
+        })
+        .when('/upload-product', {
+            templateUrl: 'sections/upload-product/view.html',
+            controller: 'UploadCtrl'
+        })
+        .when('/user-products', {
+            templateUrl: 'sections/user-products/view.html',
+            controller: 'UserProductsCtrl'
+        })
+        // .when('/reset-password/:r', {
+        //    templateUrl: 'sections/reset-password/view.html',
+        //    controller: 'ResetPasswordCtrl',
+        //    resolve : {
+        //        usercode:  function(){
+        //            return $routeParams.r.replace('r=','');
+        //        }
+        //    }
+        //  })
 
-      .otherwise({
+    .otherwise({
         redirectTo: '/home'
-      });
-  })
+    });
+})
 
   /** APPLICATION INITIALIZATION **/
   .run(function(LayoutManager, StyleService, ConfigurationService, $rootScope,$location, $http){
@@ -123,23 +123,26 @@ var DHuSModule = angular
     window.http= $http;
     LayoutManager.init();
     StyleService.init();
-    if(!ConfigurationService.isLoaded()) {
-      ConfigurationService.getConfiguration().then(function(data) {
-              // promise fulfilled
-          if (data) {
-              ApplicationService=data;
-              $rootScope.debugMode = ApplicationService.debugMode;
-          } else {
 
-              $rootScope.debugMode = ApplicationService.debugMode;
-          }
-      }, function(error) {
-          // promise rejected, could log the error with: console.log('error', error);
-          
-      });
-    }
-    else
-      $rootScope.debugMode = ApplicationService.debugMode;
+    var self = this;
+
+      if (!ConfigurationService.isLoaded()) {
+    
+        ConfigurationService.getConfiguration().then(function(data) {
+            // promise fulfilled
+            if (data) {
+                ApplicationService = data;
+                $rootScope.debugMode = ApplicationService.debugMode;
+            } else {
+
+                $rootScope.debugMode = ApplicationService.debugMode;
+            }
+        }, function(error) {
+            // promise rejected, could log the error with: console.log('error', error);
+
+        });
+    } else
+        $rootScope.debugMode = ApplicationService.debugMode;
 
     jQuery.ajaxSettings = null; //super test
 
