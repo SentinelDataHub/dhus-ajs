@@ -36,7 +36,7 @@
                 "default_cause": "Invalid"
             },
         "toolbar" : {
-            "title": "Copernicus Scientific Data Hub",
+            "title": "Data Hub System - OSF Installation",
             "userguide_link": "https://scihub.copernicus.eu/userguide",
             "userguide_title": "User Guide",
             "home_link": "https://scihub.copernicus.eu",
