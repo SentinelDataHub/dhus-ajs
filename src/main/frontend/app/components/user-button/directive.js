@@ -21,7 +21,7 @@
  */
 angular.module('DHuS-webclient')
 
-.directive('userButton', function($location) {
+.directive('userButton', function($location, SearchService, UserService, UserInfoService, Session, CartStatusService) {
   return {
     restrict: 'AE',
     replace: true,
@@ -34,23 +34,21 @@ angular.module('DHuS-webclient')
           pre: function(scope, iElem, iAttrs){
           },
           post: function(scope, iElem, iAttrs){
-            
-            scope.openBadge = function(){   
-
-                UserDetailsManager.getUserDetails();
-                /*console.warn("clicked!!!"); 
-                if(scope.userInfo.isLogged)
-                {
-                  scope.user = UserService.model;
-                }          
-                if($('.callout').css('display') == 'none') {
-                  $('.callout').css('display','inline-block');
-                  $('.notch').css('display','inline-block');
-                }
-                else {
-                  $('.callout').css('display','none');
-                  $('.notch').css('display','none');
-                }*/
+            scope.openBadge = function(){
+                              //check if Session is present
+                Session.checkSession().then(function(response){                  
+                  if(response) {
+                    UserInfoService.userInfo.isLogged = true;                    
+                    UserDetailsManager.getUserDetails();
+                  } else {
+                    UserInfoService.userInfo.isLogged = false;
+                    UserDetailsManager.getUserDetails();
+                  }
+                },function(response){
+                  UserInfoService.userInfo.isLogged = false;
+                  UserDetailsManager.getUserDetails();
+                });
+                
             };            
           }
         }

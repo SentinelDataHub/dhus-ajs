@@ -202,7 +202,11 @@
         #alertmessage p{
           text-align: justify;
           text-decoration: none !important;               
-        }           
+        }   
+
+        #alertModal {
+          z-index: 9990;
+        }        
     </style>    
 
     <div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alerttitle" ng-keyup="$event.keyCode == 13 && close()">

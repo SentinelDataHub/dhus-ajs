@@ -24,12 +24,11 @@
 'use strict';
 angular
   .module('DHuS-webclient')
-.factory('ProductCartService', function($http, CartModel, Logger){
+.factory('ProductCartService', function($http, CartModel, Logger, AuthenticationService){
     return {
 	cartRequestUrl: "api/stub/users/0/carts/0?offset=:offset&count=:count",
 	removeProductUrl: "api/stub/users/0/cart/0/removeproduct?productId=:productId",
 	clearCartUrl: "api/stub/users/0/cart/0/clear",
-	getCountUrl: "api/stub/users/0/cart/0/getcount",
 	addProductToCartUrl: "api/stub/users/0/cart/0/addproduct?productId=:productId",
 	getCartsIdsUrl: "api/stub/users/0/cart/0/getcartids", //TODO to refactor: it is not restful!
     odataReqUrl:"odata/v1/",
@@ -57,23 +56,31 @@ angular
 	getCart: function(){
 		Logger.log("cart","sent ajax request to get cart");
 		var self = this;              
-        return self.getCartCount()
-        .then(function(totalCount){
-        
-            CartModel.model.count = totalCount.data;            
-            return $http({
-                url: ApplicationConfig.baseUrl + self.createCartRequest(self.offset,self.limit),
-                method: "GET"}).then(function(result){   
-              CartModel.createModel(result.data,CartModel.model.count);                               
-            });
-        });          
-	},
+        return $http({
+            url: ApplicationConfig.baseUrl + self.createCartRequest(self.offset,self.limit),
+            method: "GET"}).then(function(result){  
+          CartModel.model.count = result.data.totalresults;  
+          CartModel.createModel(result.data.products,CartModel.model.count);                               
+        }, function(response){
+            if(response.status == 401) {
+                AuthenticationService.refresh(); //calls a service to reload page
+                var defer = $q.defer();
+                defer.resolve(false);
+                return;
+            }
+            else
+// Create empty model in case of error
+            CartModel.createModel([],0); 
+        });                
+    },
+
 	removeProductFromCart: function(productId){
         var self = this;          
         return $http({
             url: (ApplicationConfig.baseUrl + self.removeProductUrl).replace(":productId",productId),
             method: "POST"
         }); 
+        
 	},
 	clearCart: function(){
 		var self = this;          
@@ -81,13 +88,6 @@ angular
             url: ApplicationConfig.baseUrl + self.clearCartUrl,
             method: "POST"
         });
-	},
-	getCartCount: function(){
-		var self = this;          
-        return $http({
-            	url: ApplicationConfig.baseUrl + self.getCountUrl,
-            	method: "GET"
-        });        
 	},
 	addProductToCart: function(productId){		
 		var self = this;				

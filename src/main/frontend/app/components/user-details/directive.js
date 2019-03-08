@@ -19,10 +19,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('DHuS-webclient')
-
-.directive('userDetails', function($location,$document, $window,
-  ConfigurationService, AdminUserService) {
+angular.module('DHuS-webclient').directive('userDetails', function(
+  $location, $document, $window, ConfigurationService, AdminUserService) {
   var countries = null;
   return {
     restrict: 'AE',
@@ -31,107 +29,96 @@ angular.module('DHuS-webclient')
     scope: {
       text: "="
     },
-    compile: function(tElem, tAttrs){
-        return {
-          pre: function(scope, iElem, iAttrs){
-          },
-          post: function(scope, iElem, iAttrs){
-            scope.user = {};
-            scope.users = {};
-            scope.checkFields = true;
-            scope.nextbutton = {};
-            scope.prevbutton = {};
-            scope.isNew = false;
+    compile: function (tElem, tAttrs) {
+      return {
+        pre: function (scope, iElem, iAttrs) {
+        },
+        post: function (scope, iElem, iAttrs) {
+          scope.user = {};
+          scope.users = {};
+          scope.checkFields = true;
+          scope.nextbutton = {};
+          scope.prevbutton = {};
+          scope.isNew = false;
 
-            scope.domains = [
-              'Atmosphere',
-              'Emergency',
-              'Marine',
-              'Land',
-              'Security',
-              'Climate',
-              'Other'
-            ];
-            scope.usages =[
-              'Research',
-              'Commercial',
-              'Education',
-              'Other'
-            ];
-            AdminUserDetailsManager.setUserDetails(function(userId, userList, isNew){scope.getUserDetails(userId, userList, isNew)});
+          scope.domains = [
+            'Atmosphere',
+            'Emergency',
+            'Marine',
+            'Land',
+            'Security',
+            'Climate',
+            'Other'
+          ];
+          scope.usages = [
+            'Research',
+            'Commercial',
+            'Education',
+            'Other'
+          ];
 
-            function initUser(userId, model, isNew) {
-              if(isNew) {
-                scope.user = {};
-                scope.resetFields();
-              }
-              getCountries(userId, model, isNew);
+          function init() {
+            scope.availableRoles = ApplicationService.settings.availableRoles;
+            if (!ConfigurationService.isLoaded()) {
+              ConfigurationService.getConfiguration().then(function (data) {
+                if (data) {
+                  ApplicationService = data;
+                  scope.availableRoles = ApplicationService.settings.availableRoles;
+                }
+              }, function (error) {
+              });
             }
+          }
 
-            function init(){
-              scope.availableRoles = ApplicationService.settings.availableRoles;
-              if(!ConfigurationService.isLoaded()) {
-                ConfigurationService.getConfiguration().then(function(data) {
-                    if (data) {
-                        ApplicationService=data;
-                        scope.availableRoles = ApplicationService.settings.availableRoles;
-                    } else {
+          //Set User Details
+          AdminUserDetailsManager.setUserDetails(function (userId, userList, isNew) {
+            scope.getUserDetails(userId, userList, isNew);
+          });
 
-                    }
-                }, function(error) {
-                    // promise rejected, could log the error with: console.log('error', error);
+          //User Initialization
+          function initUser(userId, model, isNew) {
+            if (isNew) {
+              scope.user = {};
+              scope.resetFields();
+            }
+            getCountries(userId, model, isNew);
+          }
 
-                });
-              }
-            };
+          function cleanRoles() {
+            var role = "";
+            if (scope.availableRoles) {
+              scope.availableRoles.forEach(function (entry) {
+                role = "#userRole_" + entry.id;
+                $(role).prop('checked', false);
+              });
+            }
+          }
 
-            function cleanRoles() {
-              var role = "";
-              if(scope.availableRoles)
-              {
-                  scope.availableRoles.forEach(function(entry) {
-                      //console.log(entry);
-                      role =  "#userRole_"+entry.id;
+          function selectAllRoles() {
+            var role = "";
+            if (scope.availableRoles) {
+              scope.availableRoles.forEach(function (entry) {
+                role = "#userRole_" + entry.id;
+                $(role).prop('checked', true);
+              });
+            }
+          }
 
-                      $(role).prop('checked',false);
-                  });
-              }
-            };
+          function selectUserRoles(userRoles) {
+            var role = "";
+            if (userRoles) {
+              userRoles.forEach(function (entry) {
+                role = "#userRole_" + entry;
+                $(role).prop('checked', true);
+              });
+            }
+          }
 
-            function selectAllRoles() {
-              var role = "";
-              if(scope.availableRoles)
-              {
-                  scope.availableRoles.forEach(function(entry) {
-                      //console.log(entry);
-                      role =  "#userRole_"+entry.id;
-
-                      $(role).prop('checked',true);
-                  });
-              }
-            };
-
-            function selectUserRoles(userRoles) {
-              var role = "";
-              if(userRoles)
-              {
-                  userRoles.forEach(function(entry) {
-                      //console.log(entry);
-                      role =  "#userRole_"+entry;
-
-                      $(role).prop('checked',true);
-                  });
-              }
-            };
-
-            function getCountries(userId, model, isNew) {
-              if(!scope.countries)
-              {
-                AdminUserService.getCountries()
-                .then( function(result){
-
-                  if(result.status==200)
-                  {
+          function getCountries(userId, model, isNew) {
+            if (!scope.countries) {
+              AdminUserService.getCountries()
+                .then(function (result) {
+                  if (result.status == 200) {
                     countries = result.data;
                     scope.countries = countries;
                     scope.loadUserInfo(userId, model, isNew);
@@ -140,111 +127,100 @@ angular.module('DHuS-webclient')
                     ToastManager.error("error getting countries list");
                     scope.loadUserInfo(userId, model, isNew);
                   }
-
-                }, function(result){
+                }, function (result) {
                   ToastManager.error("error getting countries list");
                   scope.loadUserInfo(userId, model, isNew);
                 });
-              }
-              else
-                scope.loadUserInfo(userId, model, isNew);
-            };
+            }
+            else
+              scope.loadUserInfo(userId, model, isNew);
+          }
 
-            scope.selectUnselectAll = function() {
-              if(scope.selected) {
-                selectAllRoles();
-              }
-              else {
-                cleanRoles();
-              }
-            };
+          scope.selectUnselectAll = function () {
+            if (scope.selected) {
+              selectAllRoles();
+            }
+            else {
+              cleanRoles();
+            }
+          };
 
-            scope.loadUserInfo = function(userId, model, isNew) {
-              if(isNew) {
+          scope.loadUserInfo = function (userId, model, isNew) {
+            if (isNew) {
+              scope.nextbutton.disabled = true;
+              scope.prevbutton.disabled = true;
+              return;
+            }
 
-                scope.nextbutton.disabled=true;
-                scope.prevbutton.disabled=true;
-                return;
-              }
+            scope.currentUuid = userId;
+            if (model) {
+              scope.currentList = model;
+              scope.users.list = model;
+            }
 
-              scope.currentUuid=userId;
-              if(model)
-              {
-                scope.currentList=model;
-                scope.users.list = model;
-              }
+            if (scope.currentList) {
 
-              if(scope.currentList) {
+              for (var i = 0; i < scope.currentList.length; i++) {
+                if (scope.currentList[i].uuid == userId) {
+                  var user = scope.currentList[i];
 
-                for(var i = 0 ; i < scope.currentList.length; i++){
-                  if(scope.currentList[i].uuid == userId)
-                  {
-                    var user = scope.currentList[i];
+                  scope.user = user;
+                  if (scope.user.lockedReason)
+                    scope.isLocked = true;
+                  else
+                    scope.isLocked = false;
+                  selectUserRoles(scope.user.roles);
 
-                    scope.user=user;
-                    //console.log("scope.user",scope.user);
-                    if(scope.user.lockedReason)
-                      scope.isLocked = true;
-                    else
-                      scope.isLocked = false;
-                    selectUserRoles(scope.user.roles);
+                  if ((i + 1) < scope.currentList.length) {
 
-                    if ((i+1)<scope.currentList.length) {
+                    scope.nextUuid = scope.currentList[i + 1].uuid;
+                    scope.nextbutton.disabled = false;
+                  } else {
+                    scope.nextbutton.disabled = true;
+                  }
+                  if ((i - 1) >= 0) {
+                    scope.prevbutton.disabled = false;
+                    scope.prevUuid = scope.currentList[i - 1].uuid;
+                  } else {
 
-                      scope.nextUuid = scope.currentList[i+1].uuid;
-                      scope.nextbutton.disabled=false;
-                    }else{
-                      scope.nextbutton.disabled=true;
-                    };
-                    if ((i-1)>=0) {
-                      scope.prevbutton.disabled=false;
-                      scope.prevUuid = scope.currentList[i-1].uuid;
-                    }else{
-
-                      scope.prevbutton.disabled=true;
-                    };
-
+                    scope.prevbutton.disabled = true;
                   }
                 }
               }
+            }
+            scope.checkUsage();
+            scope.checkDomain();
+          };
 
-            };
+          scope.showNextUser = function () {
+            scope.getUserDetails(scope.nextUuid, null, false);
+          };
 
-            scope.showNextUser = function() {
-              scope.getUserDetails(scope.nextUuid, null, false);
-            };
+          scope.showPrevUser = function () {
+            scope.getUserDetails(scope.prevUuid, null, false);
+          };
 
-            scope.showPrevUser = function() {
-              scope.getUserDetails(scope.prevUuid, null, false);
-            };
+          scope.getUserDetails = function (userId, model, isNew) {
+            cleanRoles();
+            scope.isNew = isNew;
+            initUser(userId, model, isNew);
 
-            scope.getUserDetails = function(userId, model, isNew) {
-              cleanRoles();
-              scope.isNew = isNew;
-              initUser(userId, model, isNew);
+            if (!$('#userView').hasClass('in'))
+              $('#userView').modal('show');
+          };
 
-
-              if(!$('#userView').hasClass('in'))
-                $('#userView').modal('show');
-
-            };
-
-            scope.checkUsage = function(){
+          scope.checkUsage = function () {
             var check = true;
-            if(!scope.user.usage || scope.user.usage=='unknown'
-              || scope.user.usage.trim()=='')
-            {
-              $('#admincheckUsage').css('display','inline-block');
-              $('#adminusageLbl').css('display','none');
+            if (!scope.user.usage || scope.user.usage == 'unknown' || scope.user.usage.trim() == '') {
+              $('#admincheckUsage').css('display', 'inline-block');
+              $('#adminusageLbl').css('display', 'none');
               check = false;
             }
-            else
-            {
-              $('#admincheckUsage').css('display','none');
-              $('#adminusageLbl').css('display','inline-block');
+            else {
+              $('#admincheckUsage').css('display', 'none');
+              $('#adminusageLbl').css('display', 'inline-block');
             }
             if (scope.user.usage == "Other") {
-              //$('#usageLabel').show();
               $('#adminusageDesc').show();
             }
             else {
@@ -255,23 +231,19 @@ angular.module('DHuS-webclient')
             scope.checkFields = scope.checkFields && check;
           };
 
-          scope.checkDomain = function(){
+          scope.checkDomain = function () {
             var check = true;
-            if(!scope.user.domain || scope.user.domain=='unknown'
-              || scope.user.domain.trim()=='')
-            {
-              $('#admincheckDomain').css('display','inline-block');
-              $('#admindomainLbl').css('display','none');
+            if (!scope.user.domain || scope.user.domain == 'unknown' || scope.user.domain.trim() == '') {
+              $('#admincheckDomain').css('display', 'inline-block');
+              $('#admindomainLbl').css('display', 'none');
               check = false;
             }
-            else
-            {
-              $('#admincheckDomain').css('display','none');
-              $('#admindomainLbl').css('display','inline-block');
+            else {
+              $('#admincheckDomain').css('display', 'none');
+              $('#admindomainLbl').css('display', 'inline-block');
             }
             if (scope.user.domain == "Other") {
-                  //$('#domainLabel').show();
-                  $('#admindomainDesc').show();
+              $('#admindomainDesc').show();
             }
             else {
               $('#admindomainLabel').hide();
@@ -279,232 +251,197 @@ angular.module('DHuS-webclient')
               $('#admincheckSubDomain').hide();
             }
             scope.checkFields = scope.checkFields && check;
-
           };
 
-            scope.checkUsername = function(){
+          scope.checkUsername = function () {
+            var check = true;
+            if (!scope.user.username || scope.user.username.trim() == "") {
+              $('#admincheckUsername').css('display', 'inline-block');
+              $('#adminusernameLbl').css('display', 'none');
+              check = false;
+            }
+            else {
+              $('#admincheckUsername').css('display', 'none');
+              $('#adminusernameLbl').css('display', 'inline-block');
+            }
+            scope.checkFields = scope.checkFields && check;
+          };
 
-              var check = true;
-              if(!scope.user.username || scope.user.username.trim() == "")
-              {
-                $('#admincheckUsername').css('display','inline-block');
-                $('#adminusernameLbl').css('display','none');
+          scope.checkName = function () {
+            var check = true;
+            if (!scope.user.firstname || scope.user.firstname.trim() == "") {
+              $('#admincheckName').css('display', 'inline-block');
+              $('#adminfirstnameLbl').css('display', 'none');
+              check = false;
+            }
+            else {
+              $('#admincheckName').css('display', 'none');
+              $('#adminfirstnameLbl').css('display', 'inline-block');
+            }
+            scope.checkFields = scope.checkFields && check;
+
+          };
+          scope.checkLastname = function () {
+
+            var check = true;
+            if (!scope.user.lastname || scope.user.lastname.trim() == "") {
+              $('#admincheckLastname').css('display', 'inline-block');
+              $('#adminlastnameLbl').css('display', 'none');
+              check = false;
+            }
+            else {
+              $('#admincheckLastname').css('display', 'none');
+              $('#adminlastnameLbl').css('display', 'inline-block');
+            }
+            scope.checkFields = scope.checkFields && check;
+
+          };
+          scope.checkEmail = function () {
+
+            var check = true;
+            var email = new RegExp('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$');
+            var useremail = $('#adminemail').val();
+            if (!scope.user.email || scope.user.email.trim() == "") {
+              $('#admincheckEmail').css('display', 'inline-block');
+              $('#adminemailLbl').css('display', 'none');
+              check = false;
+            }
+            else if (!email.test(useremail.toUpperCase())) {
+              $('#admincheckEmail').css('display', 'inline-block');
+              $('#adminemailLbl').css('display', 'inline-block');
+              check = false;
+            }
+            else {
+              $('#admincheckEmail').css('display', 'none');
+              $('#adminemailLbl').css('display', 'inline-block');
+            }
+            scope.checkFields = scope.checkFields && check;
+          };
+
+          scope.checkSubDomain = function () {
+            var check = true;
+            if ($('#admindomainDesc').is(':visible')) {
+              if (!scope.user.subDomain || scope.user.subDomain == 'unknown') {
+                $('#admincheckSubDomain').css('display', 'inline-block');
+                $('#admindomailLabel').css('display', 'none');
                 check = false;
-              }
-              else
-              {
-                $('#admincheckUsername').css('display','none');
-                $('#adminusernameLbl').css('display','inline-block');
-              }
-              scope.checkFields = scope.checkFields && check;
-
-            };
-
-            scope.checkName = function(){
-
-              var check = true;
-              if(!scope.user.firstname || scope.user.firstname.trim() == "")
-              {
-                $('#admincheckName').css('display','inline-block');
-                $('#adminfirstnameLbl').css('display','none');
-                check = false;
-              }
-              else
-              {
-                $('#admincheckName').css('display','none');
-                $('#adminfirstnameLbl').css('display','inline-block');
-              }
-              scope.checkFields = scope.checkFields && check;
-
-            };
-            scope.checkLastname = function(){
-
-              var check = true;
-              if(!scope.user.lastname || scope.user.lastname.trim() == "")
-              {
-                $('#admincheckLastname').css('display','inline-block');
-                $('#adminlastnameLbl').css('display','none');
-                check = false;
-              }
-              else
-              {
-                $('#admincheckLastname').css('display','none');
-                $('#adminlastnameLbl').css('display','inline-block');
-              }
-              scope.checkFields = scope.checkFields && check;
-
-            };
-            scope.checkEmail = function(){
-
-              var check = true;
-              var email = new RegExp('^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$');
-              var useremail = $('#adminemail').val();
-              if(!scope.user.email || scope.user.email.trim() == "" )
-              {
-                $('#admincheckEmail').css('display','inline-block');
-                $('#adminemailLbl').css('display','none');
-                check = false;
-              }
-              else if(!email.test(useremail.toUpperCase()))
-              {
-                $('#admincheckEmail').css('display','inline-block');
-                $('#adminemailLbl').css('display','inline-block');
-                check = false;
-              }
-              else
-              {
-                $('#admincheckEmail').css('display','none');
-                $('#adminemailLbl').css('display','inline-block');
-              }
-              scope.checkFields = scope.checkFields && check;
-            };
-
-            scope.checkSubDomain = function(){
-
-              var check = true;
-              if($('#admindomainDesc').is(':visible'))
-              {
-                if(!scope.user.subDomain || scope.user.subDomain=='unknown')
-                {
-                  $('#admincheckSubDomain').css('display','inline-block');
-                  $('#admindomailLabel').css('display','none');
-                  check = false;
-                }
-                else
-                {
-                  $('#admincheckSubDomain').css('display','none');
-                  $('#admindomailLabel').css('display','inline-block');
-                }
-              }
-              scope.checkFields = scope.checkFields && check;
-            };
-
-            scope.checkSubUsage = function(){
-
-              var check = true;
-              if($('#adminusageDesc').is(':visible'))
-              {
-                if(!scope.user.subUsage || scope.user.subUsage=='unknown')
-                {
-                  $('#admincheckSubUsage').css('display','inline-block');
-                  $('#adminusageLabel').css('display','none');
-                  check = false;
-                }
-                else
-                {
-                  $('#admincheckSubUsage').css('display','none');
-                  $('#adminusageLabel').css('display','inline-block');
-                }
-              }
-              scope.checkFields = scope.checkFields && check;
-            };
-
-
-            scope.checkCountry = function(){
-
-              var check = true;
-
-              if(!scope.user.country || scope.user.country=='unknown' || scope.user.country=='')
-              {
-                $('#admincheckCountry').css('display','inline-block');
-                $('#admincountryLbl').css('display','none');
-                check = false;
-              }
-              else
-              {
-                $('#checkCountry').css('display','none');
-                $('#countryLbl').css('display','inline-block');
-              }
-              scope.checkFields = scope.checkFields && check;
-
-            };
-
-            scope.clearReason = function() {
-              if(!scope.isLocked)   {
-                scope.user.lockedReason='';
-              }
-            };
-
-            scope.checkIsLocked = function() {
-              if(scope.user.lockedReason!=null)
-                scope.isLocked=true;
-              else
-                scope.isLocked=false;
-            };
-
-            scope.checkAndUpdateUserInfo = function() {
-              scope.checkFields=true;
-              scope.checkUsername();
-              scope.checkName();
-              scope.checkLastname();
-              scope.checkEmail();
-              scope.checkDomain();
-              scope.checkSubDomain();
-              scope.checkUsage();
-              scope.checkSubUsage();
-              scope.checkCountry();
-              if(!scope.isLocked)   {
-                //console.log('not locked');
-                delete scope.user['lockedReason'];
               }
               else {
-                if(scope.user.lockedReason == null)
-                  scope.user.lockedReason="";
-                //console.log('locked',scope.user.lockedReason);
-
+                $('#admincheckSubDomain').css('display', 'none');
+                $('#admindomailLabel').css('display', 'inline-block');
               }
+            }
+            scope.checkFields = scope.checkFields && check;
+          };
 
-            };
-
-
-
-            scope.save = function(){
-
-              scope.checkAndUpdateUserInfo();
-              if(scope.checkFields) {
-                updateUserRoles();
-                scope.user.country = getCountryIdByName().toString();
-
-                if(scope.isNew)
-                  scope.createUser();
-                else
-                  scope.updateUser();
+          scope.checkSubUsage = function () {
+            var check = true;
+            if ($('#adminusageDesc').is(':visible')) {
+              if (!scope.user.subUsage || scope.user.subUsage == 'unknown') {
+                $('#admincheckSubUsage').css('display', 'inline-block');
+                $('#adminusageLabel').css('display', 'none');
+                check = false;
               }
-            };
-
-            function updateUserRoles() {
-              var role = "";
-              var roleObj;
-              scope.user.roles=[];
-              if(scope.availableRoles)
-              {
-                  scope.availableRoles.forEach(function(entry) {
-                      //console.log(entry);
-                      role =  "#userRole_"+entry.id;
-
-                      roleObj = $(role).prop('checked');
-                      if(roleObj)
-                        scope.user.roles.push(entry.id);
-                  });
+              else {
+                $('#admincheckSubUsage').css('display', 'none');
+                $('#adminusageLabel').css('display', 'inline-block');
               }
-            };
+            }
+            scope.checkFields = scope.checkFields && check;
+          };
 
-            scope.createUser = function() {
-              AdminUserService.createUser(scope.user)
-              .then( function(result){
 
-                if(result.status == 200)
-                {
+          scope.checkCountry = function () {
+            var check = true;
+            if (!scope.user.country || scope.user.country == 'unknown' || scope.user.country == '' || scope.user.country == 'Select your country') {
+              $('#admincheckCountry').css('display', 'inline-block');
+              $('#admincountryLbl').css('display', 'none');
+              check = false;
+            }
+            else {
+              $('#checkCountry').css('display', 'none');
+              $('#countryLbl').css('display', 'inline-block');
+            }
+            scope.checkFields = scope.checkFields && check;
+          };
+
+          scope.clearReason = function () {
+            if (!scope.isLocked) {
+              scope.user.lockedReason = '';
+            }
+          };
+
+          scope.checkIsLocked = function () {
+            if (scope.user.lockedReason != null)
+              scope.isLocked = true;
+            else
+              scope.isLocked = false;
+          };
+
+          scope.checkAndUpdateUserInfo = function () {
+            scope.checkFields = true;
+            scope.checkUsername();
+            scope.checkName();
+            scope.checkLastname();
+            scope.checkEmail();
+            scope.checkDomain();
+            scope.checkSubDomain();
+            scope.checkUsage();
+            scope.checkSubUsage();
+            scope.checkCountry();
+            if (!scope.isLocked) {
+              delete scope.user['lockedReason'];
+            }
+            else {
+              if (scope.user.lockedReason == null)
+                scope.user.lockedReason = "";
+            }
+          };
+
+          scope.save = function () {
+            scope.checkAndUpdateUserInfo();
+            if (scope.checkFields) {
+              updateUserRoles();
+              scope.user.country = getCountryIdByName().toString();
+
+              if (scope.isNew)
+                scope.createUser();
+              else
+                scope.updateUser();
+            }
+          };
+
+          function updateUserRoles() {
+            var role = "";
+            var roleObj;
+            scope.user.roles = [];
+            if (scope.availableRoles) {
+              scope.availableRoles.forEach(function (entry) {
+                role = "#userRole_" + entry.id;
+                roleObj = $(role).prop('checked');
+                if (roleObj)
+                  scope.user.roles.push(entry.id);
+              });
+            }
+          }
+
+          scope.createUser = function () {
+            AdminUserService.createUser(scope.user)
+              .then(function (result) {
+
+                if (result.status == 200) {
                   AdminUserService.getUsersList();
                   ToastManager.success("user creation succeeded.");
+                  scope.close();
                 }
-                else if(result.data && result.data.code == "email_not_sent") {
+                else if (result.data && result.data.code == "email_not_sent") {
                   AdminUserService.getUsersList();
                   var msg = 'User ' + scope.user.username + ' has been created, but there was an error while sending an email to user'
-                  + '. Please contact an administrator. Cannot send email to ' + scope.user.email;
+                    + '. Please contact an administrator. Cannot send email to ' + scope.user.email;
                   AlertManager.error("User Creation Error", msg);
+                  scope.close();
                 }
-                else if(result.data && result.data.code == "unauthorized") {
+                else if (result.data && result.data.code == "unauthorized") {
                   AdminUserService.getUsersList();
                   ToastManager.error("user creation failed. unauthorized");
                 }
@@ -512,34 +449,29 @@ angular.module('DHuS-webclient')
                   AdminUserService.getUsersList();
                   ToastManager.error("user creation failed");
                 }
-                scope.close();
-
-              }, function(result){
-
+              }, function (result) {
                 AdminUserService.getUsersList();
                 ToastManager.error("user creation failed");
-                scope.close();
               });
-            };
+          };
 
+          scope.updateUser = function () {
+            AdminUserService.updateUser(scope.user)
+              .then(function (result) {
 
-
-            scope.updateUser = function() {
-              AdminUserService.updateUser(scope.user)
-              .then( function(result){
-
-                if(result.status==200)
-                {
+                if (result.status == 200) {
                   AdminUserService.getUsersList();
                   ToastManager.success("user update succeeded.");
+                  scope.close();
                 }
-                else if(result.data && result.data.code == "email_not_sent") {
+                else if (result.data && result.data.code == "email_not_sent") {
                   AdminUserService.getUsersList();
                   var msg = 'User ' + scope.user.username + ' has been updated, but there was an error while sending an email to user'
-                  + '. Please contact an administrator. Cannot send email to ' + scope.user.email;
+                    + '. Please contact an administrator. Cannot send email to ' + scope.user.email;
                   AlertManager.error("User Update Error", msg);
+                  scope.close();
                 }
-                else if(result.data && result.data.code == "unauthorized") {
+                else if (result.data && result.data.code == "unauthorized") {
                   AdminUserService.getUsersList();
                   ToastManager.error("user update failed. unauthorized");
                 }
@@ -547,49 +479,43 @@ angular.module('DHuS-webclient')
                   AdminUserService.getUsersList();
                   ToastManager.error("user update failed");
                 }
-                scope.close();
 
-              }, function(result){
-                
+              }, function (result) {
+
                 AdminUserService.getUsersList();
                 ToastManager.error("user update failed");
-                scope.close();
               });
-            };
+          };
 
-            function getCountryIdByName () {
-              var index =  _.findIndex(scope.countries, function(element) {
-                return (element.name == scope.user.country) });
-              return scope.countries[index] ? scope.countries[index].id : -1;
-            };
+          function getCountryIdByName() {
+            var index = _.findIndex(scope.countries, function (element) {
+              return (element.name == scope.user.country)
+            });
+            return scope.countries[index] ? scope.countries[index].id : -1;
+          }
 
-            scope.resetFields = function() {
-              scope.user.usage='unknown';
-              scope.user.domain='unknown';
-              scope.user.country='unknown';
-              scope.user.username='';
-              scope.user.firstname='';
-              scope.user.lastname='';
-              scope.user.email='';
-              scope.user.subDomain='';
-              scope.user.subUsage='';
-              scope.user.lockedReason='';
-              scope.isLocked = false;
-              scope.selected = false;
-              cleanRoles();
-            };
+          scope.resetFields = function () {
+            scope.user.usage = 'unknown';
+            scope.user.domain = 'unknown';
+            scope.user.country = 'unknown';
+            scope.user.username = '';
+            scope.user.firstname = '';
+            scope.user.lastname = '';
+            scope.user.email = '';
+            scope.user.subDomain = '';
+            scope.user.subUsage = '';
+            scope.user.lockedReason = '';
+            scope.isLocked = false;
+            scope.selected = false;
+            cleanRoles();
+          };
 
-            scope.close = function() {
-
-              $('#userView').modal('hide');
-            };
-
-
-
-            init();
-
+          scope.close = function () {
+            $('#userView').modal('hide');
+          };
+          init();
         }
-      }
-      }
-    };
-})
+      };
+    }
+  };
+});

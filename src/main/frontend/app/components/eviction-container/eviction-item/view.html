@@ -1,0 +1,196 @@
+<div>
+<!-- 
+  Data HUb Service (DHuS) - For Space data distribution.
+  Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+  Copyright (C) 2013,2014,2015,2016 GAEL Systems
+  Copyright (C) 2013,2014,2015,2016 Serco Spa
+  
+  This file is part of DHuS software sources.
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details.
+ 
+  You should have received a copy of the GNU Affero General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ 
+-->
+<div >
+	
+    
+    <style>
+        .eviction-item{
+        	/*height: 100px;*/
+        	width: 100%;
+        	position: relative;
+      		background-color: inherit;
+        	border-top: 1px solid #bdc3c7; 
+   			color: #34495e;
+   			height: 73px;
+   			padding-top: 4px;
+   			cursor: default;
+        }
+
+        
+        /* **** */
+        .header {
+		    display:table; 
+		    width:100%;
+		    margin-top: 10px;
+		}
+		.logo,
+		.attributes {
+		    display:table-cell; 
+		    vertical-align:top;
+		    
+		}
+		#eviction-item .attributes{
+			padding-left: 10px;
+			    font-size: 13px;
+    			font-style: italic;
+    			
+		}
+		.logo{
+			width:60px;
+			height:60px;
+			opacity: 1;
+		}
+		#eviction-item .list-item-title{
+			font-size: 13px;
+		    font-weight: bold;
+		    line-height: 20px;
+
+		    
+		}
+
+		.item-title {
+			overflow-x: hidden;
+			text-overflow:ellipsis;
+		}
+		
+		.tooltip{
+			background-color: red;
+			position:fixed;
+			z-index:99999999;
+		}
+
+		.item-buttons{
+			position:absolute;
+			bottom:10px;
+			right: 20px;
+	
+		}
+
+		.item-button{
+			margin-left: 15px;
+			cursor: pointer;
+		}
+        
+		.button {
+		  background-color: #505050;
+		  color: #fff;
+		  font-family: 'Open Sans', Helvetica, sans-serif ;
+		  font-size: 12px;
+		}
+
+		.button.raised {            
+		  text-align: center;
+		  line-height: 15px;
+		  height: 15px;
+		  width: 30px; 
+		  margin-top: 0px;
+    	  margin-left: 0px;
+    	  margin-bottom: 3px;
+		  font-family: 'Open Sans', Helvetica, sans-serif ;
+		  font-size: 12px;
+		  padding: 1px 5px 1px 5px;
+		}
+
+		.list-link {
+			white-space: nowrap;
+			overflow-x: hidden;
+			text-overflow: ellipsis !important;
+		}
+
+		.listrow {
+			margin-top: -5px;
+		}
+
+		.list-attribute-value {
+			color: black;
+		}
+
+		.attributes-values {
+			padding-left: 0px !important;
+		}
+    </style>
+    <div 
+    	id = "eviction-item"
+    	class="eviction-item "    	
+    	ng-mouseover="hoverIn()"
+    	ng-mouseleave="hoverOut()"
+    	>
+
+    	<div class="row">
+    		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		    	<div class="row item-title" >
+		    		<div style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+		    		<span  class="list-item-title" style="float: left"
+		    			
+		    			title="{{eviction.Name}}"
+		    			
+					    >{{eviction.Name}}
+		    			
+		    		</span>
+		    		<span  class="list-item-title" style="float: right"
+		    			
+    					
+		    			title="{{(eviction.SoftEviction) ? 'SOFT EVICTION' : 'HARD EVICTION'}} - Eviction Status: {{eviction.Status}}"
+		    			
+					    >{{(eviction.SoftEviction) ? "SOFT EVICTION" : "HARD EVICTION"}} - Eviction Status: {{eviction.Status}}
+		    			
+		    		</span>		    		
+		    		</div>
+		    	</div>
+		    	<div class="row item-title" >
+		    		<div style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+		    		<span  class="attributes attributes-values" style="float: left"
+		    			
+		    			
+		    			
+					    >Keep Period: <span class="list-attribute-value">{{eviction.KeepPeriod}} </span>  -  Keep Period Unit: <span class="list-attribute-value">{{eviction.KeepPeriodUnit}} </span>
+		    			
+		    		</span>
+		    		</div>
+		    	</div>
+		    	<div class="row item-title" >
+		    		<div style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
+		    		<span  class="attributes attributes-values" style="float: left"
+		    			
+		    			
+		    			
+					    >{{(eviction.Cron.Active) ? "Eviction is active" : "Eviction is NOT active"}} {{(eviction.Cron.Schedule) ? " - Scheduled at: " : ""}} <span class="list-attribute-value">{{(eviction.Cron.Schedule) ? eviction.Cron.Schedule : ""}} </span>
+		    			
+		    		</span>
+		    		</div>
+		    	</div>
+		    </div>
+	    </div>
+		<div class="item-buttons" ng-show="visibleItemButton">
+			<div class="glyphicon glyphicon glyphicon-play item-button" ng-click="startEviction()" title="Start Eviction"></div>
+			<div class="glyphicon glyphicon glyphicon-stop item-button" ng-click="stopEviction()" title="Stop Eviction"></div>
+			<div class="glyphicon glyphicon glyphicon-remove item-button" ng-click="deleteEviction()" title="Delete Eviction">	
+			</div>
+			<div class="glyphicon glyphicon glyphicon-pencil item-button" ng-click="editEviction()" title="Edit Eviction">	
+			</div>
+		</div>
+    </div>
+
+</div>
+</div>

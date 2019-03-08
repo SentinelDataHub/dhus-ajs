@@ -1,8 +1,8 @@
 /* 
  * Data HUb Service (DHuS) - For Space data distribution.
- * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
- * Copyright (C) 2013,2014,2015,2016 GAEL Systems
- * Copyright (C) 2013,2014,2015,2016 Serco Spa
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 European Space Agency (ESA)
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 GAEL Systems
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 Serco Spa
  * 
  * This file is part of DHuS software sources.
  *
@@ -19,12 +19,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
-
-
-angular.module('DHuS-webclient')
-
-.directive('productCart', function(CartModel) {
+ /*TODO: remove*/
+(function () { 'use strict'; }());
+angular.module('DHuS-webclient').directive('productCart', function (CartModel) {
   return {
     restrict: 'AE',
     replace: true,
@@ -32,24 +29,20 @@ angular.module('DHuS-webclient')
     scope: {
       text: "="
     },
-    compile: function(tElem, tAttrs){
+    compile: function (tElem, tAttrs) {
       var self = this;
-        return {
-          pre: function(scope, iElem, iAttrs){
+      return {
+        pre: function (scope, iElem, iAttrs) {
+          scope.model = CartModel.model.list;
+          CartModel.sub(self);
+        },
+        post: function (scope, iElem, iAttrs) {
+          self.createdCartModel = function () {
+            scope.model = [];
             scope.model = CartModel.model.list;
-            CartModel.sub(self); 
-
-          },
-          post: function(scope, iElem, iAttrs){
-                                    
-            self.createdCartModel = function(){
-                scope.model = [];
-                scope.model = CartModel.model.list;              
-         
-            }
-            
-          }
+          };
         }
-      }
+      };
+    }
   };
 });

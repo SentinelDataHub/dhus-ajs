@@ -28,7 +28,7 @@
  mourner.github.io/simplify-js
 */
 
-(function() {
+(function () {
     'use strict';
 
     // to suit your point format, run search/replace for '.x' and '.y';
@@ -138,7 +138,7 @@
     }
 
     // export as AMD module / Node module / browser or worker variable
-    if (typeof define === 'function' && define.amd) define(function() {
+    if (typeof define === 'function' && define.amd) define(function () {
         return simplify;
     });
     else if (typeof module !== 'undefined') module.exports = simplify;
@@ -147,9 +147,14 @@
 
 })();
 ///////////////////////////////////**************************************//////
+var MAX_SHAPE_FILE_SIZE = 5242880;
+var MAX_SHAPE_FILE_SIZE_MESSAGE = "Your shapefile cannot be uploaded because it is too large. Shapefiles must be no larger than 5.00 MB.";
+var MOUSE_POSITION_FORMAT = 'dd';
+var coordinateStatus = 'dd';
 
+var ddCoordTemplate = 'Lat Lon: {y}, {x}';
 var Product = {
-    create: function(product, footprint) {
+    create: function (product, footprint) {
         return {
             name: product.identifier,
             footprint: footprint,
@@ -228,8 +233,7 @@ var DHuSMapConfig = {
 
 };
 
-
-angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, ConfigurationService) {
+angular.module('DHuS-webclient').factory('OLMap', function (Logger, SearchModel, CartModel, ConfigurationService, CartStatusService) {
     return {
         productModel: {
             list: "hello"
@@ -260,13 +264,13 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             fill: new ol.style.Fill(DHuSMapConfig.styles["default"].fill),
             stroke: new ol.style.Stroke(DHuSMapConfig.styles["default"].stroke)
         }),
-        setActivedSelection: function(status) {
+
+        setActivedSelection: function (status) {
             Logger.log("map", "setActivedSelection()");
             this.activedSelection = status;
-            if(this.dragBox)
-                this.dragBox.setActive(status);
         },
-        clearSelection: function() {
+
+        clearSelection: function () {
             Logger.log("map", "clearSelection()");
             this.map.getLayers().item(this.mapModel.selectionLayerId).setSource(new ol.source.Vector({
                 features: [],
@@ -284,7 +288,8 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                 $(document).trigger(DHuSMapConfig.events.changedModel, 'false');
             }
         },
-        renderFootprintLayer: function(products) {
+
+        renderFootprintLayer: function (products) {
             Logger.log("map", "renderFootprintLayer()");
             var self = this;
             var format = new ol.format.WKT();
@@ -293,7 +298,6 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                 var feature = format.readFeature(products[i].footprint);
                 feature.getGeometry().transform(DHuSMapConfig.map.transformation.source, DHuSMapConfig.map.transformation.destination);
                 feature.product = products[i];
-                //self.model[i].style=style;
                 feature.setStyle(feature.product.default_style);
                 features.push(feature);
             }
@@ -304,7 +308,8 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             }));
             self.refresh3dMap();
         },
-        refresh3dMap: function() {
+
+        refresh3dMap: function () {
             Logger.log("map", "refresh3dMap()");
             if (this.map3dActive) {
                 var is3D = this.map3d.getEnabled();
@@ -317,7 +322,8 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                 }
             }
         },
-        setup3dMap: function() {
+
+        setup3dMap: function () {
             Logger.log("map", "setup3dMap()");
             this.map3d = new olcs.OLCesium({
                 map: this.map
@@ -326,7 +332,8 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                 url: DHuSMapConfig.cesium.terrainProviderUrl
             });
         },
-        olCoords2LatLon: function(olcoords) {
+
+        olCoords2LatLon: function (olcoords) {
             Logger.log("map", "olCoords2LatLon()");
             Logger.log("map", "coordinates: " + JSON.stringify(coords));
             var coords = olcoords[0];
@@ -344,130 +351,282 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             Logger.log("map", "points: " + JSON.stringify(coordsModel));
             return coordsModel;
         },
-        setupBoxSelection: function() {
+        
+
+        switchCoordinate: function (format) {
+
+            this.map.removeControl(this.mousePositionControl);
+            // console.log("format", format);
+            this.mousePositionControl = new ol.control.MousePosition({
+                coordinateFormat: function (coord) {
+                    if (format.localeCompare('dd') == 0) {
+                        return ol.coordinate.format(coord, ddCoordTemplate, 2);
+
+                    } else {
+                        var coordinate = ol.coordinate.toStringHDMS(coord);
+                        return 'Lat Lon: ' + coordinate;
+                    }
+                },
+                projection: 'EPSG:4326',
+                undefinedHTML: '&nbsp;'
+            });
+            this.map.addControl(this.mousePositionControl);
+        },
+
+        setupBoxSelection: function () {
             var self = this;
-            var isFirst=0;
-            // todo: to move this style !!!!~!!!!
-            if(self.dragBox) {
-                this.map.removeInteraction(self.dragBox);
-            }
-            if(this.mapButton == 'Box') {
-                self.dragBox = new ol.interaction.DragBox({               
-                    condition: ol.events.condition.always,
-                    style: new ol.style.Style({
+            var isFirst = 0;
+            document.getElementById('map').addEventListener('contextmenu', function (evt) {
+                evt.preventDefault();
+                var selectedFeature;
+                if (self.mapButton == 'Box' && evt.button != 0) {
+                    if (selectedFeature) {
+                        selectedFeature.setStyle(null);
+                    }
+                    var pixel = [evt.offsetX, evt.offsetY];
+                    selectedFeature = self.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+                        if (layer === self.map.getLayers().item(self.mapModel.footprintLayerId))
+                            return feature;
+                    });
+
+                    SearchModel.deselectAll({ uuid: null, sender: 'OLMap' });
+                    CartModel.deselectAll({ uuid: null, sender: 'OLMap' });
+                    if (selectedFeature && selectedFeature.product) {
+                        if (CartStatusService.getCartActive() == true) {
+                            if (CartStatusService.getCartFootprints() == true) {
+                                CartModel.callEventSelectProduct({ uuid: selectedFeature.product.id, sender: "OLMap" });
+                            } else
+                                ToastManager.error('Map selection disabled. Please load Cart Footprints to select them');
+                        } else {
+                            SearchModel.selectProduct({ uuid: selectedFeature.product.id, sender: "OLMap" });
+                            selectedFeature.setStyle(selectedFeature.product.selected_style);
+                        }
+                    }
+                    SearchModel.OnSelectionChange(); //Update product Count
+                } else {
+                    return;
+                }
+            });
+            document.getElementById('map').addEventListener('mouseup', function (evt) {
+                //var self=this;
+                if (self.mapButton.localeCompare('Box') == 0) {
+                    if (evt.button == 0) {
+                        if (self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length == 0) {
+                            return;
+                        } else {
+                            if (self.clearOnly) {
+                                if (self.selectionType && self.selectionType.localeCompare('Polygon') == 0)
+                                    self.clearSelection();
+                            } else {
+                                return;
+                            }
+                        }
+                    } else {
+                    }
+                } else {
+                    if (evt.button == 0) {
+
+                    } else {
+                        if (self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length == 0) {
+                            return;
+
+                        } else {
+                            if (self.clearOnly) {
+                                if (self.selectionType && self.selectionType.localeCompare('Polygon') == 0)
+                                    self.clearSelection();
+                            } else {
+                                return;
+                            }
+                        }
+                    }
+                }
+            });
+            document.getElementById('map').addEventListener('mousedown', function (evt) {
+                self.clearOnly = false;
+                self.map.addInteraction(self.dragBox);
+                self.map.addInteraction(self.drawBox);
+                if (self.mapButton.localeCompare('Box') == 0) {
+                    if (evt.button == 0) {
+                        if (self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length == 0) {
+                            return;
+                        } else {
+                            self.clearOnly = true;
+                            if (self.selectionType && self.selectionType.localeCompare('Box') == 0) {
+                                self.clearSelection();
+                                self.map.removeInteraction(self.dragBox);
+                                self.map.removeInteraction(self.drawBox);
+                            } else {
+                                self.map.addInteraction(self.dragBox);
+                                self.map.addInteraction(self.drawBox);
+                            }
+                        }
+                    }
+                } else {
+                    if (evt.button == 0) {
+                    } else if (self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length == 0) {
+                        return;
+                    } else {
+                        self.clearOnly = true;
+                        if (self.selectionType && self.selectionType.localeCompare('Box') == 0) {
+                            self.clearSelection();
+                            self.map.removeInteraction(self.dragBox);
+                            self.map.removeInteraction(self.drawBox);
+                        } else {
+                            self.map.addInteraction(self.dragBox);
+                            self.map.addInteraction(self.drawBox);
+                        }
+                    }
+                }
+            });
+            self.dragBox = new ol.interaction.DragBox({
+                condition: function (e) {
+
+                    if (self.mapButton == 'Pan') {
+                        if (e.originalEvent.button == 0) {
+                            return false;
+                        }
+                        else {
+                            return true;
+                        }
+                    } else {
+                        if (e.originalEvent.button == 0) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                },
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [255, 255, 255, 0.4]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: [0, 0, 255, 1]
+                    })
+                })
+            });
+            self.dragBox.setActive(true);
+            this.map.addInteraction(self.dragBox);
+
+            self.drawBox = new ol.interaction.Draw({
+                source: self.map.getLayers().item(self.mapModel.selectionLayerId).getSource(),
+                type: 'Polygon',
+                geometryFunction: function (coords, geom) {
+
+                    if (!geom) geom = new ol.geom.Polygon(null);
+                    geom.setCoordinates(coords);
+                    //if linestring changed
+
+                    return geom;
+                },
+                condition: function (e) {
+                    if (self.mapButton == 'Pan') {
+                        if (e.originalEvent.button == 0)
+                            return false;
+                        else
+                            return true;
+                    } else {
+                        if (e.originalEvent.button == 0)
+                            return true;
+                        else
+                            return false;
+                    }
+                },
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [255, 255, 255, 0.4]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: [0, 0, 255, 1]
+                    })
+                })
+            });
+            self.drawBox.setActive(true);
+            this.map.addInteraction(self.drawBox);
+
+            self.dragBox.on('boxend', function (e) {
+                /* Fix visualization of both box and polygon drawing when dragging the mouse after drawstart  BEGIN*/
+                self.drawBox.abortDrawing_();
+                /* Fix visualization of both box and polygon drawing when dragging the mouse after drawstart  END*/
+                var geometry = new ol.geom.Polygon(null);
+
+                self.end = e.coordinate;
+                geometry.setCoordinates([
+                    [self.start, [self.start[0], self.end[1]], self.end, [self.end[0], self.start[1]], self.start]
+                ]);
+                var feature = new ol.Feature;
+                feature.setStyle(
+                    // todo: to move this style !!!!~!!!!
+                    new ol.style.Style({
                         fill: new ol.style.Fill({
-                            color: [255, 255, 255, 0.4]
+                            color: [220, 142, 2, 0.5]
                         }),
                         stroke: new ol.style.Stroke({
-                            color: [0, 0, 255, 1]
+                            color: [220, 142, 2, 1]
                         })
+                    }));
+                //feature.setGeometry(self.dragBox.getGeometry());
+                feature.setGeometry(geometry);
+                self.map.getLayers().item(self.mapModel.selectionLayerId).setSource(new ol.source.Vector({
+                    features: [feature],
+                    wrapX: false
+                }));
+                self.map.getLayers().item(self.mapModel.shapeLayerId).setSource(new ol.source.Vector({
+                    features: [],
+                    wrapX: false
+                }));
+                self.setCurrentSelection(self.processSelection(feature));
+                self.selectionType = "Box";
+            });
+            self.dragBox.on('boxstart', function (e) {
+                self.start = e.coordinate;
+                self.externalInterface.sendSelectionCoordinates(null);
+            });
+            self.drawBox.on('drawstart', function (e) {
+                if (self.clearOnly || (self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length > 0) /*|| (self.selectionType && self.selectionType.localeCompare('Box')==0)*/) {
+                    self.drawBox.removeLastPoint();
+                }
+                //self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().clear();
+
+            });
+            self.drawBox.on('drawend', function (e) {
+                //console.log("called drawend", e);
+                var style = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: [220, 142, 2, 0.5]
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: [220, 142, 2, 1]
                     })
                 });
-
-                this.map.addInteraction(self.dragBox);
-
-                
-                
-                self.dragBox.on('boxend', function(e) {
-                    var feature = new ol.Feature;
-                    feature.setStyle(
-                        // todo: to move this style !!!!~!!!!
-                        new ol.style.Style({
-                            fill: new ol.style.Fill({
-                                color: [220, 142, 2, 0.5]
-                            }),
-                            stroke: new ol.style.Stroke({
-                                color: [220, 142, 2, 1]
-                            })
-                        }));
-                    feature.setGeometry(self.dragBox.getGeometry());
-                    self.map.getLayers().item(self.mapModel.selectionLayerId).setSource(new ol.source.Vector({
-                        features: [feature],
-                        wrapX: false
-                    }));
-                    self.map.getLayers().item(self.mapModel.shapeLayerId).setSource(new ol.source.Vector({
-                        features: [],
-                        wrapX: false
-                    }));
-                    self.setCurrentSelection(self.processSelection(feature));
-                });
-                self.dragBox.on('boxstart', function(e) {
-                    self.externalInterface.sendSelectionCoordinates(null);
-                });
-            } else if(this.mapButton == 'Polygon') {                
-                
-                self.dragBox = new ol.interaction.Draw({
-                    source: self.map.getLayers().item(self.mapModel.selectionLayerId).getSource(),
-                    type: 'Polygon',
-                    geometryFunction: function(coords, geom) {
-                        if (!geom) geom = new ol.geom.Polygon(null);
-                        geom.setCoordinates(coords);
-                        //if linestring changed
-
-                        return geom;
-                    },
-                    condition: ol.events.condition.always,
-                    style: new ol.style.Style({
-                        fill: new ol.style.Fill({
-                            color: [255, 255, 255, 0.4]
-                        }),
-                        stroke: new ol.style.Stroke({
-                            color: [0, 0, 255, 1]
-                        })
-                    })
-                });
-
-                this.map.addInteraction(self.dragBox);/*self.map.on('click'*/
-                self.dragBox.on('drawstart',function(e){
-                     self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().clear();
-                   
-                });
-                self.dragBox.on('drawend',function(e){
-                    var style = new ol.style.Style({
-                            fill: new ol.style.Fill({
-                                color: [220, 142, 2, 0.5]
-                            }),
-                            stroke: new ol.style.Stroke({
-                                color: [220, 142, 2, 1]
-                            })
-                        });
-                    e.feature.setStyle(style);
-                    self.map.getLayers().item(self.mapModel.selectionLayerId).setSource(new ol.source.Vector({
-                        features: [e.feature],
-                        wrapX: false
-                    }));
-                    self.map.getLayers().item(self.mapModel.shapeLayerId).setSource(new ol.source.Vector({
-                        features: [],
-                        wrapX: false
-                    }));                    
-                    self.setCurrentSelection(self.processSelection(e.feature,'Polygon'));                    
-                    
-                });
-                
-            } else
-                return;
-
-
+                e.feature.setStyle(style);
+                self.map.getLayers().item(self.mapModel.selectionLayerId).setSource(new ol.source.Vector({
+                    features: [e.feature],
+                    wrapX: false
+                }));
+                self.map.getLayers().item(self.mapModel.shapeLayerId).setSource(new ol.source.Vector({
+                    features: [],
+                    wrapX: false
+                }));
+                self.setCurrentSelection(self.processSelection(e.feature, 'Polygon'));
+                self.selectionType = "Polygon";
+            });
         },
         /* DRAG AND DROP FEATURE BEGIN */
 
-        loadShapeFile: function(shapefile) {
-            //manage only one file
+        //manage only one file
+        loadShapeFile: function (shapefile) {
             var file = shapefile;
             var self = this;
-            if ((file.name.toLowerCase().indexOf('.shp', file.name.length - 4)) == -1) {
-
-                AlertManager.warn("Unsupported shape file", "Only files with extension .shp are supported");
+            if ((file && file.name.toLowerCase().indexOf('.shp', file.name.length - 4)) == -1) {
+                AlertManager.info("Unsupported file", "Only files with extension .shp are supported.");
                 SpinnerManager.off();
                 return;
             }
             try {
-
                 var reader = new FileReader();
-
-                reader.onloadend = function() {
-
-
+                reader.onloadend = function () {
                     var binary = "";
                     var bytes = new Uint8Array(reader.result);
                     var length = bytes.byteLength;
@@ -477,14 +636,14 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                     var binaryFile = binary;
                     var features = [];
                     var originalShapesFeatures = [];
-                    getOpenLayersFeatures(file.name, binaryFile, function(fs) {
-                        if (!fs) {
-                            AlertManager.warn("Unexpected Error", "Error Loading Shapefile ");
+                    getOpenLayersFeatures(file.name, binaryFile, function (fs) {
+                        if (!fs || !fs.data || fs.message) {
+                            AlertManager.info("Unsupported shapefile", fs.message);
                             SpinnerManager.off();
+                            return;
                         }
                         var format = new ol.format.WKT();
-
-                        var originalfeature = format.readFeature(fs);
+                        var originalfeature = format.readFeature(fs.data);
                         var feature = angular.copy(originalfeature);
                         var geometry = feature.getGeometry();
 
@@ -534,7 +693,6 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                             }
                         } while (!completedPointReduction);
 
-
                         // convert coordinates
                         var simplifiedAndConvertedPoints = []
                         for (var k = 0; k < simplifiedPoints.length; k++) {
@@ -552,8 +710,6 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                         });
 
                         shapefeature.getGeometry().setCoordinates(simplifiedAndConvertedPoints);
-
-
                         shapefeature.getGeometry().transform(DHuSMapConfig.map.transformation.source, DHuSMapConfig.map.transformation.destination);
                         shapefeature.setStyle(new ol.style.Style({
                             fill: new ol.style.Fill({
@@ -566,7 +722,6 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
 
                         // end shape file
                         //-------------------------//
-
 
                         originalfeature.getGeometry().transform(DHuSMapConfig.map.transformation.source, DHuSMapConfig.map.transformation.destination);
                         originalfeature.setStyle(new ol.style.Style({
@@ -581,7 +736,6 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                         originalShapesFeatures.push(originalfeature);
                         features.push(shapefeature);
                         var vectorSource = new ol.source.Vector({
-
                             features: features,
                             wrapX: false
                         });
@@ -597,35 +751,44 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
 
                         self.setCurrentSelection(self.processSelection(shapefeature, 'Shape'));
                         var view = self.map.getView();
-                        view.fitExtent(
-                            vectorSource.getExtent(), /** @type {ol.Size} */ (self.map.getSize()));
+                        view.fit(
+                            vectorSource.getExtent(), /** @type {ol.Size} */(self.map.getSize()));
                         SpinnerManager.off();
                     });
-                }
+                };
 
                 // Read in the image file as a data URL.
                 reader.readAsArrayBuffer(file);
             } catch (err) {
-                AlertManager.warn("Unexpected Error", "Error Loading Shapefile ");
+                AlertManager.info("Unsupported shapefile", "Unsupported shapefile type. Shapefiles are limited to one record of type POLYGON.");
                 SpinnerManager.off();
             }
-
         },
 
-        setupDragAndDrop: function() {
-
+        setupDragAndDrop: function () {
             var self = this;
-
             function handleFileSelect(evt) {
                 SpinnerManager.on();
                 evt.stopPropagation();
                 evt.preventDefault();
-
                 var files = evt.dataTransfer.files; // FileList object.
                 if (files && files.length > 0) {
-                    self.loadShapeFile(files[0]);
+                    if ((files[0] && files[0].name.toLowerCase().indexOf('.shp', files[0].name.length - 4)) == -1) {
+                        AlertManager.info("Unsupported file", "Only files with extension .shp are supported.");
+                        SpinnerManager.off();
+                    } else {
+                        if (files[0].size > MAX_SHAPE_FILE_SIZE) {
+                            SpinnerManager.off();
+                            AlertManager.info("File too large",
+                                MAX_SHAPE_FILE_SIZE_MESSAGE);
+                        } else {
+                            self.loadShapeFile(files[0]);
+                        }
+                    }
+                } else {
+                    SpinnerManager.off();
+                    AlertManager.info("Unsupported file", "Only files with extension .shp are supported.");
                 }
-
             }
 
             function handleDragOver(evt) {
@@ -633,12 +796,11 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                 evt.preventDefault();
                 evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
             }
-
             document.getElementById('map').addEventListener('dragover', handleDragOver, false);
             document.getElementById('map').addEventListener('drop', handleFileSelect, false);
         },
 
-        testGeomIsValid: function(testGeometry){
+        testGeomIsValid: function (testGeometry) {
             var result = {};
             var wktReader = new jsts.io.WKTReader();
             var jstsGeometry = wktReader.read(testGeometry);
@@ -647,10 +809,26 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             return valid;
         },
 
-        displayFeatureInfo: function(pixel) {
+        testPolygonOutOfBounds: function (extent) {
+            var top = extent[3];
+            var bottom = extent[1];
+            var left = extent[0];
+            var right = extent[2];
+            return top <= 85.05 && bottom >= -85.05 && left >= -180 && right <= 180;
+        },
+
+        testPolygonOutOfMap: function (extent) {
+            var top = extent[3];
+            var bottom = extent[1];
+            var left = extent[0];
+            var right = extent[2];
+            return (Math.abs(top) > 85.05 && Math.abs(bottom) > 85.05) || (Math.abs(left)  > 180 && Math.abs(right) > 180);
+        },
+
+        displayFeatureInfo: function (pixel) {
             var self = this;
             var features = [];
-            self.map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+            self.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
                 features.push(feature);
             });
             if (features.length > 0) {
@@ -665,8 +843,7 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             }
         },
 
-
-        setCurrentSelection: function(coords) {
+        setCurrentSelection: function (coords) {
             if (this.externalInterface.sendSelectionCoordinates) {
                 this.externalInterface.sendSelectionCoordinates(coords);
             } else {
@@ -674,72 +851,95 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             }
         },
 
-        initMap: function(mapDomNode, model) {
+        initMap: function (mapDomNode, model) {
             var self = this;
             if (!ConfigurationService.isLoaded())
-                ConfigurationService.getConfiguration().then(function(data) {
-
-                    if (data)
+                ConfigurationService.getConfiguration().then(function (data) {
+                    if (data) {
                         ApplicationService = data;
+                        if (ApplicationService.settings.shapefile_max_size &&
+                            ApplicationService.settings.shapefile_max_size_message) {
+                            MAX_SHAPE_FILE_SIZE = ApplicationService.settings.shapefile_max_size
+                            MAX_SHAPE_FILE_SIZE_MESSAGE = ApplicationService.settings.shapefile_max_size_message;
+                        }
+                    }
                 });
-            else {
-
+            else if (ApplicationService.settings.shapefile_max_size &&
+                ApplicationService.settings.shapefile_max_size_message) {
+                MAX_SHAPE_FILE_SIZE = ApplicationService.settings.shapefile_max_size
+                MAX_SHAPE_FILE_SIZE_MESSAGE = ApplicationService.settings.shapefile_max_size_message;
             }
 
             var bounds = [-180, -80, 180, 80];
             Logger.log("map", "initMap()");
-            var self = this;
+            // var self = this;
             self.productModel.list = model && model.list;
             self.footprintLayer = new ol.layer.Vector({
-                source: new ol.source.Vector({ wrapX: false })
+                source: new ol.source.Vector({ wrapX: false }),
+                displayInLayerSwitcher: false
             });
 
-            var generateLayer = function(model) {
+            var generateLayer = function (model) {
                 var layersX = [];
-                for (var i = 0; i < model.sources.length; i++)
-                    layersX.push(new ol.layer.Tile({
-                        source: new ol.source[model.sources[i].class](model.sources[i].params)
-                    }));
-
+                if (model && model.sources) {
+                    for (var i = 0; model && i < model.sources.length; i++) {
+                        var sourceParams = model.sources[i].params;
+                        if (model.sources[i].attributions) {
+                            var attributions = new ol.Attribution({ html: model.sources[i].attributions })
+                            sourceParams.attributions = [attributions];
+                        }
+                        layersX.push(new ol.layer.Tile({
+                            source: new ol.source[model.sources[i].class](sourceParams)
+                        }));
+                    }
+                }
                 return new ol.layer.Group({
-                    title: model.title,
-                    type: model.type,
-                    visible: model.visible,
+                    title: (model) ? model.title : "",
+                    type: (model) ? model.type : "",
+                    visible: (model) ? model.visible : false,
                     layers: layersX,
                     wrapX: false
                 });
-
             };
 
-            var mousePositionControl = new ol.control.MousePosition({
-                coordinateFormat: ol.coordinate.createStringXY(4),
+            var getConfiguredLayers = function () {
+                var _layers = [];
+                var layers_keys = Object.keys(ApplicationService.settings.map);
+                for (var i = 0; i < layers_keys.length; i++) {
+                    _layers.push(generateLayer(ApplicationService.settings.map[layers_keys[i]]));
+                }
+                return _layers;
+            };
+
+            var generateMapLayers = function () {
+                self.mapLayers = [];
+                self.mapLayers = getConfiguredLayers();
+                self.mapLayers.push(self.footprintLayer);
+                self.mapLayers.push(new ol.layer.Vector({
+                    source: new ol.source.Vector({ wrapX: false }),
+                    displayInLayerSwitcher: false
+                }));
+                self.mapLayers.push(new ol.layer.Vector({
+                    source: new ol.source.Vector({ features: [], wrapX: false }),
+                    displayInLayerSwitcher: false
+                }));
+                return self.mapLayers;
+            };
+
+
+
+            this.mousePositionControl = new ol.control.MousePosition({
+                coordinateFormat: function (coord) { return ol.coordinate.format(coord, ddCoordTemplate, 2); },
+
                 projection: 'EPSG:4326',
-                // comment the following two lines to have the mouse position
-                // be placed within the map.
-                // className: 'custom-mouse-position',
-                // target: document.getElementById('mouse-position'),
                 undefinedHTML: '&nbsp;'
             });
 
+
             this.map = new ol.Map({
-
-
                 /*interactions: ol.interaction.defaults().extend([dragAndDropInteraction]),*/
                 target: mapDomNode,
-                layers: [
-                    generateLayer(ApplicationService.settings.map.Satellite),
-                    generateLayer(ApplicationService.settings.map.Road),
-                    generateLayer(ApplicationService.settings.map.Hybrid),
-                    self.footprintLayer,
-                    new ol.layer.Vector({
-                        source: new ol.source.Vector({ wrapX: false })
-                    }),
-                    new ol.layer.Vector({
-                        source: new ol.source.Vector({ features: [], wrapX: false })
-                    })
-                ],
-
-
+                layers: generateMapLayers(),
                 view: new ol.View({
                     center: ol.proj.transform(DHuSMapConfig.map.defaultCenter.coordinates, DHuSMapConfig.map.transformation.source, DHuSMapConfig.map.transformation.destination),
                     zoom: DHuSMapConfig.map.defaultZoom,
@@ -751,28 +951,36 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                     attributionOptions: ({
                         collapsible: false
                     })
-                }).extend([mousePositionControl])
+                }).extend([this.mousePositionControl])
             });
+            self.mapModel.footprintLayerId = self.map.getLayers().getLength() - 3;
+            self.mapModel.shapeLayerId = self.map.getLayers().getLength() - 2;
+            self.mapModel.selectionLayerId = self.map.getLayers().getLength() - 1;
             if (ApplicationService.settings.isMapLayerSwitcherVisible) {
-                var layerSwitcher = new ol.control.LayerSwitcher({
+                var layerSwitcher = new ol.control.LayerSwitcherImage({
                     tipLabel: 'Map Layers' // Optional label for button
                 });
                 self.map.addControl(layerSwitcher);
             }
-
+            if (ApplicationService.settings.enable_shapefile) self.setupDragAndDrop();
             self.setupBoxSelection();
-            if (ApplicationService.settings.enable_shapefile)
-                self.setupDragAndDrop();
+
             self.setActivedSelection(true); //todo to check
-            $(document).on('zoom-to', function(event, product) {
-                for (var i = 0; i < SearchModel.model.list.length; i++) {
-                    if (SearchModel.model.list[i]) {
-                        if (SearchModel.model.list[i].uuid == product.uuid) {
+            $(document).on('zoom-to', function (event, product) {
+                var zoomModel = {};
+                if (CartStatusService.getCartFootprints() === true) {
+                    zoomModel = CartModel.model;
+                } else {
+                    zoomModel = SearchModel.model;
+                }
+                for (var i = 0; i < zoomModel.list.length; i++) {
+                    if (zoomModel.list[i]) {
+                        if (zoomModel.list[i].uuid == product.uuid) {
                             var selectedFeature = self.map.getLayers()
                                 .item(self.mapModel.footprintLayerId).getSource()
                                 .getFeatures()[_.findIndex(self.map.getLayers()
                                     .item(self.mapModel.footprintLayerId).getSource().getFeatures(),
-                                    function(element) {
+                                    function (element) {
                                         return (self.model[i].uuid == element.product.id)
                                     })];
                             var duration = 800;
@@ -789,62 +997,135 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                                 start: start
                             });
                             self.map.beforeRender(pan, zoom);
-                            if (selectedFeature)
-                                self.map.getView().fitExtent(selectedFeature.getGeometry().getExtent(), self.map.getSize());
-
+                            if (selectedFeature) self.map.getView().fit(selectedFeature.getGeometry().getExtent(), self.map.getSize());
                         }
                     }
                 }
-
             });
-
         },
 
-        setupSelection: function() {
+        setGraticule: function (coordinates) {
+
+            //Graticule CONFIGURATION
+            graticule_step = ApplicationService.settings.graticule_step || 0.2;
+            graticule_stepCoord = ApplicationService.settings.graticule_stepCoord || 2;
+            graticule_maxResolution = ApplicationService.settings.graticule_maxResolution || 10000;
+
+            //Graticule Style: get fro application.json or aplpy default values
+            graticule_style = ApplicationService.settings.graticule_style || {
+                "color": "#808080",
+                "width": 1
+            };
+            graticul_color = graticule_style.color || "#808080";
+            graticul_width = graticule_style.width || 1;
+
+            // 0 0 for Continous line
+            graticule_min_dash = ApplicationService.settings.graticule_min_dash;
+            graticule_max_dash = ApplicationService.settings.graticule_max_dash;
+
+            //Graticule Configuration log
+            // console.log("GRATICULE CONFIGURATION:",
+            //     "graticule_step:", graticule_step,
+            //     "graticule_stepCoord:", graticule_stepCoord,
+            //     "graticule_maxResolution:", graticule_maxResolution,
+            //     "graticule_style:", graticule_style
+            // );
+
+            this.graticule = new ol.control.Graticule({
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({
+                        color: graticule_style.color,
+                        width: graticule_style.width,
+                        lineDash: [graticule_min_dash, graticule_max_dash]
+                    }),
+                    fill: new ol.style.Fill({ color: "#fff" }),
+                    text: new ol.style.Text({
+                        stroke: new ol.style.Stroke({ color: "#fff", width: 1 }),
+                        fill: new ol.style.Fill({ color: "#000" }),
+                    })
+                }),
+                // Graticule SETUP by configuration
+                step: graticule_step,
+                stepCoord: graticule_stepCoord,
+                borderWidth: 1,
+                margin: 0,
+                maxResolution: graticule_maxResolution,
+                formatCoord: function (c) {
+
+                    //Handle different coordinates values
+                    if (coordinates === 'dd') {
+                        return c.toFixed(1);
+                    } else {
+                        var absolute = Math.abs(c);
+                        var degrees = Math.floor(absolute);
+                        var minutesNotTruncated = (absolute - degrees) * 60;
+                        var minutes = Math.floor(minutesNotTruncated);
+                        var seconds = Math.floor((minutesNotTruncated - minutes) * 60);
+                        sign = (c < 0) ? "-" : ""; //Assign sign to show
+
+                        return sign + degrees + "°" + minutes + "'"
+                            // + seconds + "\""
+                            ;
+                    }
+                }
+            });
+            this.graticule.setMap(this.map);
+        },
+
+        //Destroy Graticul 
+        unsetGraticule: function () {
+            this.graticule.setMap(null);
+        },
+
+        setupSelection: function () {
             Logger.log("map", "setupSelection()");
             var self = this;
             var selectedFeature;
-            self.map.on('click', function(e) {
-                // here rbua
-                if(self.mapButton == 'Polygon') {                    
+            self.map.on('click', function (e) {
+                if (self.mapButton == 'Box') {
                     e.preventDefault();
                     return;
                 }
-                self.clearSelection();
-                self.setCurrentSelection(null);
-
-                if (selectedFeature) {
-                    selectedFeature.setStyle(null);
+                if (!(self.mapButton == 'Pan' && e.originalEvent.button == 0
+                    && self.map.getLayers().item(self.mapModel.selectionLayerId).getSource().getFeatures().length > 0)) {
+                    self.clearSelection();
                 }
-                selectedFeature = self.map.forEachFeatureAtPixel(e.pixel, function(feature, layer) {
-                    return feature;
+
+                if (selectedFeature) selectedFeature.setStyle(null);
+                selectedFeature = self.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+                    if (layer === self.map.getLayers().item(self.mapModel.footprintLayerId))
+                        return feature;
                 });
 
+                SearchModel.deselectAll({ uuid: null, sender: 'OLMap' });
+                CartModel.deselectAll({ uuid: null, sender: 'OLMap' });
                 if (selectedFeature && selectedFeature.product) {
-                    //selectSingleProduct
-                    SearchModel.selectSingleProduct({ uuid: selectedFeature.product.id, sender: 'OLMap' });
-                    selectedFeature.setStyle(selectedFeature.product.selected_style);
-                } else {
-                    SearchModel.deselectAll({ uuid: null, sender: 'OLMap' });
+                    if (CartStatusService.getCartActive() == true) {
+                        if (CartStatusService.getCartFootprints() == true) {
+                            CartModel.callEventSelectProduct({ uuid: selectedFeature.product.id, sender: "OLMap" });
+                        } else
+                            ToastManager.error('Map selection disabled. Please load Cart Footprints to select them');
+                    } else {
+                        SearchModel.selectProduct({ uuid: selectedFeature.product.id, sender: "OLMap" });
+                        selectedFeature.setStyle(selectedFeature.product.selected_style);
+                    }
                 }
+                SearchModel.OnSelectionChange(); //Update product Count
             });
         },
 
-
-
-
-        setupMap: function(mapDomNode) {
+        setupMap: function (mapDomNode) {
             Logger.log("map", "setupMap()");
             this.initMap(mapDomNode);
             this.setupSelection();
         },
-        setupCesium: function() {
+        setupCesium: function () {
             Logger.log("map", "setupCesium()");
             this.setup3dMap();
             this.map3d.setEnabled(true); //To check
             this.map3dActive = true;
         },
-        createJTSMultipolygon: function(multipoly) {
+        createJTSMultipolygon: function (multipoly) {
             var jtsmultipoly = 'MULTIPOLYGON(';
             for (var i = 0; i < multipoly.length; i++) {
                 var poly = multipoly[i];
@@ -871,31 +1152,41 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             jtsmultipoly = jtsmultipoly.substring(0, jtsmultipoly.length - 1) + ')';
             return jtsmultipoly;
         },
-        setModel: function(model) {
+        setModel: function (model) {
             Logger.log("map", "setModel()");
             var newValue = model;
             this.model = model;
             var products = [];
-
-            for (var i = 0; i < model.length; i++) {
+            var length = (model && model.length) ? model.length : 0;
+            for (var i = 0; i < length; i++) {
                 var productIndex = _.findIndex(
                     model[i].indexes,
-                    function(element) {
-                        return (element.name == "product")
+                    function (element) {
+                        return (element.name == "product");
                     }
                 );
                 var footprint = model[i].footprint;
                 var jtsFootprint = '';
-                if (footprint) {
-                    jtsFootprint = this.createJTSMultipolygon(footprint);
+
+                var wkt = model[i].wkt;
+                if (wkt) {
+
                     products.push(
-                        Product.create(model[i], jtsFootprint));
+                        Product.create(model[i], wkt));
+                } else {
+                    if (footprint) {
+                        console.log("No WKT found, rebuild from coordinates...")
+                        jtsFootprint = this.createJTSMultipolygon(footprint);
+                        //console.log("footprint is", jtsFootprint)
+                        products.push(
+                            Product.create(model[i], jtsFootprint));
+                    }
                 }
             }
             this.renderFootprintLayer(products);
         },
-        updateHighlightProducts: function() {
 
+        updateHighlightProducts: function () {
             var self = this;
             if (SearchModel.model.list) {
                 for (var i = 0; i < SearchModel.model.list.length; i++) {
@@ -904,7 +1195,7 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                             .item(self.mapModel.footprintLayerId).getSource()
                             .getFeatures()[_.findIndex(self.map.getLayers()
                                 .item(self.mapModel.footprintLayerId).getSource().getFeatures(),
-                                function(element) {
+                                function (element) {
                                     return (SearchModel.model.list[i].uuid == element.product.id)
                                 })];
                         if (elem) {
@@ -915,35 +1206,34 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                     }
                 }
             }
-
         },
-        updateModel: function(performZoom) {
+
+        updateModel: function (performZoom) {
             Logger.log("map", "updateModel()  " + performZoom);
             var self = this;
+
+            //Update Searchmodel
             if (SearchModel.model.list) {
                 for (var i = 0; i < SearchModel.model.list.length; i++) {
                     if (SearchModel.model.list[i]) {
-                        var elem =
-                            self.map.getLayers()
+                        var elem = self.map.getLayers()
                             .item(self.mapModel.footprintLayerId).getSource()
                             .getFeatures()[_.findIndex(self.map.getLayers()
                                 .item(self.mapModel.footprintLayerId).getSource().getFeatures(),
-                                function(element) {
-                                    return (SearchModel.model.list[i].uuid == element.product.id)
+                                function (element) {
+                                    return (SearchModel.model.list[i].uuid == element.product.id);
                                 })];
-                        if (elem) {
-                            elem.setStyle((SearchModel.model.list[i].selected) ?
-                                SearchModel.model.list[i].selected_style :
-                                SearchModel.model.list[i].default_style);
-                        }
+                        if (elem)
+                            elem.setStyle((SearchModel.model.list[i].selected) ? SearchModel.model.list[i].selected_style : SearchModel.model.list[i].default_style);
                     }
 
+                    //Zoom
                     if (SearchModel.model.list[i].selected && performZoom) {
                         var selectedFeature = self.map.getLayers()
                             .item(self.mapModel.footprintLayerId).getSource()
                             .getFeatures()[_.findIndex(self.map.getLayers()
                                 .item(self.mapModel.footprintLayerId).getSource().getFeatures(),
-                                function(element) {
+                                function (element) {
                                     return (self.model[i].uuid == element.product.id)
                                 })];
                         var duration = 800;
@@ -959,8 +1249,7 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                             resolution: self.map.getView().getResolution(),
                             start: start
                         });
-                        var zoom = function() {};
-
+                        var zoom = function () { };
 
                         self.map.beforeRender(pan, zoom);
                         if (selectedFeature) {
@@ -968,15 +1257,35 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
                             var centerCoordinate = ol.extent.getCenter(extentCoords);
                             self.map.getView().setCenter(centerCoordinate);
                         }
-
-
                     }
-
                 }
             }
-        },
-        polygon2String: function(polygon) {
 
+            //Update Cart Model   // using j as index
+            if (CartStatusService.getCartFootprints())
+                self.updateCartFootprints();
+
+        },
+
+        updateCartHighlightedProducts: function () {
+            var self = this;
+            if (CartStatusService.getCartFootprints() === true && CartModel.model.list) self.updateCartFootprints();
+        },
+
+        //Update Cart Footprints on Map on Highligh or Selection
+        updateCartFootprints: function () {
+            var self = this;
+            CartModel.model.list.forEach(function (elem, i) {
+                elem = self.map.getLayers().item(self.mapModel.footprintLayerId).getSource().getFeatures()[_.findIndex(self.map.getLayers()
+                    .item(self.mapModel.footprintLayerId).getSource().getFeatures(),
+                    function (element) { return (CartModel.model.list[i].uuid == element.product.id); })];
+                var cartItem = CartModel.model.list[i];
+                if(elem)
+                    elem.setStyle((cartItem.selected) ? (cartItem.selected_style) : ((cartItem.highlight) ? (cartItem.highlighted_style) : (cartItem.default_style)));
+            });
+        },
+
+        polygon2String: function (polygon) {
             var polygonString = 'POLYGON(('
             for (var i = 0; i < polygon.length; i++)
                 polygonString += ((polygon[i][0]) + ' ' + (polygon[i][1]) + ',');
@@ -984,10 +1293,9 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
         },
         // from old dhus
         /* added parameter isShape to be used for selection after having fixed simplified WKT from shapefile*/
-        processSelection: function(feature, format) {
+        processSelection: function (feature, format) {
             var self = this;
             var currentPolygonSearchString = "";
-
             var featureX = feature.clone();
             var geometry = featureX.getGeometry();
 
@@ -996,13 +1304,13 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
             var simplifiedPoints = [];
             geometry = geometry.transform(DHuSMapConfig.map.transformation.destination, DHuSMapConfig.map.transformation.source);
             points = geometry.getCoordinates();
-            var _poly='';
+            var _poly = '';
             for (var i = 0; i < points.length; i++) {
                 _poly += self.polygon2String(points[i]);
             }
-            
             if (format) {
-                if(format.localeCompare('Polygon') == 0 && !self.testGeomIsValid(_poly)) {
+                if (format.localeCompare('Polygon') == 0 && (!self.testGeomIsValid(_poly) || !self.testPolygonOutOfBounds(geometry.getExtent()))) {
+
                     alert('Not a valid polygon!');
                     self.clearSelection();
                     return "";
@@ -1026,9 +1334,13 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
 
             } else {
 
-                var extent = geometry.getExtent();
+                if(self.testPolygonOutOfMap(geometry.getExtent())) {
+                    alert('Not a valid polygon!');
+                    self.clearSelection();
+                    return "";
+                }
 
-                console.log('extent', extent);
+                var extent = geometry.getExtent();
                 var top = extent[3];
                 var bottom = extent[1];
                 var left = extent[0];
@@ -1174,7 +1486,7 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
 
             // convert coordinates
             // var simplifiedAndConvertedPoints =  []
-            // for(var k = 0; k < simplifiedPoints.length; k++){
+            // for(var k = 0; k < simplifiedPoints.length; selectSingleProductk++){
             //   simplifiedAndConvertedPoints[k] = [];
             //   for (var z = 0;  z < simplifiedPoints[k].length; z++){
             //     simplifiedAndConvertedPoints[k][z] = [];
@@ -1186,32 +1498,26 @@ angular.module('DHuS-webclient').factory('OLMap', function(Logger, SearchModel, 
 
             // end shape file
             //-------------------------//
-
-
-
-
-
-
             return currentPolygonSearchString;
         },
-        init: function(mapDomNode) {
+        setDrawOnMap: function (status) {
+            if (!status)
+                this.clearSelection();
+            this.dragBox.setActive(status);
+            this.drawBox.setActive(status);
+        },
+
+        init: function (mapDomNode) {
             Logger.log("map", "init()");
             var self = this;
             this.setupMap(mapDomNode);
-
             if (DHuSMapConfig.map3dActive)
                 this.setupCesium();
-
         }
     };
 });
 
-
-
-
-
-angular.module('DHuS-webclient').directive('dhusMap', function(OLMap, $window, $document, Logger, LayoutManager, $rootScope, $location, SearchBoxService, SearchModel, ConfigurationService) {
-
+angular.module('DHuS-webclient').directive('dhusMap', function ($document, $location, $rootScope, $window, GraticuleService, CartModel, CartStatusService, ConfigurationService, LayoutManager, Logger, OLMap, SearchBoxService, SearchModel) {
     return {
         restrict: 'AE',
         replace: true,
@@ -1219,130 +1525,186 @@ angular.module('DHuS-webclient').directive('dhusMap', function(OLMap, $window, $
         scope: {
             text: "="
         },
-        createdSearchModel: function() {},
-        productDidSelected: function() {},
-        singleProductDidSelected: function() {},
-        productDidDeselected: function() {},
-        productDidHighlighted: function() {},
-        compile: function(tElem, tAttrs) {
+        createdSearchModel: function () { },
+        productDidSelected: function () { },
+        singleProductDidSelected: function () { },
+        productDidDeselected: function () { },
+        productDidHighlighted: function () { },
+        OnSelectProduct: function () { }, //Select Cart item
+        OnHighlight: function () { },
+        compile: function (tElem, tAttrs) {
             var self = this;
+            var anim = false;
             return {
-                pre: function(scope, iElem, iAttrs) {
+                pre: function (scope, iElem, iAttrs) {
                     SearchModel.sub(self);
+                    CartModel.sub(self); //CartModel Subscription
 
-                    var resizeMap = function() {
+                    var resizeMap = function () {
                         $('#map').css('top', (parseInt(LayoutManager.getToolbarHeight())) + 'px');
                         $('#map').css('height', (parseInt(LayoutManager.getScreenHeight()) - parseInt(LayoutManager.getToolbarHeight())) + 'px');
                     };
 
-                    angular.element($window).bind('resize', function() {
+                    angular.element($window).bind('resize', function () {
                         resizeMap();
-
                     });
+
                     angular.element($document).ready(resizeMap);
 
                     angular.element($window).bind('resize',
-                        function() {
-                            setTimeout(function() {
+                        function () {
+                            setTimeout(function () {
                                 OLMap.map.updateSize();
                             }, 0);
                         });
+
                     angular.element($window).ready(
-                        function() {
-                            setTimeout(function() {
+                        function () {
+                            setTimeout(function () {
                                 OLMap.map.updateSize();
                             }, 0);
                         });
-
                 },
-                post: function(scope, iElem, iAttrs) {
-                    if (!ConfigurationService.isLoaded())
-                        ConfigurationService.getConfiguration().then(function(data) {
-                            if (data)
+                post: function (scope, iElem, iAttrs) {
+                    if (!ConfigurationService.isLoaded()) {
+                        ConfigurationService.getConfiguration().then(function (data) {
+                            if (data) {
                                 ApplicationService = data;
+                                if (ApplicationService.settings.shapefile_max_size &&
+                                    ApplicationService.settings.shapefile_max_size_message) {
+                                    MAX_SHAPE_FILE_SIZE = ApplicationService.settings.shapefile_max_size
+                                    MAX_SHAPE_FILE_SIZE_MESSAGE = ApplicationService.settings.shapefile_max_size_message;
+                                }
+                            }
                         });
-
+                    } else {
+                        if (ApplicationService.settings.shapefile_max_size &&
+                            ApplicationService.settings.shapefile_max_size_message) {
+                            MAX_SHAPE_FILE_SIZE = ApplicationService.settings.shapefile_max_size
+                            MAX_SHAPE_FILE_SIZE_MESSAGE = ApplicationService.settings.shapefile_max_size_message;
+                        }
+                    }
+                    scope.format = MOUSE_POSITION_FORMAT;
+                    scope.titleformat = 'Convert to Degree Minute Second';
                     scope.model = SearchBoxService.model;
                     scope.toggleBtnMap = false;
                     OLMap.mapButton = 'Box';
-                    scope.showMapToolbar = ApplicationService.settings.show_map_toolbar;
+                    scope.drawByDefault = ApplicationService.settings.draw_by_default
+
                     function init() {
                         OLMap.init("map");
-                        OLMap.externalInterface.sendSelectionCoordinates = function(coords) {
-                                scope.model.geoselection = coords;
-                            }
-                            /** SearchModel Protocol implementation **/
-                        self.createdSearchModel = function() {
-                            OLMap.setModel(SearchModel.model.list);
+                        OLMap.externalInterface.sendSelectionCoordinates = function (coords) {
+                            scope.model.geoselection = coords;
                         };
-                        self.productDidSelected = function(param) {
-                            OLMap.updateModel(false);
-                        };
-                        self.productDidDeselected = function(param) {
-                            OLMap.updateModel(false);
-                        };
-                        self.singleProductDidSelected = function(param) {
-                            OLMap.updateModel(false);
-                        };
-                        self.productDidHighlighted = function(param) {
-                            OLMap.updateHighlightProducts();
-                        };
-                        self.productDidntHighlighted = function(param) {
-                            OLMap.updateHighlightProducts();
-                        };
-                        self.updatedSearchModel = function() {
+
+                        /**CartModel Protocol Implementation  **/
+                        self.OnSelectProduct = function (param) { OLMap.updateModel(false); };
+                        self.OnDeselectCurrentProduct = function (param) { OLMap.updateModel(false); };
+                        self.OnHighlight = function (param) { OLMap.updateCartHighlightedProducts(); };
+
+                        //TODO: More Cart methods here based on CartModel protocol if needed...
+
+                        /** SearchModel Protocol implementation. Check Searchmodel **/
+                        self.createdSearchModel = function () { OLMap.setModel(SearchModel.model.list); };
+                        self.productDidSelected = function (param) { OLMap.updateModel(false); };
+                        self.productDidDeselected = function (param) { OLMap.updateModel(false); };
+                        self.singleProductDidSelected = function (param) { OLMap.updateModel(false); };
+                        self.productDidHighlighted = function (param) { OLMap.updateHighlightProducts(); };
+                        self.productDidntHighlighted = function (param) { OLMap.updateHighlightProducts(); };
+                        self.clearMap = function () { OLMap.clearSelection(); };
+                        self.updatedSearchModel = function () {
                             //OLMap.updateModel(performZoom);
                         };
+                    }
 
-                        if (SearchModel.model && SearchModel.model.list) {
-                            OLMap.setModel(SearchModel.model.list);
-                        }
-
-                    };
-
-                    scope.toggle3dMap = function() {
+                    scope.toggle3dMap = function () {
                         Logger.log("map", "toggle3dMap()");
                         OLMap.map3d.setEnabled(!OLMap.map3d.getEnabled());
                         OLMap.toggleButtonLabel = (OLMap.map3d.getEnabled()) ? DHuSMapConfig.mapToggleButton.active2DlabelText : DHuSMapConfig.mapToggleButton.active3DlabelText;
                     };
 
-                    scope.toggleActivedSelection = function() {
+                    scope.toggleActivedSelection = function () {
+                        if (CartStatusService.getCartActive() == true) {
+                            ToastManager.error("Disabled When Cart is Active")
+                            return;
+                        }
                         Logger.log("map", "toggleActivedSelection()");
                         OLMap.setActivedSelection(!OLMap.activedSelection);
                         scope.toggleBtnMap = !OLMap.activedSelection;
-                        OLMap.mapButton = (scope.toggleBtnMap) ? 'Pan' : 'Box';                        
+                        OLMap.mapButton = (scope.toggleBtnMap) ? 'Pan' : 'Box';
+                        scope.animateCircle();
                     };
 
-                    scope.activatePan = function() {
+                    //Switcher animation
+                    scope.animateCircle = function () {
+                        if (CartStatusService.getCartActive() == true) {
+                            ToastManager.error('Toggle button disabled when Cart is active');
+                            return;
+                        }
+                        var elem = document.getElementById("moving-circle-toggle");
+
+                        if (anim) {
+                            $(elem).animate({ top: '30px' }, 300);
+                            scope.toggleSwitcherTitle = "Switch to Area Mode";
+                        } else {
+                            $(elem).animate({ top: ('-' + parseInt($(elem).height() + -28) + 'px') }, 300);
+                            scope.toggleSwitcherTitle = "Switch to Navigation Mode";
+                        }
+                        anim = !anim;
+                    };
+
+                    scope.activatePan = function () {
                         OLMap.setActivedSelection(false);
                         scope.toggleBtnMap = true;
-                        OLMap.mapButton = 'Pan';                        
+                        OLMap.mapButton = 'Pan';
                     };
 
-                    scope.activateBox = function() {
+                    scope.activateBox = function () {
                         OLMap.setActivedSelection(true);
                         scope.toggleBtnMap = false;
                         OLMap.mapButton = 'Box';
-                        OLMap.setupBoxSelection();                        
+                        OLMap.setupBoxSelection();
                     };
 
-                    scope.activatePolygon = function() {
+                    scope.activatePolygon = function () {
                         OLMap.setActivedSelection(true);
                         scope.toggleBtnMap = false;
                         OLMap.mapButton = 'Polygon';
-                        OLMap.setupBoxSelection();                        
+                        OLMap.setupBoxSelection();
                     };
 
-                    scope.clearSelection = function() {
+                    scope.clearSelection = function () {
                         OLMap.clearSelection();
                     };
 
+                    scope.switchCoordinate = function () {
+
+                        //Show Graticule for the different Coordinates format on switching
+                        if (GraticuleService.getGraticuleStatus() == false) {
+
+                            //Delete current Graticule
+                            OLMap.unsetGraticule()
+
+                            //Set Graticule on the opposite of he current coordinate value
+                            OLMap.setGraticule((scope.format == 'dd') ? 'dms' : 'dd');
+                        }
+
+                        if (scope.format.localeCompare('dd') == 0) {
+                            scope.format = 'dms';
+                            coordinateStatus = scope.format;
+                            scope.titleformat = 'Convert to Decimal Degree';
+                        } else {
+                            scope.format = 'dd';
+                            coordinateStatus = scope.format;
+                            scope.titleformat = 'Convert to Degree Minute Second';
+                        }
+                        OLMap.switchCoordinate(scope.format);
+                    }
                     scope.isMapLayerSwitcherVisible = ApplicationService.settings.isMapLayerSwitcherVisible;
-
                     init();
-
+                    if (!scope.drawByDefault) scope.toggleActivedSelection();
                 }
-            }
+            };
         }
     };
 });

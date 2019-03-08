@@ -1,0 +1,316 @@
+{
+
+    "debugMode": false,
+    "webAppRoot": "/",
+    "version": "Data Hub System #version developed by a Serco and GAEL Systems consortium under a contract with the European Space Agency - Funded by the EU and ESA",
+
+    "settings": {
+        "hide_login_title":false,
+        "login_title": "",  
+        "title": "Copernicus Scientific Data Hub",
+        "logo": "images/datahub.png",
+        "t_and_c": "https://scihub.copernicus.eu/twiki/do/view/SciHubWebPortal/TermsConditions",
+        "pagination_limit": [25, 50, 75, 100, 125, 150],
+        "keep_period_unit": ["DAYS"],
+        "shapefile_max_size": 5242880,
+        "shapefile_max_size_message": "Your shapefile cannot be uploaded because it is too large. Shapefiles must be no larger than 5.00 MB.",
+        "shapefile_description": "You can also drag & drop the shapefile on map. Only files with extension .shp are supported. Shapefiles are limited to one record of type POLYGON and must be no larger than 5.00 MB.",
+        "search_max_length": 5000,
+        "signup": true,
+        "forgotpassword": true,
+        "editprofile": true,
+        "showcart": true,
+        "showmap": true,
+        "hideminimap": false,
+        "bgimage": "images/bg_s3.jpg",
+        "showquicklook": true,
+        "show_newgui_link": false,
+        "show_userguide": true,
+        "show_home": true,
+        "show_extended_list": false,
+        "showsensingfilter": true,
+        "showingestionfilter": true,
+        "newgui_link": "./new/",
+        "newgui_label": "go to new GUI",
+        "querytitle": "Request Done: ",
+        "enable_shapefile": true,
+        "max_points_shape_file": 50,
+        "show_admin_change_password": true,
+        "draw_by_default": false,
+        "superuser": "root",
+        "enable_lta": true,
+        "search_error_title":"Invalid request",
+        "search_error_message":"Your request connot be processed by the server. Please check the request's parameters.",
+        "deleted_product": {
+            "show_deletion_cause": true,
+            "causes": ["Invalid: bad geometry", "Invalid: reprocessed"],
+            "default_cause": "Invalid"
+        },
+        "toolbar": {
+            "title": "Data Hub System - OSF Installation",
+            "userguide_link": "https://scihub.copernicus.eu/userguide",
+            "userguide_title": "User Guide",
+            "home_link": "https://scihub.copernicus.eu",
+            "home_title": "Scientific Data Hub Portal",
+            "logos": [
+                { "link": "http://www.copernicus.eu", "image": "images/EC_standard_logo.png" },
+                { "link": "https://sentinel.esa.int", "image": "images/logo_esa.png" },
+                { "link": "http://www.copernicus.eu", "image": "images/copernicus.png" }
+            ],
+            "rightlogos": []
+        },
+        "availableRoles": [
+            { "id": "SEARCH", "title": "Search" },
+            { "id": "DOWNLOAD", "title": "Download" },
+            { "id": "UPLOAD", "title": "Upload" },
+            { "id": "USER_MANAGER", "title": "User Manager" },
+            { "id": "ARCHIVE_MANAGER", "title": "Archive Manager" },
+            { "id": "DATA_MANAGER", "title": "Data Manager" },
+            { "id": "SYSTEM_MANAGER", "title": "System Manager" },
+            { "id": "EVENT_MANAGER", "title": "Event Manager" }
+        ],
+        "managementRoles": ["USER_MANAGER", "DATA_MANAGER", "SYSTEM_MANAGER"],
+        "synchronizerRoles": ["UPLOAD"],
+        "uploadRoles": ["UPLOAD"],
+        "sortOptions": [{
+            "name": "Ingestion Date",
+            "value": "ingestiondate"
+        }, {
+            "name": "Sensing Date",
+            "value": "beginposition"
+        }, {
+            "name": "Tile Id",
+            "value": "datatakesensingstart,hv_order_tileid",
+            "message": "This sorting is meaningful only for Sentinel-2 L1C products. Clicking on this checkbox, only Sentinel-2 L1C products will be shown in the list.",
+            "filter": "platformname:Sentinel-2 AND producttype:S2MSI1C",
+            "show_checkbox": true,
+            "checkbox_checked": false,
+            "disable_filters": true
+        }],
+        "orderOptions": [{ "name": "Descending", "value": "desc" }, { "name": "Ascending", "value": "asc" }],
+
+        "isMapLayerSwitcherVisible": true,
+        "map": {
+            "Satellite": {
+                "sources": [{
+                    "class": "MapQuest",
+                    "params": {
+                        "layer": "sat",
+                        "wrapX": false
+                    }
+                }],
+                "title": "Satellite",
+                "type": "base",
+                "visible": false
+            },
+            "Road": {
+                "sources": [{
+                    "class": "OSM",
+                    "params": {
+                        "wrapX": false
+                    }
+                }],
+                "title": "Road",
+                "type": "base",
+                "visible": true
+            },
+            "Hybrid": {
+                "sources": [{
+                    "class": "MapQuest",
+                    "params": {
+                        "layer": "sat",
+                        "wrapX": false
+                    }
+                }, {
+                    "class": "MapQuest",
+                    "params": {
+                        "layer": "hyb",
+                        "wrapX": false
+                    }
+                }],
+                "title": "Hybrid",
+                "type": "base",
+                "visible": false
+            }
+        },
+
+        "miniMap": {
+            "sources": [{
+                "class": "OSM",
+                "params": {
+                    "wrapX": false
+                }
+            }],
+            "title": "Road",
+            "type": "base",
+            "visible": true
+        }
+    },
+    "missions": [{
+        "indexname": "platformname",
+        "name": "Mission: Sentinel-1",
+        "indexvalue": "Sentinel-1",
+        "filters": [{
+            "regex": ".*",
+            "indexname": "filename",
+            "indexlabel": "Satellite Platform",
+            "indexvalues": "S1A_*|S1B_*"
+        }, {
+            "regex": ".*",
+            "indexname": "producttype",
+            "indexlabel": "Product Type",
+            "indexvalues": "SLC|GRD|OCN"
+        }, {
+            "regex": ".*",
+            "indexname": "polarisationmode",
+            "indexlabel": "Polarisation",
+            "indexvalues": "HH|VV|HV|VH|HH+HV|VV+VH"
+        }, {
+            "regex": ".*",
+            "indexname": "sensoroperationalmode",
+            "indexlabel": "Sensor Mode",
+            "indexvalues": "SM|IW|EW|WV"
+        }, {
+            "regex": "[1-9]|[1-9][0-9]|[1-9][0-7][0-5]",
+            "indexname": "relativeorbitnumber",
+            "indexlabel": "Relative Orbit Number (from 1 to 175)"
+        }, {
+            "regex": ".*",
+            "indexname": "collection",
+            "indexlabel": "Collection",
+            "indexvalues": "S1B_24AUG2016"
+            }]
+        }, {
+        "indexname": "platformname",
+        "name": "Mission: Sentinel-2",
+        "indexvalue": "Sentinel-2",
+        "filters": [{
+            "regex": ".*",
+            "indexname": "filename",
+            "indexlabel": "Satellite Platform",
+            "indexvalues": "S2A_*|S2B_*"
+        }, {
+            "regex": ".*",
+            "indexname": "producttype",
+            "indexlabel": "Product Type",
+            "indexvalues": "S2MSI1C|S2MSI2A|S2MSI2Ap"
+        }, {
+            "regex": "[1-9]|[1-9][0-9]|[1-9][0-4][0-9]",
+            "indexname": "relativeorbitnumber",
+            "indexlabel": "Relative Orbit Number (from 1 to 143)"
+        }, {
+            "regex": "([0-9]*\\.?[0-9]*|[1-9][0-9]*\\.?[0-9]*|100)|(\\[([0-9]*\\.?[0-9]*|[1-9][0-9]*\\.?[0-9]*|100) TO ([0-9]*\\.?[0-9]*|[1-9][0-9]*\\.?[0-9]*|100)\\])",
+            "indexname": "cloudcoverpercentage",
+            "indexlabel": "Cloud Cover % (e.g.[0 TO 9.4])"
+            }]
+        }, {
+        "indexname": "platformname",
+        "name": "Mission: Sentinel-3",
+        "indexvalue": "Sentinel-3",
+        "filters": [{
+            "regex": ".*",
+            "indexname": "producttype",
+            "indexlabel": "Product Type",
+            "indexvalues": "OL_1_EFR___|OL_1_ERR___|SL_1_RBT___|SR_1_SRA___|SR_1_SRA_A_|SR_1_SRA_BS|OL_2_LFR___|OL_2_LRR___|SR_2_LAN___|SL_2_LST___"
+        }, {
+            "regex": ".*",
+            "indexname": "timeliness",
+            "indexlabel": "Timeliness",
+            "indexvalues": "\"Near Real Time\"|\"Short Time Critical\"|\"Non Time Critical\""
+        }, {
+            "regex": ".*",
+            "indexname": "instrumentshortname",
+            "indexlabel": "Instrument",
+            "indexvalues": "OLCI|SLSTR"
+        }, {
+            "regex": ".*",
+            "indexname": "productlevel",
+            "indexlabel": "Product Level",
+            "indexvalues": "L1|L2"
+        }, {
+            "regex": ".*",
+            "indexname": "relativeorbitnumber",
+            "indexlabel": "Relative Orbit Start [1-385]"
+            }]
+        }, {
+        "name": "Mission: Sentinel-5P",
+        "indexname": "platformname",
+        "indexvalue": "Sentinel-5",
+        "filters": [
+            {
+                "indexname": "producttype",
+                "indexlabel": "Product Type",
+                "indexvalues": "L1B_IR_SIR|L1B_IR_UVN|L1B_RA_BD1|L1B_RA_BD2|L1B_RA_BD3|L1B_RA_BD4|L1B_RA_BD5|L1B_RA_BD6|L1B_RA_BD7|L1B_RA_BD8|L2__AER_AI|L2__CLOUD_|L2__CO____|L2__NO2___|L2__NP_BD3|L2__NP_BD6|L2__NP_BD7|L2__O3____",
+                "regex": ".*"
+            },
+            {
+                "indexname": "processinglevel",
+                "indexlabel": "Processing Level",
+                "indexvalues": "L1B|L2",
+                "regex": ".*"
+            },
+            {
+                "indexname": "processingmode",
+                "indexlabel": "Timeliness",
+                "indexvalues": "Offline|Near real time",
+                "regex": ".*"
+            },
+            {
+                "indexname": "orbitnumber",
+                "indexlabel": "Absolute Orbit Number",
+                "regex": ".*"
+            }]
+        }, {
+        "name": "Mission: Sentinel-5P Auxiliary",
+        "indexname": "platformname",
+        "indexvalue": "Sentinel-5",
+        "filters": [
+            {
+            "indexname": "producttype",
+            "indexlabel": "Input Auxiliary Files for Product Type",
+            "complexindexes": [
+            {
+                "label": "FRESCO",
+                "value": "(AUX_MET_TP OR AUX_MET_2D OR AUX_NISE__)"
+            },{
+                "label": "AER_LH",
+                "value": "(AUX_MET_TP OR AUX_MET_2D OR AUX_NISE__ OR L2__FRESCO OR L2__NP_BD6 OR L2__AER_AI)"
+            },{
+                "label": "CO____",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_CTM_CO OR AUX_CTMCH4)"
+            },{
+                "label": "CH4___",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_CTM_CO OR AUX_CTMCH4 OR L2__FRESCO OR L2__NP_BD6 OR L2__NP_BD7 OR L2__CO____)"
+            },{
+                "label": "O3__PR",
+                "value": "(AUX_MET_TP OR AUX_MET_2D OR AUX_NISE__ OR L2__FRESCO OR L2__AER_AI)"
+            },{
+                "label": "O3_TPR",
+                "value": "(AUX_MET_TP OR AUX_MET_2D OR AUX_NISE__ OR L2__FRESCO OR L2__AER_AI OR L2__O3__PR)"
+            },{
+                "label": "SO2___",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_NISE__ OR AUX_CTMFCT OR AUX_CTMANA OR AUX_BGSO2_ OR L2__AER_AI OR L2__O3____ OR L2__CLOUD_)"
+            },{
+                "label": "CLOUD_",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_NISE__ )"
+            },{
+                "label": "O3____",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_NISE__ OR L2__CLOUD_)"
+            },{
+                "label": "HCHO__",
+                "value": "(AUX_MET_TP OR AUX_MET_QP OR AUX_MET_2D OR AUX_NISE__ OR AUX_CTMFCT OR AUX_CTMANA OR AUX_BGHCHO OR L2__AER_AI OR L2__CLOUD_)"
+            },{
+                "label": "AER_AI",
+                "value": "AUX_MET_2D"
+            },{
+                "label": "NO2___",
+                "value": "(AUX_MET_2D OR AUX_NISE__ OR AUX_CTMFCT OR L2__FRESCO OR L2__AER_AI)"
+            },{
+                "label": "O3_TCL",
+                "value": "L2__O3____"
+            }],            
+            "regex": ".*"
+        }]
+
+    }]
+}

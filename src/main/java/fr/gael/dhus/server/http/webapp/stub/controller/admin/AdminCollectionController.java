@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.gael.dhus.database.dao.CollectionDao;
 import fr.gael.dhus.database.object.Collection;
-import fr.gael.dhus.database.object.User;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.CollectionData;
 import fr.gael.dhus.service.SecurityService;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
@@ -52,15 +51,14 @@ public class AdminCollectionController {
     private SecurityService securityService;
 
     public List<CollectionData> getCollectionsWithProductsIds() throws AccessDeniedException, Exception {
-        User u = securityService.getCurrentUser();
-
+        
         fr.gael.dhus.service.CollectionService collectionService
                 = ApplicationContextProvider
                 .getBean(fr.gael.dhus.service.CollectionService.class);
 
         List<CollectionData> children = new ArrayList<CollectionData>();
         Set<Collection> collections
-                = collectionService.getAuthorizedCollection(u);
+                = collectionService.getCollections();
 
         for (Collection col : collections) {
 
@@ -115,7 +113,7 @@ public class AdminCollectionController {
             List<Long> productIds = collectionService.getProductIds(uuid);
             // fix waiting the refactoring of CollectionDao.java code
             if (productIds.size() == 1) {
-                Iterator iter = productIds.iterator();
+                Iterator<Long> iter = productIds.iterator();
 
                 Object first = iter.next();
                 if (first == null) {

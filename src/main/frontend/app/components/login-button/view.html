@@ -1,5 +1,5 @@
 <div>
-<!-- 
+    <!-- 
   Data HUb Service (DHuS) - For Space data distribution.
   Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
   Copyright (C) 2013,2014,2015,2016 GAEL Systems
@@ -21,22 +21,29 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
  
 -->
-<div>
-    <style>
-        .login-button {
-            background-color: #797F9E !important;
+    <div>
+        <style>
+        
+        /* LOGIN ICON */
+        .login-ico {
             vertical-align: middle;
-            margin-top: 8px;
+            margin-top: 5px;
+            margin-right: 5px;
+            padding: 3px;
             line-height: 20px;
             font-size: 15px;
-            margin-left: 20px;
             position: relative;
             float: right;
-            padding: 7px;
+            display: block;
+            height: 37px;
             cursor: pointer;
         }
         
-    </style>
-    <div class="login-button" ng-click="openLogin()">LOGIN</div>
-</div>
+        </style>
+        
+        <!-- LOGIN ICON-->
+        <img ng-click="openLogin()" class="login-ico" title="Login" src="images/not-logged.png">
+        
+    </div>
+
 </div>

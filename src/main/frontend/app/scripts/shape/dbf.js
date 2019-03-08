@@ -87,9 +87,14 @@ function DbfHeader(src) {
 
     // iterate field descriptors:
     this.fields = [];
+    var i=0;
     while (src.getSByte() != 0x0D){
         src.position -= 1;
         this.fields.push(new DbfField(src));
+        //console.log("in while....");
+        if(i>1000)
+            break;
+        i++;
     }
 
     this.recordsOffset = this.headerSize+1;                                                                    

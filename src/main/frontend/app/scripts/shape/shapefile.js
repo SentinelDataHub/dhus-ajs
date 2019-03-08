@@ -40,7 +40,7 @@ function ShpFile(binFile) {
         }
         catch (e) {
             if (e.id !== ShpError.ERROR_NODATA) {
-                alert(e);
+                console.warn(e);
             }
             break;
         }
@@ -141,10 +141,10 @@ var ShpType = {
 function ShpHeader(src)
 {
     if (src.getLength() < 100)
-        alert("Not a valid shape file header (too small)");
+        console.warn("Not a valid shape file header (too small)");
 
     if (src.getSLong() != 9994)
-        alert("Not a valid signature. Expected 9994");
+        console.warn("Not a valid signature. Expected 9994");
  
     // skip 5 integers;
     src.position += 5*4;

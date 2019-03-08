@@ -113,12 +113,14 @@ $.fn.EasyTree = function (options) {
             var selected = $(easyTree).find('li.li_selected');
             var ele=$(selected).firstChild;
           var nodeurl= $(easyTree).find('li.li_selected').attr('nodelink');
-            if ($(selected).attr('loaded')=='false') {            
+          if ($(selected).attr('loaded')=='false') {       
+          $(selected).attr('loaded','true');
           ProductService.getElement(nodeurl)
                     .success( function(result) {
-                        var arr = JSON.stringify(result);    
-                
-                        $(selected).attr('loaded','true');
+                        var arr = JSON.stringify(result);
+
+                        var node_to_open = $(selected).find(' > ul');
+                        $(node_to_open).remove();
                         for(var i=0; i<result.d.results.length; i++){
                           var entry = result.d.results[i];
                             //console.log('entry',entry);
@@ -163,7 +165,7 @@ $.fn.EasyTree = function (options) {
                                 $(easyTree).prepend(warningAlert);
                                 $(easyTree).find('.alert .alert-content').text(options.i18n.addMultiple);
                             } else {
-                                if ($(selected).hasClass('parent_li')) {                              
+                                if ($(selected).hasClass('parent_li')) { 
                                     $(selected).find(' > ul').append(item);
 
                                 } else {
@@ -207,10 +209,11 @@ $.fn.EasyTree = function (options) {
                             $(createInput).remove();
                         } // for
                     }); // success
+                return;
           
             }
-            else
-            {                
+            else if($(selected).attr('loaded')=='true')
+            {        
                 var children = $(selected).find('li');  
                 if ($(children).is(':visible')) {
                      
@@ -257,6 +260,7 @@ $.fn.EasyTree = function (options) {
     this.quicklook = ApplicationConfig.baseUrl  +"odata/v1/Products('"+entry.uuid+"')/Products('Quicklook')/$value";                                                         
     this.link = ApplicationConfig.baseUrl  + "odata/v1/Products('"+entry.uuid+"')/$value";
     this.alternative = ApplicationConfig.baseUrl  + "odata/v1/Products('"+entry.uuid+"')/";
+    this.offline = entry.offline;
     }
 
 angular.module('DHuS-webclient')
@@ -279,7 +283,7 @@ angular.module('DHuS-webclient')
              scope.uuid = null;
              scope.product = {};
              iAttrs.$observe('productUuid',
-              function(newValue){               
+              function(newValue){     
                 scope.uuid = newValue;
                 for(var i = 0 ; i < scope.products.list.length; i++){
                     if(scope.products.list[i].uuid == scope.uuid){
@@ -289,8 +293,27 @@ angular.module('DHuS-webclient')
                     }
                 }
                 scope.clearTree();
-                scope.requestNode();
-              });  
+                if(!scope.product.offline)
+                    scope.requestNode(); 
+              }); 
+
+             $('#productView').on('shown.bs.modal', function(e) {
+                    var pUuid = iAttrs.productUuid;
+                    if(pUuid) {
+                        scope.uuid = pUuid;
+                        for(var i = 0 ; i < scope.products.list.length; i++){
+                            if(scope.products.list[i].uuid == scope.uuid){
+                                var entry = scope.products.list[i];
+                                var product = new MetaProduct(entry);
+                                scope.product=product; 
+                            }
+                        } 
+                    }
+                    scope.clearTree();
+                    if(!scope.product.offline)
+                        scope.requestNode();                         
+
+              }); 
 
               scope.requestNode = function(){
                     var self = this;
@@ -313,8 +336,15 @@ angular.module('DHuS-webclient')
                                 var nodename = scope.getShortString(entry.Name, 60);
                                 $('#easytree').append("<ul><li loaded='false' nodelink='"+nodelink+"'><span><span class='glyphicon glyphicon-folder-close'> "+nodename+"</span></span></li></ul>");
                                 $('#easytree').EasyTree({addable: true, editable: false,deletable: false});
-                                var selected = $('#easytree').find('li > span > a');              
-                                $(selected).click();
+                                var selected = $('#easytree').find('li > span > a');     
+                                if(ApplicationService.settings.regex_closed_by_default) {
+                                    var nodeRegex = new RegExp(ApplicationService.settings.regex_closed_by_default, "g");
+                                    if (!nodeRegex.test(scope.product.title))
+                                        $(selected).click();
+                                    //console.log("entry in TCI LINK",entry.identifier);
+                                     
+                                } else
+                                    $(selected).click();
                                 
                             });
                     }

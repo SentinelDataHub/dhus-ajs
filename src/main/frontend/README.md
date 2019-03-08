@@ -3,7 +3,7 @@
 ## Application folder structure
 ```
 .
-|__ app                 (application logic)Â Â 
+|__ app                 (application logic)
 |     |__ components      (directives - reusable components)
 |     |     |__ example     (directive - template)
 |     |         |__ directive.js
@@ -19,12 +19,13 @@
 |     |     |__ ...
 |     |__ styles
 |         |__ main.css
-|__ bower.json          (external dependencies)
 |__ config.json.default
 |__ dist                (minified and uglyfied build)
 |__ Gruntfile.js        (task executor to generate build and test the application)
 |__ package.json        (project definition)
 |__ README.md
+|__ yarn.lock           (yarn migration file)
+|__ bower.json          (old bower dependencies)
 ```
 
 ## Setup environment (after clone)
@@ -32,8 +33,7 @@
 Install dependencies
 ```
 $ cd <DHuS_project_path>/client/webclient/frontend
-$ npm install
-$ bower install
+$ yarn install (or just "yarn")
 ```
 
 ## How to run distribution
@@ -45,7 +45,13 @@ $ grunt serve:dist
 ## How to build the application
 ```
 $ cd <DHuS_project_path>/client/webclient/frontend
-$ grunt
+$ grunt build (or just "grunt")
+```
+
+## How to run development environment
+```
+$ yarn dev (replaces the old "grunt serve:dist")
+$ yarn watch (it will restart the server on any modify on any js files)
 ```
 
 ## How to add a new section

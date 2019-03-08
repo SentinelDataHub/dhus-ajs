@@ -345,7 +345,7 @@
       </div>
       <div class="group col-md-6">      
         <p>Name</p>
-        <input  type="email" ng-model="model.basic.supportName" ng-change="checkSupportMailName()"  class="form-control" >
+        <input  type="text" ng-model="model.basic.supportName" ng-change="checkSupportMailName()"  class="form-control" >
         <span class="highlight"></span>
         <span class="bar"></span>        
         <!-- <span class="field-error" ng-init="supportMailNameError = false" ng-show="supportMailNameError">Support Name empty</span>  -->
@@ -431,16 +431,5 @@
   </div>
   <!-- ____________________________-->
   <br/><br/><br/>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-1 "></div>
-      <div class="col-md-10 col-xs-8 col-sd-8">
-        <h3>Local Archive</h3>
-      </div>      
-    </div>        
-    <div class="row">      
-      <div class="action-button" ng-click="synchronizeLocalArchive()">SYNCHRONIZE LOCAL ARCHIVE</div>
-    </div>    
-  </div>  
 </div>
 </div>

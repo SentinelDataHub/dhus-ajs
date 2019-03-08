@@ -1,216 +1,269 @@
 <div>
-    <!-- 
-      Data HUb Service (DHuS) - For Space data distribution.
-      Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
-      Copyright (C) 2013,2014,2015,2016 GAEL Systems
-      Copyright (C) 2013,2014,2015,2016 Serco Spa
-      
-      This file is part of DHuS software sources.
-     
-      This program is free software: you can redistribute it and/or modify
-      it under the terms of the GNU Affero General Public License as
-      published by the Free Software Foundation, either version 3 of the
-      License, or (at your option) any later version.
-      
-      This program is distributed in the hope that it will be useful,
-      but WITHOUT ANY WARRANTY; without even the implied warranty of
-      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-      GNU Affero General Public License for more details.
-     
-      You should have received a copy of the GNU Affero General Public License
-      along with this program. If not, see <http://www.gnu.org/licenses/>.
-     
-    -->
-    <div >
+	<!-- /* 
+		* Data HUb Service (DHuS) - For Space data distribution.
+		* Copyright (C) 2013,2014,2015,2016,2017,2018 European Space Agency (ESA)
+		* Copyright (C) 2013,2014,2015,2016,2017,2018 GAEL Systems
+		* Copyright (C) 2013,2014,2015,2016,2017,2018 Serco Spa
+		* 
+		* This file is part of DHuS software sources.
+		*
+		* This program is free software: you can redistribute it and/or modify
+		* it under the terms of the GNU Affero General Public License as
+		* published by the Free Software Foundation, either version 3 of the
+		* License, or (at your option) any later version.
+		* 
+		* This program is distributed in the hope that it will be useful,
+		* but WITHOUT ANY WARRANTY; without even the implied warranty of
+		* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+		* GNU Affero General Public License for more details.
+		*
+		* You should have received a copy of the GNU Affero General Public License
+		* along with this program. If not, see <http://www.gnu.org/licenses/>.
+		*/ -->
+	<style>
+		/*CSS for injected Popover*/
+		.popover {
+			border: none !important;
+			background-color: transparent;
+			box-shadow: none;
+			border-radius: 10px;
+		}
 
+		.popover-content {
+			display: inline-block;
+			background-color: rgba(243, 243, 243, 1);
+			box-shadow: 3px 5px 19px 0 rgba(49, 50, 50, .62);
+			border-radius: 10px;
+		}
 
-        <style>
-            .cart-item{
-                /*height: 100px;*/
-                width: 100%;
-                position: relative;
-                background-color: inherit;
-                border-top: 1px solid #bdc3c7; 
-                color: #34495e;
-                height: 103px;
-                padding-top: 4px;
-                cursor: default;
-            }
+		.arrow,
+		.arrow::after {
+			border-right-color: rgba(243, 243, 243, 1);
+		}
 
-            .placeholder-image{
+		/*End Popover injected*/
 
-                width:            100px;
-                height:           auto;
-                display: block;
-                background-repeat: no-repeat;
-                background-image: url('data:image/jpg;base64,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');
+		.cart-item {
+			width: 100%;
+			position: relative;
+			background-color: inherit;
+			border-top: 1px solid #bdc3c7;
+			color: #34495e;
+			height: 103px;
+			padding-top: 5px;
+			cursor: default;
+		}
 
-            }
-            /* **** */
-            .header {
-                display:table; 
-                width:100%;
-                margin-top: 10px;
-            }
-            .logo,
-            .attributes {
-                display:table-cell; 
-                vertical-align:top;
+		.cart-item-offline {
+			background-color: darkgrey;
+			margin-left: 2px;
+			margin-right: 2px;
+			padding-bottom: 6px !important;
+			margin-top: -2px;
+		}
 
-            }
-            #cart-item .attributes{
-                padding-left: 10px;
-                font-size: 13px;
-                font-style: italic;
+		.placeholder-image {
+			width: 100px;
+			height: auto;
+			display: block;
+			background-repeat: no-repeat;
+			background-image: url('data:image/jpg;base64,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');
+		}
 
-            }
-            .logo{
-                width:60px;
-                height:60px;
-                opacity: 1;
-            }
-            #cart-item .list-item-title{
-                font-size: 13px;
-                font-weight: bold;
-                line-height: 20px;
+		.cart-thumbnail {
+			max-height: 64px;
+			max-width: 64px;
+		}
 
+		.cart-row-middle {
+			display: table;
+			width: 100%;
+			margin-top: 10px;
+		}
 
-            }
+		.logo,
+		#cart-row-attributes {
+			display: table-cell;
+			vertical-align: top;
+		}
 
-            .item-title {
-                overflow-x: hidden;
-                text-overflow:ellipsis;
-            }
+		#cart-row-attributes {
+			padding-left: 10px;
+			font-size: 12px;
+			font-style: italic;
+		}
 
-            .tooltip{
-                background-color: red;
-                position:fixed;
-                z-index:99999999;
-            }
+		.logo {
+			width: 60px;
+			height: 60px;
+			opacity: 1;
+		}
 
-            .item-buttons{
-                position:absolute;
-                bottom:10px;
-                right: 20px;
+		#cart-item {
+			line-height: 20px;
+		}
 
-            }
+		#cart-item .list-item-title {
+			font-size: 12px;
+			font-weight: bold;
+		}
 
-            .item-button{
-                margin-left: 15px;
-                cursor: pointer;
-            }
-            /* marker label */
-            .button.S1 {
-                background-color: #DC143C;
-                color: #fff;
-                font-family: 'Open Sans', Helvetica, sans-serif ;
-                font-size: 12px;
-            }
+		.item-title {
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+		}
 
-            .button.S2 {
-                background-color: #0f9d58;
-                color: #fff;
-                font-family: 'Open Sans', Helvetica, sans-serif ;
-                font-size: 12px;
-            }
+		.cart-item-button {
+			font-size: 16px !important;
+			margin-left: 15px;
+			cursor: pointer;
+		}
 
-            .button.S3 {
-                background-color: #191970;
-                color: #fff;
-                font-family: 'Open Sans', Helvetica, sans-serif ;
-                font-size: 12px;
-            }
+		.cart-item-button-top {
+			font-size: 14px !important;
+			margin-left: 10px;
+			cursor: pointer;
+		}
 
-            .button {
-                background-color: #505050;
-                color: #fff;
-                font-family: 'Open Sans', Helvetica, sans-serif ;
-                font-size: 12px;
-            }
+		.cart-button {
+			background-color: #505050;
+			color: #fff;
+			font-family: 'Open Sans', Helvetica, sans-serif;
+			font-size: 12px;
+			text-align: center;
+			line-height: 15px;
+			height: 15px;
+			display: inline;
+			margin-left: 1px;
+			margin-right: 2px;
+			padding: 1px 5px 1px 5px;
+		}
 
-            .button.raised {            
-                text-align: center;
-                line-height: 15px;
-                height: 15px;
-                width: 30px; 
-                margin-top: 0px;
-                margin-left: 0px;
-                margin-bottom: 3px;
-                font-family: 'Open Sans', Helvetica, sans-serif ;
-                font-size: 12px;
-                padding: 1px 5px 1px 5px;
-            }
+		.button.S1 {
+			background-color: #DC143C;
+		}
 
-            .list-link {
-                white-space: nowrap;
-                overflow-x: hidden;
-                text-overflow: ellipsis !important;
-            }
+		.button.S2 {
+			background-color: #0f9d58;
+		}
 
-            .listrow {
-                margin-top: -5px;
-            }
+		.button.S3 {
+			background-color: #191970;
+		}
 
-            .list-attribute-value {
-                color: black;
-            }
-            .max{
-                max-height: 64px;
-                max-width: 64px
-            }
-        </style>
+		.overflow {
+			white-space: nowrap;
+			overflow-x: hidden;
+			text-overflow: ellipsis;
+		}
 
-        <div 
-            id = "cart-item"
-            class="cart-item "    	
-            ng-mouseover="hoverIn()"
-            ng-mouseleave="hoverOut()"
-            >
+		.listrow {
+			margin-top: -5px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
 
-            <div class="row">
-                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <!-- title -->
-                    <div class="row item-title" >
-                        <div style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">
-                            <span class="button raised" style="{{product.label_style}}">{{mission}}</span>
-                            <span ng-if="product.instrument" class="button raised" style="{{product.instrlabel_style}}">{{product.instrument}}</span>
-                            <span  class="list-item-title"
+		.cart-default-color {
+			color: black;
+		}
 
+		.cart-offline {
+			color: #fff;
+			background-color: #505050;
+			font-family: 'Open Sans', Helvetica, sans-serif;
+			font-size: 12px;
+			padding: 1px 5px 1px 5px;
+			padding-left: 0px !important;
+			float: right;
+		}
 
-                                   title="{{product.identifier}}"
+		.undraggable {
+			-moz-user-select: none;
+			-webkit-user-drag: none;
+		}
 
-                                   >{{product.identifier}}
+		.unselectable {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
 
-                            </span>
-                        </div>
-                    </div>
-                    <!-- content -->
-                    <div class="row listrow" style="overflow:hidden;text-overflow:ellipsis;">		    		
-                        <div class="header" style="overflow:hidden;text-overflow:ellipsis;">
-                            <a class="logo" >
-                                <img ng-if="!product.quicklook" class="max" style="opacity:1;" src="images/placeholder.png" alt="quicklook"/>
-                                <img ng-if="product.quicklook" class="max" alt="quicklook" ng-src="{{quicklooksrc}}">
-                            </a>
-                            <div class="attributes" style="overflow:hidden;text-overflow:ellipsis;">
-                                <!-- TODO: to refatoring with generic model -->
-                                <!--<div><span class="list-link"> Mission: <span class="button raised {{satellite}}">{{mission}}</span></span><div>-->					        			         
+		/*Buttons floating on bottom right*/
+		.cart-floating-bottom-right-buttons {
+			position: absolute;
+			bottom: 1px;
+			right: 20px;
+			margin-bottom: 3px;
+		}
+	</style>
 
-                                <div class="list-link">Download URL: <a class="list-link" style="overflow:hidden;text-overflow:ellipsis;" href="{{link}}">{{link}}</a></div>
-                                <div title="{{summary}}" style="overflow:hidden;text-overflow:ellipsis; white-space: nowrap;">Mission: <span class="list-attribute-value">{{satellitename}}</span>; Instrument: <span class="list-attribute-value">{{product.instrument}}</span>; Sensing Date: <span class="list-attribute-value">{{date}}</span>; Size: <span class="list-attribute-value">{{size}}</span></div>					      			       
-                            </div>    
-                        </div>
+	<!-- CART-ROW-ITEM VIEW-->
+	<div id="cart-item" class="cart-item " ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()">
+		<div class="row" ng-class="{ ' cart-item-offline': product.offline}">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-right: 20px;">
 
-                    </div>
-                </div>
-            </div>
-            <!-- buttons -->
-            <div class="item-buttons" ng-show="visibleItemButton">
-                <div class="glyphicon glyphicon-eye-open item-button" ng-click="showProductDetails()" title="View Product Details"></div>
-                <div class="glyphicon glyphicon-minus item-button" ng-click="removeProductFromCart()" title="Remove Product from Download Cart"></div>
-                <div class="glyphicon glyphicon-download-alt item-button" ng-click="downloadProduct()" title="Download Product">	
-                </div>
-            </div>
-        </div>
+				<!-- Product Offline -->
+				<div ng-if="product.offline" class="row item-title">
+					<div class="col-xs-10 col-sm-10 col-md-11 col-lg-11" style="display: flex; padding: 0px;">
+						<span class="cart-button raised " style="{{product.label_style}}">{{mission}}</span>
+						<span ng-if="product.instrument" class="cart-button raised " style="{{product.instrlabel_style}}">{{product.instrument}}</span>
+						<div class="list-item-title" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" title="{{product.identifier}}">{{product.identifier}}</div>
+					</div>
+					<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1" style="padding: 0px;">
+						<span class="cart-button raised cart-offline">Offline</span>
+					</div>
+				</div>
 
-    </div>
+				<!-- Product not Offline -->
+				<div ng-if="!product.offline" class="row item-title">
+					<div style="float: right; width:14px; height:14px;" class="glyphicon glyphicon-unchecked" ng-click="selectProduct();"
+					 title="{{attributeTitles[0]}}" ng-class="{ ' glyphicon-unchecked': !product.selected, 'glyphicon-check': product.selected, 'selected-item': product.selected }"></div>
+					<div style="display: flex; padding: 0px;">
+						<span class="cart-button raised " style="{{product.label_style}}">{{mission}}</span>
+						<span ng-if="product.instrument" class="cart-button raised " style="{{product.instrlabel_style}}">{{product.instrument}}</span>
+						<div class="list-item-title overflow" title="{{product.identifier}}">{{product.identifier}}</div>
+					</div>
+				</div>
+
+				<div class="row listrow">
+					<!-- cart row middle: contains the quicklook and the attributes -->
+					<div class="cart-row-middle">
+
+						<!-- QuickLook -->
+						<div ng-show="showquicklook">
+							<a class="logo unselectable undraggable">
+								<img ng-if="!product.quicklook" style="opacity:1;" src="images/placeholder.png" alt="no placeholder" draggable="false" />
+								<!-- popover on hover on thumbnail -->
+								<div data-toggle="pop" data-container="body" data-placement="right">
+									<img ng-if="product.quicklook" class="cart-thumbnail" ng-src="{{quicklooksrc}}" alt="quicklook" draggable="false">
+								</div>
+							</a>
+						</div>
+
+						<!-- Attributes: Download Url, SUMMARY: Mission, Instrument, Sensing Date, Size -->
+						<div id="cart-row-attributes">
+							<div class="overflow">Download URL:<a href="{{link}}">{{link}}</a></div>
+							<div title="{{summary}}" style="white-space: nowrap;">
+								<span ng-if="satellitename"> Mission:<span class="cart-default-color">{{satellitename}}</span></span>
+								<span ng-if="product.instrument">Instrument:<span class="cart-default-color">{{product.instrument}}</span></span>
+								<span ng-if="date">Sensing Date:<span class="cart-default-color">{{date}}</span></span>
+								<span ng-if="size">Size:<span class="cart-default-color">{{size}}</span></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- FLOATING UI Buttons -->
+		<div class="cart-floating-bottom-right-buttons" ng-show="visibleItemButton">
+			<div class="glyphicon-screenshot glyphicon cart-item-button" ng-click="zoomCart(product)" title="{{attributeTitles[1]}}"></div>
+			<div class="glyphicon-trash glyphicon cart-item-button" ng-click="removeProductFromCart();" title="{{attributeTitles[2]}}"></div>
+			<div class="glyphicon-eye-open glyphicon cart-item-button" ng-click="showProductDetails();" title="{{attributeTitles[3]}}"></div>
+			<div class="glyphicon-download-alt glyphicon cart-item-button" ng-click="downloadProduct() ;" title="{{attributeTitles[4]}}"></div>
+		</div>
+	</div>
 </div>

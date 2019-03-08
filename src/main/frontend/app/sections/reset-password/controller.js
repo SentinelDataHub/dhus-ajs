@@ -38,22 +38,33 @@ angular.module('DHuS-webclient')
 
     LayoutManager.init();
 
-    $scope.usercode = usercode;   
+    $scope.usercode = usercode;
 
     $scope.checkPwd= function(){
 
       var check = true;
+      var rlatins =  /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/g;
       if(!$('#reset-password').val() || $('#reset-password').val().trim() =="")
       {
         $('#reset-checkPassword').css('display','inline-block');
         $('#reset-checkPasswordLength').css('display','none');
+        $('#reset-checkPasswordNonLatin').css('display','none');        
         $('#reset-pwdLbl').css('display','none');
+        check = false;
+      }
+      else if(!rlatins.test($('#reset-password').val()))
+      {
+        $('#reset-checkPasswordLength').css('display','none');
+        $('#reset-checkPassword').css('display','none');
+        $('#reset-checkPasswordNonLatin').css('display','inline-block');        
+        $('#reset-pwdLbl').css('display','inline-block');
         check = false;
       }
       else if($('#reset-password').val().length < 8)
       {
         $('#reset-checkPasswordLength').css('display','inline-block');
         $('#reset-checkPassword').css('display','none');
+        $('#reset-checkPasswordNonLatin').css('display','none');     
         $('#reset-pwdLbl').css('display','inline-block');
         check = false;
       }
@@ -61,6 +72,7 @@ angular.module('DHuS-webclient')
       {
         $('#reset-checkPassword').css('display','none');
         $('#reset-checkPasswordLength').css('display','none');
+        $('#reset-checkPasswordNonLatin').css('display','none');   
         $('#reset-pwdLbl').css('display','inline-block');
       }
       $scope.checkFields = $scope.checkFields && check;
@@ -128,7 +140,7 @@ angular.module('DHuS-webclient')
           window.location.href='#/home';
 
         }, function(result){
-          console.log("directive error result", result);
+          //console.log("directive error result", result);
           AlertManager.error("Password Reset Failed","There was an error while changing your password");
           window.location.href='#/home';
         });

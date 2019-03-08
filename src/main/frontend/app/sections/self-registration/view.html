@@ -244,7 +244,9 @@ select:focus {
     <div class="col-md-12">
       <b>Sentinel data access is free and open to all.</b><br/><br/>
 On completion of the registration form below you will receive an e-mail with a link to validate your e-mail address. Following this you can start to download the data.<br/>
-Username field accepts only alphanumeric characters plus ".", "-", "_" and "-".
+Username field accepts only lowercase alphanumeric characters plus ".", "-" and "_".<br/>
+Password field accepts only alphanumeric characters plus "!", "@", "#", "$", "%", "^", "&", "*", ")", "(", "+", "=", ".", "_", "-".<br/>
+Password fields minimum length is 8 characters.
     </div>
   </div>
   <hr></hr>
@@ -290,6 +292,7 @@ Username field accepts only alphanumeric characters plus ".", "-", "_" and "-".
       <label id="pwdLbl">Password</label>
       <span class="invalid-field" id="checkPasswordLength">Password too short. Minimum 8 characters.</span>
       <span class="invalid-field" id="checkPassword">Password empty</span>
+      <span class="invalid-field" id="checkPasswordNonLatin">Password cannot contain special characters</span>
     </div>
     <div class="group col-md-6">      
       <input id="confirmpassword" type="password" ng-model="user.confirmpwd" ng-change="checkConfimPwd()"  class="form-control" placeholder="Confirm Password">

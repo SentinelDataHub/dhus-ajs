@@ -84,7 +84,7 @@
             </h4>
           </div>
           <div id="section_{{section.name}}" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="section_{{section.name}}">
-            <div ng-repeat="attrs in section.children">
+            <div ng-repeat="attrs in section.children | orderBy: 'name'">
               <div class="panel-body panel-attributes">
               <span class="attr">{{attrs.name}}:</span>
                   <span class="value">{{attrs.value }}</span>
@@ -105,7 +105,7 @@
             </h4>
           </div>
           <div id="section_{{section.name}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="section_{{section.name}}">
-            <div ng-repeat="attrs in section.children">
+            <div ng-repeat="attrs in section.children | orderBy: 'name'">
               <div class="panel-body panel-attributes">
               <span class="attr">{{attrs.name}}:</span>
                   <span ng-if="(attrs.value.indexOf('<a')==0)" class="value"><a target="_blank" href="{{attrs.value | checkHTML}}">{{attrs.value | checkHTML}}</a></span>

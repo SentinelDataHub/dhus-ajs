@@ -62,10 +62,21 @@ angular.module('DHuS-webclient')
             scope.checkPassword = function(){
 
               var check = true;
+              var rlatins =  /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/g;
+
               if(!scope.userpwd || scope.userpwd.trim() == "")
               {
                 $('#admincheckPwdToChange').css('display','inline-block');
                 $('#admincheckPwdLength').css('display','none');
+                $('#admincheckPasswordNonLatin').css('display','none');
+
+                check = false;
+              }
+              else if(!rlatins.test(scope.userpwd))
+              {
+                $('#admincheckPwdToChange').css('display','none');
+                $('#admincheckPwdLength').css('display','none');
+                $('#admincheckPasswordNonLatin').css('display','inline-block');
 
                 check = false;
               }
@@ -73,6 +84,7 @@ angular.module('DHuS-webclient')
               {
                 $('#admincheckPwdToChange').css('display','none');
                 $('#admincheckPwdLength').css('display','inline-block');
+                $('#admincheckPasswordNonLatin').css('display','none');
 
                 check = false;
               }
@@ -80,6 +92,7 @@ angular.module('DHuS-webclient')
               {
                 $('#admincheckPwdToChange').css('display','none');
                 $('#admincheckPwdLength').css('display','none');
+                $('#admincheckPasswordNonLatin').css('display','none');
 
               }
               scope.checkFields = scope.checkFields && check;

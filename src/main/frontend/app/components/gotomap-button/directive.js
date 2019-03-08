@@ -19,9 +19,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-angular.module('DHuS-webclient')
-
-.directive('gotomapButton', function($location, AdvancedSearchService) {
+angular.module('DHuS-webclient').directive('gotomapButton', function ($location, AdvancedSearchService, CartMenuService, CartStatusService) {
   return {
     restrict: 'AE',
     replace: true,
@@ -29,18 +27,17 @@ angular.module('DHuS-webclient')
     scope: {
       text: "="
     },
-    compile: function(tElem, tAttrs){
-        return {
-          pre: function(scope, iElem, iAttrs){
-          },
-          post: function(scope, iElem, iAttrs){
-            scope.redirectHome = function() {
-              var location = window.location.href;              
-              AdvancedSearchService.hide();                
-              window.location.href = '#/home'; 
-            } 
-          }
+    compile: function (tElem, tAttrs) {
+      return {
+        post: function (scope, iElem, iAttrs) {
+          scope.redirectHome = function () {
+            CartStatusService.setIsUserDialog(false);
+            CartMenuService.hide();
+            AdvancedSearchService.hide();
+            window.location.href = '#/home';
+          };
         }
-      }
+      };
+    }
   };
 });

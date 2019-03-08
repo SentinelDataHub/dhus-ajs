@@ -174,8 +174,12 @@ input:focus ~ .highlight {
   <div class="row">
     <div class="col-md-12">
       <b>Please fill this form to reset your password. </b>
+      <br/>
+      Password field accepts only alphanumeric characters plus "!", "@", "#", "$", "%", "^", "&", "*", ")", "(", "+", "=", ".", "_", "-".<br/>
+      Password fields minimum length is 8 characters.
     </div>
   </div>
+  
   <hr></hr>    
 
   <div class="row">
@@ -186,6 +190,7 @@ input:focus ~ .highlight {
       <label id="reset-pwdLbl">Password</label>
       <span class="invalid-field" id="reset-checkPasswordLength">Password too short. Minimum 8 characters.</span>
       <span class="invalid-field" id="reset-checkPassword">Password empty</span>
+      <span class="invalid-field" id="reset-checkPasswordNonLatin">Password cannot contain special characters</span>
     </div>
     <div class="group col-md-6">      
       <input id="reset-confirmpassword" type="password" ng-model="confirmpwd" ng-change="checkConfirmPwd()"  class="form-control" placeholder="Confirm Password">

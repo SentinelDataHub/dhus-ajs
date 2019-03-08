@@ -56,7 +56,7 @@ angular
         return http({
               url: ApplicationConfig.baseUrl + 'api/stub/users/0/searches/count',
               method: "GET"
-        });            
+        });
     },
     getUserSearches: function(searchInPage, offset){
       var saveSearchUrl = 'api/stub/users/0/searches?offset=:offset&count=:count';
@@ -66,14 +66,14 @@ angular
       return http({
           url: ApplicationConfig.baseUrl + saveSearchUrl,
           method: "GET"
-      });         
+      });
     },
     clearUserSearches: function(){
       var self = this;              
       return http({
           url: ApplicationConfig.baseUrl + 'api/stub/users/0/searches',
           method: "DELETE"
-      }); 
+      });
     },
     removeSavedSearch: function(id){
       var self = this;           

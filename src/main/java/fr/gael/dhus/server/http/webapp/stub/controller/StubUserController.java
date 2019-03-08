@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.UserData;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.UserPasswordConfirmationException;
 import fr.gael.dhus.database.object.User;
 import fr.gael.dhus.database.object.User.PasswordEncryption;
@@ -54,7 +55,7 @@ public class StubUserController {
 			@PathVariable(value = "userid") String userid) throws RequiredFieldMissingException, RootNotModifiableException {
 		logger.info("******** updateUserProfile()");
 		int responseCode = 0;
-		User user = body.getUser();
+		UserData user = body.getUser();
 		logger.info("******** called body.getUser");
 		PasswordModel passwordModel = body.getPasswordModel();
 		User u = getCurrentUser();
@@ -112,7 +113,7 @@ public class StubUserController {
 						"Old password is not correct.");
 			}
 
-			if (!user.getPassword().equals(passwordModel.getConfirmPassword())) {
+			if (!user.getPassword().equals(passwordModel.getConfirmPassword())) {				
 				responseCode = 1004;
 				throw new UserPasswordConfirmationException(
 						"Confirmation password value doesn't match.");
@@ -147,80 +148,6 @@ public class StubUserController {
 
 		return new ResponseEntity<>("{\"code\":\""+responseCode+"\"}", HttpStatus.OK);
 	}
-
-
-
-	/**
-	 * Uploaded products ids list of logged user
-	 *
-	 * @return ArrayList String ids
-	 */
-	@RequestMapping(value = "/admin/users/{userid}/uploadedproducts", method = RequestMethod.GET)
-	public ResponseEntity<?> uploadedProducts(@RequestParam(value = "offset", defaultValue = "0") int start,
-			@RequestParam(value = "limit", defaultValue = "") int count) {
-		fr.gael.dhus.service.UserService userService = ApplicationContextProvider
-				.getBean(fr.gael.dhus.service.UserService.class);
-
-		try {
-			User user = getCurrentUser();
-
-			ArrayList<String> productsIdentifiers = new ArrayList<String>();
-			Set<String> products = userService
-					.getUploadedProductsIdentifiers(user.getUUID());
-			if (products == null)
-				return new ResponseEntity<>(productsIdentifiers, HttpStatus.OK);
-			int i = 0;
-			Iterator<String> iter = products.iterator();
-
-			while (products != null && iter.hasNext() && i < count) {
-				String product = iter.next();
-				if (i < start) {
-					i++;
-					continue;
-				}
-				i++;
-				if (product == null) {
-					break;
-				}
-				productsIdentifiers.add(product);
-			}
-
-			return new ResponseEntity<>(productsIdentifiers, HttpStatus.OK);
-		} catch (org.springframework.security.access.AccessDeniedException e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("{\"code\":\"unauthorized\"}",
-					HttpStatus.FORBIDDEN);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>(e.getMessage(),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/**
-	 * Count uploaded products ids list of logged user
-	 *
-	 * @return Long count of ids
-	 */
-	@RequestMapping(value = "/admin/users/{userid}/uploadedproducts/count", method = RequestMethod.GET)
-	public ResponseEntity<?> uploadedProductsCount() {
-		fr.gael.dhus.service.UserService userService = ApplicationContextProvider
-				.getBean(fr.gael.dhus.service.UserService.class);
-		try {
-			User user = getCurrentUser();
-			return new ResponseEntity<>("{\"count\":"
-					+ userService.countUploadedProducts(user.getUUID()) + "}",
-					HttpStatus.OK);
-		} catch (org.springframework.security.access.AccessDeniedException e) {
-			e.printStackTrace();
-			return new ResponseEntity<>("{\"code\":\"unauthorized\"}",
-					HttpStatus.FORBIDDEN);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new ResponseEntity<>(e.getMessage(),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}	
 
 	/**
 	 * Check User code in order to allow password reset

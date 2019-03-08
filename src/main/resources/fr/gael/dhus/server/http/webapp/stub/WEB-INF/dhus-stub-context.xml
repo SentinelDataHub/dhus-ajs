@@ -27,15 +27,30 @@
 
    <bean class="fr.gael.dhus.spring.context.DHuSContextLoader" />
 
-   <bean id="stubAuthEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-      <property name="realmName" value="#{ configurationManager.getNameConfiguration ().getLongName () } Stub" />
+   <bean id="customEntryPoint" class="org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint">
+    <constructor-arg>
+        <map>
+            <entry key="hasHeader('X-Requested-With','XMLHttpRequest')" value-ref="ajaxEntyPoint" />
+        </map>
+    </constructor-arg>
+    <property name="defaultEntryPoint" ref="defaultEntryPoint"/>
    </bean>
 
-   <security:http entry-point-ref="stubAuthEntryPoint" use-expressions="true" disable-url-rewriting="true">
+   <bean id="ajaxEntyPoint" class="org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer.HttpStatusEntryPoint">
+    <constructor-arg name="httpStatus" value="#{T(org.springframework.http.HttpStatus).UNAUTHORIZED}"/>
+   </bean>
+
+   <bean id="defaultEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+    <property name="realmName" value="#{ configurationManager.getNameConfiguration ().getLongName () } Stub"/>
+   </bean>
+		 	 	
+	
+	<security:http use-expressions="true" entry-point-ref="customEntryPoint">   
       <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthFilter" />
       <security:custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter" />
 
       <security:intercept-url pattern="/signup" access="permitAll"/>
+      <security:intercept-url pattern="/configuration" access="permitAll"/>
       <security:intercept-url pattern="/version" access="permitAll"/>
       <security:intercept-url pattern="/forgotpwd" access="permitAll"/>     
       <security:intercept-url pattern="/resetpwd" access="permitAll"/>

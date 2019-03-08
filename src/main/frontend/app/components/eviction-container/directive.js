@@ -20,56 +20,22 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-
-
-angular.module('DHuS-webclient')
-
-.directive('evictionContainer', function(UIUtils, $document,$window , EvictionService) {
-    
+angular.module('DHuS-webclient').directive('evictionContainer', function(ODataEvictionService) {
   return {    
     restrict: 'AE',
     replace: true,
     templateUrl: 'components/eviction-container/view.html',
     scope: {
-      text: "="
-    },    
-    pristineModel: {},
+
+    },
     compile: function(tElem, tAttrs){
       var self = this;
         return {
-          pre: function(scope, iElem, iAttrs){            
-            
+          pre: function(scope, iElem, iAttrs){   
+                           
           },
           post: function(scope, iElem, iAttrs){
-            EvictionService.getEviction().then(function(model){
-              scope.model = angular.copy(model);
-            });
             
-            scope.cancel = function(){                
-                EvictionService.getEviction().then(function(model){
-                  scope.model = angular.copy(model);
-                });
-            };
-
-            scope.run = function(){
-                EvictionService.runEviction(scope.model)
-                  .success(function(){
-                    ToastManager.success("Started eviction successfully");
-                  })
-                  .error(function(){
-                    ToastManager.error("Started run eviction failed");
-                  })
-            };
-
-            scope.save = function(){              
-                EvictionService.updateEviction(scope.model)
-                  .success(function(){
-                    ToastManager.success("Updated eviction settings successfully");
-                  })
-                  .error(function(){
-                    ToastManager.error("Updated eviction settings failed");
-                  });
-            };
           }
         }
       }

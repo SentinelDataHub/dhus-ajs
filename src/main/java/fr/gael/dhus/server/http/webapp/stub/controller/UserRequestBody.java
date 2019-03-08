@@ -1,16 +1,16 @@
 package fr.gael.dhus.server.http.webapp.stub.controller;
 
-import fr.gael.dhus.database.object.User;
+import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.UserData;
 
 public class UserRequestBody{
-	private User user;
+	private UserData user;
 	 private PasswordModel pm;
 
-	public void setUser(User u) {
+	public void setUser(UserData u) {
 		this.user = u;
 	}
 
-	public User getUser() {
+	public UserData getUser() {
 			  return user;
 		  }
 	public void setPm(PasswordModel pm) {

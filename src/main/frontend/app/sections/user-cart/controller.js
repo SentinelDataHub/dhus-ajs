@@ -29,18 +29,18 @@
  * Controller of the DHuS-webclient
  */
 angular.module('DHuS-webclient')
-  .controller('UserCartCtrl', function ($scope, LayoutManager, ProductCartService, CartModel) {
+  .controller('UserCartCtrl', function ($scope, LayoutManager) {
 
     // ------ ------ ------ ------ //    
-        
 
   LayoutManager.init();
 
-  $scope.init = function () {    
+  $scope.init = function () {
+    
+    //Get User Information
+    //TODO: check if the removal can cause problems. removed since caused redirection loop on FireFox
+    //UserService.getUser();
   };
 
-  $scope.init();     
-
-    
-
+  $scope.init();
   });

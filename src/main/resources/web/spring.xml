@@ -30,9 +30,10 @@
       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
 	<bean class="fr.gael.dhus.spring.context.DHuSContextLoader" />
-		 	 	
+	
 	<security:http use-expressions="true" disable-url-rewriting="true" auto-config="false"
 		create-session="ifRequired">
+    	   
 
 		<security:custom-filter ref="preAuthFilter"
 			position="PRE_AUTH_FILTER" />

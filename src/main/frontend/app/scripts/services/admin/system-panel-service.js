@@ -31,24 +31,19 @@ angular
     defaultConfigUrl: "api/stub/admin/system/defaultconfigurations",
     rootConfigUrl: "api/stub/admin/system/rootpassword",
     dumpedDatabasesUrl: "api/stub/admin/system/dumpdatabases",
-    synchronizeLocalArchiveUrl: "api/stub/admin/system/archive",
     restoreDatabaseUrl: "api/stub/admin/system/database",
 
     getSystem: function(){
       var self = this;
-      if(self.model){
-          var defer = $q.defer();
-          defer.resolve(self.model);
-          return defer.promise;
-      }else{
-        return $http({
-          url: ApplicationConfig.baseUrl + self.systemUrl, 
-          method: "GET"
-        })
-          .then(function(response) {
-            return (response.status == 200)?response.data:[];
-          });
-      }
+      
+      return $http({
+        url: ApplicationConfig.baseUrl + self.systemUrl, 
+        method: "GET"
+      })
+      .then(function(response) {
+        return (response.status == 200)?response.data:[];
+      });
+      
     },
 
     basicSave: function(model){
@@ -90,14 +85,6 @@ angular
         });
     },
 
-
-    synchronizeLocalArchive: function(){
-      var self = this;
-      return $http({
-          url: ApplicationConfig.baseUrl + self.synchronizeLocalArchiveUrl, 
-          method: "POST"
-        });
-    },
 
     restoreDefaultConfig: function(){
       var self = this;

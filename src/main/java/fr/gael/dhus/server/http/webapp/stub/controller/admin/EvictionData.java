@@ -28,12 +28,6 @@ public class EvictionData {
     private String strategy;
 
 
-    public EvictionData(int keepPeriod, int maxDiskUsage, String strategy){
-        this.keepPeriod = keepPeriod;
-        this.maxDiskUsage = maxDiskUsage;
-        this.strategy = strategy;
-    }
-
     public int getKeepPeriod() {
         return keepPeriod;
     }

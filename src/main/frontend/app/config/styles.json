@@ -3,6 +3,73 @@
         "matches": [
             {
                 "name": "Instrument",
+                "value": "TROPOMI"
+            }
+        ],
+        "styles": {
+            "fill": {
+                "color": [
+                    100,
+                    83,
+                    148,
+                    0.05
+                ]
+            },
+            "stroke": {
+                "color": [
+                    100,
+                    83,
+                    148,
+                    1
+                ],
+                "width": 1.5
+            }
+        },
+        "selected_styles": {
+            "fill": {
+                "color": [
+                    255,
+                    0,
+                    255,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    255,
+                    0,
+                    255,
+                    1
+                ],
+                "width": 3.5
+            }
+        },
+        "highlighted_styles": {
+            "fill": {
+                "color": [
+                    100,
+                    83,
+                    148,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    127,
+                    0,
+                    255,
+                    1
+                ],
+                "width": 3
+            }
+        },
+        "label_style": "background-color: #645394 !important;",
+        "instrlabel_style": "background-color: #B57EDC !important;"
+     },   
+     {
+        "matches": [
+            {
+                "name": "Instrument",
                 "value": "OLCI"
             }
         ],
@@ -601,6 +668,140 @@
         },
         "label_style": "background-color: #191970 !important;",
         "instrlabel_style": "background-color: #306754 !important;"
+    },
+    {
+        "matches": [
+            {
+                "name": "Product type",
+                "value": "S2MSI2Ap"
+            }
+        ],
+        "styles": {
+            "fill": {
+                "color": [
+                    217,
+                    144,
+                    88,
+                    0.1
+                ]
+            },
+            "stroke": {
+                "color": [
+                    217,
+                    144,
+                    88,
+                    1
+                ],
+                "width": 1.5
+            }
+        },
+        "selected_styles": {
+            "fill": {
+                "color": [
+                    255,
+                    159,
+                    0,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    255,
+                    159,
+                    0,
+                    1
+                ],
+                "width": 3.5
+            }
+        },
+        "highlighted_styles": {
+            "fill": {
+                "color": [
+                    150,
+                    75,
+                    0,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    150,
+                    75,
+                    0,
+                    1
+                ],
+                "width": 3
+            }
+        },
+        "label_style": "background-color: #0f9d58 !important",
+        "instrlabel_style": "background-color: #0f9d58 !important"
+    },
+    {
+        "matches": [
+            {
+                "name": "Product type",
+                "value": "S2MSI2A"
+            }
+        ],
+        "styles": {
+            "fill": {
+                "color": [
+                    217,
+                    144,
+                    88,
+                    0.1
+                ]
+            },
+            "stroke": {
+                "color": [
+                    217,
+                    144,
+                    88,
+                    1
+                ],
+                "width": 1.5
+            }
+        },
+        "selected_styles": {
+            "fill": {
+                "color": [
+                    255,
+                    159,
+                    0,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    255,
+                    159,
+                    0,
+                    1
+                ],
+                "width": 3.5
+            }
+        },
+        "highlighted_styles": {
+            "fill": {
+                "color": [
+                    150,
+                    75,
+                    0,
+                    0.3
+                ]
+            },
+            "stroke": {
+                "color": [
+                    150,
+                    75,
+                    0,
+                    1
+                ],
+                "width": 3
+            }
+        },
+        "label_style": "background-color: #0f9d58 !important",
+        "instrlabel_style": "background-color: #0f9d58 !important"
     },
     {
         "matches": [

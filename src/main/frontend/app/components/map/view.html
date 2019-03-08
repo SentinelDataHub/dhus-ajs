@@ -1,5 +1,5 @@
 <div>
-<!--
+  <!--
   Data HUb Service (DHuS) - For Space data distribution.
   Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
   Copyright (C) 2013,2014,2015,2016 GAEL Systems
@@ -21,250 +21,375 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<div class="map-item">
+  <div class="map-item">
     <script>
-    (function(){if(!window.CESIUM_BASE_URL) window.CESIUM_BASE_URL = "libs/Cesium/Cesium.js";})()
+      (function () { if (!window.CESIUM_BASE_URL) window.CESIUM_BASE_URL = "libs/Cesium/Cesium.js"; })()
     </script>
 
     <style>
-        #map {
-            padding: 0;
-            margin: 0;
-            background-color: black;
-            position: fixed;
-            width: 100%;
-            z-index: 10;
-        }
+      #map {
+        padding: 0;
+        margin: 0;
+        background-color: black;
+        position: fixed;
+        width: 100%;
+        z-index: 10;
+      }
 
-        .toggle-map-button{
-            position: absolute;
-            top: 40px;
-            right: 15px;
-            float: right;
-            z-index: 5;
-            color: #385f96;
-        }
+      .toggle-map-button {
+        position: absolute;
+        top: 40px;
+        right: 15px;
+        float: right;
+        z-index: 5;
+        color: #385f96;
+      }
 
-        .clear-map-selection{
-            position:absolute;
-            top: 40px;
-            right: 100px;
-            float: right;
-            z-index: 5;
-            color: #385f96;
-        }
+      .clear-map-selection {
+        position: absolute;
+        top: 40px;
+        right: 100px;
+        float: right;
+        z-index: 5;
+        color: #385f96;
+      }
 
-        .ol-zoom {
-            position: relative;
-            bottom: 140px;
-            top: inherit;
-            float: right;
-            left: -10px;
-            display: none;
-        }
+      .ol-zoom {
+        position: relative;
+        bottom: 140px;
+        top: inherit;
+        float: right;
+        left: -10px;
+        display: none;
+      }
 
-        .toggle-layers-button{
-            position: absolute;
-            top: 0px;
-            right: 15px;
-            float: right;
-            z-index: 5;
-            color: #385f96;
-        }
+      .toggle-layers-button {
+        position: absolute;
+        top: 0px;
+        right: 9px;
+        float: right;
+        z-index: 5;
+        color: #385f96;
+      }
 
-        .layer-switcher{
-            padding: 10px 90px 0px 0px;
-            right: 0px !important;
-            background-color: rgba(255,255,255,0);
-        }
+      .layer-switcher {
+        padding: 10px 90px 0px 0px;
+        right: 0px !important;
+        background-color: rgba(255, 255, 255, 0);
+      }
 
-        .ol-control:hover{
-            background-color: rgba(255,255,255,0);
-        }
+      .map-item {
+        height: 100%;
+      }
 
-        .map-item{
-            height:100%;
-        }
+      .layer-switcher {
+        position: absolute;
+        top: 3.5em;
+        right: 0.5em;
+        text-align: left;
+        background-color: none;
+      }
 
-        .layer-switcher {
-            position: absolute;
-            top: 3.5em;
-            right: 0.5em;
-            text-align: left;
-            background-color: none;
-        }
+      .layer-switcher .panel2 {
+        padding-right: 50px;
+        border: 1px solid #cccccc;
+        background-color: white;
+        margin: 0;
+        display: none;
+        font-size: 11px;
+      }
 
-        .layer-switcher .panel2 {
-            padding-right: 50px;
-            border: 1px solid #cccccc;
-            background-color: white;
-            margin: 0;
-            display: none;
-            font-size: 11px;
-        }
+      .layer-switcher.shown .panel2 {
+        display: table;
+      }
 
-        .layer-switcher.shown .panel2 {
-            display: block;
-        }
+      .layer-switcher button {
+        float: right;
+        width: 38px;
+        height: 38px;
+        background-image: none;
+        background-color: transparent;
+        border: none;
+      }
 
-        .layer-switcher button {
-            float: right;
-            width: 38px;
-            height: 38px;
-            background-image: none;
-            background-color: transparent;
-            border: none;
-        }
+      .layer-switcher button:focus,
+      .layer-switcher button:hover {
+        background-color: transparent;
+      }
 
-        .layer-switcher button:focus, .layer-switcher button:hover {
-            background-color: transparent;
-        }
+      .layer-switcher ul {
+        width: 100%;
+        padding-left: 1em;
+        list-style: none;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
 
-        .layer-switcher ul {
-            width: 100%;
-            padding-left: 1em;
-            list-style: none;
-        }
+      .layer-switcher li {
+        display: flex;
+        line-height: 20px;
+      }
 
-        .layer-switcher li.group {
-            padding-top: 90px;
-        }
+      .layer-switcher li.group {
+        padding-top: 90px;
+      }
 
-        .layer-switcher li.group > label {
-            font-weight: bold;
-        }
+      .layer-switcher input {
+        margin: 4px;
+        width: 13px;
+      }
 
-        .layer-switcher input {
-            margin: 4px;
-        }
+      /* -- layer selector -- */
 
-        /* -- layer selector -- */
-        .pan {
-            z-index: 11;
-            margin-right: 15px;
-        }
+      .pan {
+        z-index: 11;
+        margin-right: 15px;
+      }
 
-        .ol-mouse-position{
-          background-color: #ffffff;
-          bottom: 8px !important;
-          left: 20px !important;
-          top: inherit;
-          width: 150px;
-          text-align: center;
-          opacity: 0.8;
-        }
+      .ol-mouse-position {
+        background-color: #ffffff;
+        bottom: 10px !important;
+        left: 20px !important;
+        top: inherit;
+        width: 250px;
+        text-align: center;
+        opacity: 0.8;
+    }
+      .switcher-mouse-position {
+        background-color: #ffffff;
+        bottom: 10px !important;
+        left: 20px !important;
+        width: 70px;
+        text-align: center;
+        opacity: 0.8;
+        height: 20px;
+        position: fixed;
+        z-index: 1;
+        display: none;
+    }
 
-        #action-box-container{
-          
-          bottom: 8px !important;
-          left: 190px !important;
-          top: inherit;          
-          text-align: center;
-          opacity: 0.8;
+      #action-box-container {
+        bottom: 8px !important;
+        left: 190px !important;
+        top: inherit;
+        text-align: center;
+        opacity: 0.8;
+        position: absolute;
+        z-index: 12;
+      }
+
+      #action-box-container .btn {
+        height: 20px;
+        line-height: 5px;
+        font-weight: bold;
+        border-radius: 0 !important;
+      }
+
+      #action-box-container .btn.btn-primary.active.focus {
+        outline-offset: 0px !important;
+        outline-color: transparent !important;
+      }
+
+      #action-box-container .btn.btn-primary.active {
+        background-color: #373B50;
+        border-color: #797F9E;
+      }
+
+      #action-box-container .btn.btn-primary {
+        background-color: #797F9E;
+        border-color: #373B50;
+      }
+
+      #bounding-box {
+        left: 10px;
+      }
+
+      #polygon-box {
+        left: 10px;
+      }
+
+      #clear-box-container {
+        bottom: 8px !important;
+        left: 390px !important;
+        top: inherit;
+        text-align: center;
+        opacity: 0.8;
+        position: absolute;
+        z-index: 12;
+      }
+
+      #clear-box-container .btn {
+        height: 20px;
+        line-height: 5px;
+        font-weight: bold;
+        border-radius: 0 !important;
+      }
+
+      #clear-box-container .btn.btn-primary.active.focus {
+        outline-offset: 0px !important;
+        outline-color: transparent !important;
+      }
+
+      #clear-box-container .btn.btn-primary {
+        background-color: #797F9E;
+        border-color: #373B50;
+      }
+
+      .switcher-container {
+        z-index: 11;
+        position: absolute;
+        top: 110px;
+        right: 15px;
+        width: 46px;
+        height: 90px;
+        border-radius: 30px;
+        background-color: gray;
+        box-shadow: 3px 5px 19px 0 rgba(49, 50, 50, .62);
+      }
+
+      .switcher {
+        z-index: 13;
+        position: absolute;
+        margin-top: 25px;
+        margin-left: 15px;
+        padding: 5px;
+        height: 82px;
+        width: 42px;
+        border-radius: 10px;
+      }
+
+      .svg-background {
+        z-index: 25;
+        position: absolute;
+        margin: 2px 2px 2px 5px;
+        padding: 6px 5px;
+        height: 86px;
+        width: 42px;
+        background-color: transparent;
+      }
+
+      .svg-container {
+        margin-left: 0px;
+      }
+
+      #moving-circle-toggle {
+        z-index: 15;
+        position: absolute;
+        margin-top: 16px;
+        margin-left: 3px;
+        margin-bottom: 0px;
+        width: 40px;
+        height: 40px;
+        bottom: 46px;
+        background-color: #373B50;
+        border-radius: 50%;
+      }
+
+      .onoffswitch {        
+        position: fixed;
+        width: 70px;
+        bottom: 12px !important;
+        left: 20px !important;
+        margin-left: 255px !important;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        z-index: 1;
+        height: 20px;
+        border-radius: 20px;
+        box-shadow: 3px 5px 19px 0 rgba(49,50,50,.62) !important;
+
+      }
+      .onoffswitch-checkbox {
+          display: none;
+      }
+      .onoffswitch-label {
+          display: block; overflow: hidden; cursor: pointer;
+          border: 2px solid #808080; border-radius: 20px;
+      }
+      .onoffswitch-inner {
+          display: block; width: 200%; margin-left: -100%;
+          transition: margin 0.3s ease-in 0s;
+      }
+      .onoffswitch-inner:before, .onoffswitch-inner:after {
+          display: block; float: left; width: 50%; height: 20px; padding: 0; line-height: 20px;
+          font-size: 13px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+          box-sizing: border-box;
+      }
+      .onoffswitch-inner:before {
+          content: "DD";
+          padding-left: 10px;
+          background-color: #383B4F; color: #FFFFFF;
+      }
+      .onoffswitch-inner:after {
+          content: "DMS";
+          padding-right: 10px;
+          background-color: #383B4F; color: #FFFFFF;
+          text-align: right;
+      }
+      .onoffswitch-switch {
+          display: block;
+          width: 20px;
+          height: 20px;
+          margin: 2px;
+          background: #FFFFFF;
           position: absolute;
-          z-index:12;         
-        }
+          top: 0;
+          bottom: 0;
+          right: 46px;
+          border: 2px solid #808080;
+          border-radius: 30px;
+          transition: all 0.3s ease-in 0s;
+      }
+      .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+          margin-left: 0;
+      }
+      .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+          right: 0px; 
+      }
 
-        #action-box-container .btn {
-            height: 20px;
-            line-height: 5px;
-            font-weight: bold;
-            border-radius: 0 !important;
-        }     
 
-        #action-box-container .btn.btn-primary.active.focus {
-            outline-offset: 0px !important;
-            outline-color: transparent !important; 
-        } 
-
-        #action-box-container .btn.btn-primary.active {
-            background-color: #373B50;
-            border-color: #797F9E;
-        } 
-
-        #action-box-container .btn.btn-primary {
-            background-color: #797F9E;
-            border-color: #373B50;
-        }  
-
-        #bounding-box {
-            left: 10px;
-        } 
-
-        #polygon-box {
-            left: 10px;
-        } 
-
-        #clear-box-container{
-          
-          bottom: 8px !important;
-          left: 390px !important;
-          top: inherit;          
-          text-align: center;
-          opacity: 0.8;
-          position: absolute;
-          z-index:12;         
-        }
-
-        #clear-box-container .btn {
-            height: 20px;
-            line-height: 5px;
-            font-weight: bold;
-            border-radius: 0 !important;
-        }   
-
-        #clear-box-container .btn.btn-primary.active.focus {
-            outline-offset: 0px !important;
-            outline-color: transparent !important; 
-        }             
-
-        #clear-box-container .btn.btn-primary {
-            background-color: #797F9E;
-            border-color: #373B50;
-        }              
-
+      /**/
     </style>
-    <div ng-show="!showMapToolbar">        
-        <div  class="row fab-map pan dhus-button" ng-click="toggleActivedSelection()" ng-show="!toggleBtnMap" title="Draw region of Interest">
-            <svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;" >
-                <g id="open-with"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/></g>
-            </svg>
-        </div>
-        <div class="row fab-map pan dhus-button" ng-click="toggleActivedSelection()" ng-show="toggleBtnMap" title="Navigate on Map">
-            <svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;" >
-                <g id="flip-to-front"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm2 4v-2H3c0 1.1.89 2 2 2zM3 9h2V7H3v2zm12 12h2v-2h-2v2zm4-18H9c-1.11 0-2 .9-2 2v10c0 1.1.89 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H9V5h10v10zm-8 6h2v-2h-2v2zm-4 0h2v-2H7v2z"/></g>
-            </svg>
-        </div>
+
+    <!-- toggle-switch button -->
+    <div class="switcher-container" ng-click="toggleActivedSelection()" ng-class="toggleSwitcherClass" title="{{toggleSwitcherTitle}}" >
+      <div class="svg-background">
+        <span class="svg-container">
+          <svg fill="white" viewBox="0 0 30 30" height="50%" width="100%" style="pointer-events: none; ">
+            <g>
+              <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z" />
+            </g>
+          </svg>
+        </span>
+        <span class="svg-container">
+          <svg fill="white" viewBox="0 0 30 30" height="50%" width="100%" style="pointer-events: none;">
+            <g>
+              <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm2 4v-2H3c0 1.1.89 2 2 2zM3 9h2V7H3v2zm12 12h2v-2h-2v2zm4-18H9c-1.11 0-2 .9-2 2v10c0 1.1.89 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 12H9V5h10v10zm-8 6h2v-2h-2v2zm-4 0h2v-2H7v2z"></path>
+            </g>
+          </svg>
+        </span>
+      </div>
+      
+      <!-- circle-toggle-button -->
+      <div id="moving-circle-toggle"></div>
     </div>
-    <div id="action-box-container" ng-show="showMapToolbar" class="btn-group" data-toggle="buttons">      
-      <label id="pan-box" class="btn btn-primary" ng-click="activatePan()" title="Activate pan">
-        <input type="radio" name="options"  autocomplete="off" > Pan
-      </label>
-      <label id="bounding-box" class="btn btn-primary active" ng-click="activateBox()" title="Draw bounding box">
-        <input type="radio" name="options"  autocomplete="off" checked > Box
-      </label>
-      <label id="polygon-box" class="btn btn-primary" ng-click="activatePolygon()" title="Draw polygon">
-        <input type="radio" name="options"  autocomplete="off" > Polygon
-      </label>      
-    </div>
-    <div id="clear-box-container" ng-show="showMapToolbar" class="btn-group" title="Clear selection area on map">      
-      <label id="clear-box" class="btn btn-primary" ng-click="clearSelection()">
-        Clear
-      </label>
-    </div>
-    <div id="map" >
-        <div ng-if="isMapLayerSwitcherVisible">
-            <ol3switcher-button ></ol3switcher-button>
-        </div>
+
+    <div id="map">
+      <div ng-if="isMapLayerSwitcherVisible">
+        <ol3switcher-button></ol3switcher-button>
+      </div>
+
+      <div class="onoffswitch" title="{{titleformat}}">
+          <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="myonoffswitch" checked  ng-click="switchCoordinate()">
+          <label class="onoffswitch-label" for="myonoffswitch">
+              <span class="onoffswitch-inner"></span>
+              <span class="onoffswitch-switch"></span>
+          </label>
+      </div>
     </div>
     <info-badge></info-badge>
     <info-element></info-element>
-
-
-    <!--<script src="../../libs/OpenLayers3.4.0Dist/ol.js"></script>-->
-    <!--<script src="../../libs/Cesium/Cesium.js"></script>-->
-    <!--<script src="../ol3-cesium/ol3cesium.js"></script>-->
-    <!--<script src="ol3-layerswitcher.js"></script>-->
-
-</div>
+    <map-graticule></map-graticule>
+  </div>
 </div>

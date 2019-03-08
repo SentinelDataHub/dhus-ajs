@@ -21,7 +21,7 @@
  */
 angular.module('DHuS-webclient')
 
-.directive('alertManager', function($location) {
+.directive('alertManager', function($location, AuthenticationService) {
   return {
     restrict: 'AE',
     replace: true,
@@ -32,18 +32,37 @@ angular.module('DHuS-webclient')
     compile: function(tElem, tAttrs){
         return {
           pre: function(scope, iElem, iAttrs){
-            
+            scope.force = false;            
           },
           post: function(scope, iElem, iAttrs){
             AlertManager.setSuccess(function(title,msg){scope.success(title,msg)});    
             AlertManager.setError(function(title,msg){scope.error(title,msg)});    
             AlertManager.setWarn(function(title,msg){scope.warn(title,msg)});
-            AlertManager.setInfo(function(title,msg){scope.info(title,msg)});                          
+            AlertManager.setInfo(function(title,msg){scope.info(title,msg)});
+            AlertManager.setForceLogout(function(force){scope.forceLogout(force)});                             
             function init(){
               
               $('#alertModal').on('shown.bs.modal', function (e) {                                    
                                                                                 
                 });
+
+              $('#alertModal').on('hidden.bs.modal', function (e) {  
+                if(scope.force) {
+                  AuthenticationService.logout()
+                    .success(function(response){   
+                        scope.force = false;                     
+                        window.location.replace("#/home");
+                        window.location.reload();
+                        
+                    })
+                    .error(function(response){
+                        scope.force = false;
+                        ToastManager.error("Logout failed");
+                    })
+
+                }
+                                                                              
+              });
             };
             
             scope.close = function() {   
@@ -81,6 +100,10 @@ angular.module('DHuS-webclient')
             scope.info = function(title,msg){
               var icon = "glyphicon glyphicon-info-sign";
               scope.toastImp("info",title,msg,icon);
+            };
+
+            scope.forceLogout = function(force) {
+              scope.force = force;
             };
 
             init();

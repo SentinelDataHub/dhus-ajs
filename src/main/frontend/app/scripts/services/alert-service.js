@@ -27,8 +27,10 @@ var AlertManager = {
     success: function(){},
     error: function(){},
     warning: function(){},
+    forceLogout: function(){},
     setSuccess: function(method){this.success = method;},
     setError: function(method){this.error = method;},
     setWarn: function(method){this.warn = method;},
-    setInfo: function(method){this.info = method;}
+    setInfo: function(method){this.info = method;},
+    setForceLogout: function(method){this.forceLogout = method;}
 };

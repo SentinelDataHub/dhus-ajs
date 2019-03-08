@@ -205,6 +205,7 @@ angular.module('DHuS-webclient')
         $('#checkUsernameInvalid').css('display','none');
         $('#checkUsername').css('display','none');
         $('#usernameLbl').css('display','inline-block');
+        $scope.user.username = ($scope.user.username).toLowerCase();
       } 
       $scope.checkFields = $scope.checkFields && check;        
         
@@ -364,17 +365,26 @@ angular.module('DHuS-webclient')
     $scope.checkPwd= function(){
 
       var check = true;
+      var rlatins =  /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/g;
       if(!$('#password').val() || $('#password').val().trim() =="")
       {
         $('#checkPassword').css('display','inline-block');
         $('#checkPasswordLength').css('display','none');
+        $('#checkPasswordNonLatin').css('display','none');
         $('#pwdLbl').css('display','none');
         check = false;
+       } else if (!rlatins.test($('#password').val())) {
+        $('#checkPasswordLength').css('display','none');
+        $('#checkPassword').css('display','none');
+        $('#checkPasswordNonLatin').css('display','inline-block');
+        $('#pwdLbl').css('display','inline-block');
+        check = false;
       }
-      else if($('#password').val().length < 8)
+      else if($('#password').val().length < 8 )
       {
         $('#checkPasswordLength').css('display','inline-block');
         $('#checkPassword').css('display','none');
+        $('#checkPasswordNonLatin').css('display','none');
         $('#pwdLbl').css('display','inline-block');
         check = false;
       }
@@ -382,6 +392,7 @@ angular.module('DHuS-webclient')
       {
         $('#checkPassword').css('display','none');
         $('#checkPasswordLength').css('display','none');
+        $('#checkPasswordNonLatin').css('display','none');
         $('#pwdLbl').css('display','inline-block');
       }   
       $scope.checkFields = $scope.checkFields && check;     

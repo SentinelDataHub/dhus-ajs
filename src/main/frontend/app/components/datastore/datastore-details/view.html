@@ -1,0 +1,770 @@
+<div>
+	<span>
+		<!-- 
+      Data HUb Service (DHuS) - For Space data distribution.
+      Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+      Copyright (C) 2013,2014,2015,2016 GAEL Systems
+      Copyright (C) 2013,2014,2015,2016 Serco Spa
+      
+      This file is part of DHuS software sources.
+     
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+      
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      GNU Affero General Public License for more details.
+     
+      You should have received a copy of the GNU Affero General Public License
+      along with this program. If not, see <http://www.gnu.org/licenses/>.
+     
+    -->
+	</span>
+	<style>
+		#dsDetails .panel-heading {
+			height: 30px;
+			background-color: lightgray;
+			line-height: 10px;
+		}
+
+		#dsDetails .panel-default {
+			border: 1px #aaa solid;
+			width: 50%;
+		}
+
+		@media screen and (min-width: 993px) and (max-width: 1200px) {
+			#dsDetails .panel-default {
+				width: 50%;
+			}
+		}
+
+		@media screen and (min-width: 769px) and(max-width: 992px) {
+			#dsDetails .panel-default {
+				width: 100%;
+			}
+		}
+
+		@media screen and (max-width: 768px) {
+			#dsDetails .panel-default {
+				width: 100%;
+			}
+		}
+
+		#dsDetails .group {
+			position: relative;
+			margin-bottom: 35px;
+		}
+
+		#dsDetails .checkFunction {
+			top: -5px;
+		}
+
+		#dsDetails input {
+			font-size: 13px;
+			padding: 2px;
+			display: block;
+			width: 100%;
+			border: none;
+			border-bottom: 1px solid #757575;
+		}
+
+		#dsDetails input:focus {
+			outline: none;
+		}
+
+		/* LABEL ======================================= */
+		#dsDetails label {
+			color: #999;
+			font-size: 13px;
+			font-weight: normal;
+			position: absolute;
+			pointer-events: none;
+			top: 10px;
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+
+		#dsDetails .fixed-field {
+			top: -15px;
+			font-size: 13px;
+			color: rgb(55, 59, 80);
+		}
+
+		/* active state */
+		#dsDetails input:focus~.lbl-field,
+		#dsDetails input:valid~.lbl-field,
+		#dsDetails input:invalid~.lbl-field {
+			top: -15px;
+			font-size: 13px;
+			color: rgb(55, 59, 80);
+		}
+
+		#dsDetails input:invalid~.invalid-field {
+			display: inline-block !important;
+		}
+
+		#dsDetails .invalid-field {
+			display: none;
+			color: rgb(255, 110, 64);
+			top: 30px;
+			font-size: 9px;
+		}
+
+		#dsDetails .select-label {
+			top: -20px;
+			color: rgb(55, 59, 80);
+			font-size: 13px;
+		}
+
+		/* BOTTOM BARS ================================= */
+		#dsDetails .bar {
+			position: relative;
+			display: block;
+			width: 100%;
+		}
+
+		#dsDetails .bar:before,
+		.bar:after {
+			content: '';
+			height: 2px;
+			width: 0;
+			bottom: 1px;
+			position: absolute;
+			background: rgb(55, 59, 80);
+			transition: 0.2s ease all;
+			-moz-transition: 0.2s ease all;
+			-webkit-transition: 0.2s ease all;
+		}
+
+		#dsDetails .bar:before {
+			left: 50%;
+		}
+
+		#dsDetails .bar:after {
+			right: 50%;
+		}
+
+		/* active state */
+		#dsDetails input:focus~.bar:before,
+		#dsDetails input:focus~.bar:after {
+			width: 50%;
+		}
+
+		/* HIGHLIGHTER ================================== */
+		#dsDetails .highlight {
+			position: absolute;
+			height: 60%;
+			width: 100px;
+			top: 25%;
+			left: 0;
+			pointer-events: none;
+			opacity: 0.5;
+		}
+
+		/* active state */
+		#dsDetails input:focus~.highlight {
+			-webkit-animation: inputHighlighter 0.3s ease;
+			-moz-animation: inputHighlighter 0.3s ease;
+			animation: inputHighlighter 0.3s ease;
+		}
+
+		/* Style Select Field */
+		#dsDetails select {
+			font-family: inherit;
+			background-color: transparent;
+			width: 100%;
+			padding: 2px 0;
+			font-size: 13px;
+			border: none;
+			border-bottom: 1px solid rgb(0, 0, 0);
+		}
+
+		/* Remove focus */
+		#dsDetails select:focus {
+			outline: none;
+		}
+
+		/* ANIMATIONS ================ */
+		@-webkit-keyframes inputHighlighter {
+			from {
+				background: rgb(55, 59, 80);
+			}
+
+			to {
+				width: 0;
+				background: transparent;
+			}
+		}
+
+		@-moz-keyframes inputHighlighter {
+			from {
+				background: rgb(55, 59, 80);
+			}
+
+			to {
+				width: 0;
+				background: transparent;
+			}
+		}
+
+		@keyframes inputHighlighter {
+			from {
+				background: rgb(55, 59, 80);
+			}
+
+			to {
+				width: 0;
+				background: transparent;
+			}
+		}
+
+		#dsDetails .fab-details {
+			background-color: #373B50 !important;
+			vertical-align: middle;
+			margin-left: 20px;
+			padding: 6px;
+			line-height: 20px;
+			font-size: 15px;
+			position: relative;
+			display: block;
+			height: 40px;
+			width: 40px;
+			color: #fff;
+			fill: currentColor;
+			cursor: pointer;
+			text-decoration: none;
+			border-radius: 50%;
+			overflow: hidden;
+			transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+			transition-delay: 0.2s;
+			box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+		}
+
+		@media screen and (max-width: 480px) {
+			#dsDetails .fab-details {
+				background-color: #373B50 !important;
+				vertical-align: middle;
+				margin-left: 20px;
+				padding: 6px;
+				line-height: 20px;
+				font-size: 15px;
+				position: relative;
+				display: block;
+				height: 32px !important;
+				width: 32px !important;
+				color: #fff;
+				fill: currentColor;
+				cursor: pointer;
+				text-decoration: none;
+				border-radius: 50%;
+				overflow: hidden;
+				transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+				transition-delay: 0.2s;
+				box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+			}
+		}
+
+		#dsDetails .fab-reset-eviction {
+			font-size: 26px;
+		}
+
+		@media screen and (max-width: 480px) {
+			#dsDetails .fab-reset-eviction {
+				font-size: 22px;
+				padding: 4px;
+			}
+		}
+
+		#dsDetails .fab-details.fab-right {
+			float: right;
+		}
+
+		#dsDetails .fab-details.fab-left {
+			float: left;
+		}
+
+		#dsDetails .modal-dialog {
+			width: 60%;
+			max-height: 65%;
+			margin: 0px auto;
+			position: relative;
+			margin-top: 2%;
+			margin-bottom: 2%;
+			/*position: fixed;*/
+			height: 65%;
+			padding: 0;
+			background: white;
+			padding-bottom: 30px;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		#dsDetails .btn {
+			background: #373B50;
+			color: #FFF;
+		}
+
+		@media screen and (min-width: 500px) {
+			#dsDetails .eviction-details-modal-dialog {
+				width: 60% !important;
+				max-width: 60% !important;
+			}
+		}
+
+		#dsDetails .modal-header {
+			background: #373B50;
+			color: #FFF;
+		}
+
+		#dsDetails .sectiontitle {
+			background-color: rgb(55, 59, 80);
+			color: #fff;
+			text-align: left;
+			padding: 10px;
+			margin-bottom: 15px;
+		}
+
+		#dsDetails .modal-container {
+			padding: 20px;
+		}
+
+		#dsDetails .eviction-details-modal {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			overflow: hidden;
+		}
+
+		#dsDetails .eviction-details-modal-content {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			border-radius: 0;
+			box-shadow: none;
+		}
+
+		#dsDetails .eviction-details-modal-header {
+			position: absolute;
+			top: 0;
+			right: 0;
+			left: 0;
+			height: 40px;
+			padding: 10px;
+			border: 0;
+			text-align: center;
+			font-size: bold;
+		}
+
+		#dsDetails .eviction-details-modal-body {
+			position: absolute;
+			top: 51px;
+			bottom: 30px;
+			width: 100%;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		#dsDetails .eviction-details-modal-footer {
+			position: absolute;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background: #f1f3f5;
+			padding: 5px;
+			height: 50px;
+		}
+
+		#dsDetails .modal-footer .left {
+			text-align: left;
+		}
+
+		#dsDetails .modal-footer .right {
+			text-align: right;
+		}
+
+		#dsDetails .eviction-details-modal-row {
+			margin: 0px;
+		}
+
+		.datastore-checkbox-attribute {
+			display: inline-block;
+			width: 30px;
+		}
+	</style>
+	<div class="modal fade eviction-details-modal" data-keyboard="false" data-backdrop="static" id="dsDetails"
+		tabindex="-1" role="dialog" aria-labelledby="evictionTitle" aria-hidden="true">
+		<div class="modal-dialog eviction-details-modal-dialog">
+
+			<!-- COMMON FIELDS FOR DATA STORES -->
+			<!-- TOP -->
+			<div class="modal-header eviction-details-modal-header">Data Store Properties</div>
+
+			<!-- MIDDLE -->
+			<div class="modal-body eviction-details-modal-body container-fluid">
+
+				<div class="row" style="margin-top: 5px;">
+
+					<!-- Type -->
+					<div class="group col-md-6">
+						<div ng-if="!isNew">
+							<input type="text" ng-model="datastore.Type" value="datastore.Type" readonly='true'>
+							<span class="highlight"></span>
+							<span class="bar"></span>
+							<label class="fixed-field ">Type</label>
+						</div>
+						<div ng-if="isNew" ng-click="resetErrorDivs()">
+							<label class="select-label">Data Store Type</label>
+							<select ng-model="datastore.Type">
+								<option value="" ng-selected></option>
+								<option ng-if="openstack_ds" value="Open Stack Data Store">Open Stack Data Store</option>
+								<option ng-if="hfs_ds" value="HFS Data Store">HFS Data Store</option>
+								<option ng-if="gmp_ds" value="GMP Data Store">GMP Data Store</option>
+								<option ng-if="remote_ds" value="DHuS Remote Data Store">DHuS Remote Data Store</option>
+								<!-- <option value="PDGS Data Store">PDGS Data Store</option> -->
+							</select>
+							<label class="invalid-field" id="dscheckType">Type empty</label>
+						</div>
+					</div>
+
+					<div class="group col-md-6">
+						<label class="select-label">Link Eviction</label>
+						<select ng-model="datastore.Eviction">
+							<!-- <option ng-value="datastore.Eviction">{{datastore.Eviction}}</option> -->
+							<option ng-repeat="x in evictionsName" value="{{x}}">{{x}}</option>
+						</select>
+					</div>
+
+
+					<!-- <div class="group col-md-6" ng-if="!isNew">
+						<input type="text" ng-model="datastore.Eviction" readonly='true'>
+						<label class="fixed-field ">Linked Eviction</label>
+					</div> -->
+				</div>
+				<div class="row">
+					<!-- DS Name -->
+					<div class="group col-md-6">
+						<div ng-if="!isNew">
+							<input type="text" ng-model="datastore.Name" value="datastore.Name" readonly='true'>
+							<span class="highlight"></span>
+							<span class="bar"></span>
+							<label class="fixed-field ">Name</label>
+						</div>
+						<div ng-if="isNew">
+							<input type="text" ng-model="datastore.Name" value="datastore.Name" ng-click="resetErrorDivs()">
+							<span class="highlight"></span>
+							<span class="bar"></span>
+							<label class="lbl-field ">Name</label>
+							<label class="invalid-field" id="dscheckName">Name empty</label>
+						</div>
+					</div>
+
+					<!-- Priority -->
+					<div class="group col-md-6">
+						<input type="number" ng-model="datastore.Priority" value="datastore.Priority" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">Priority</label>
+						<label class="invalid-field" id="dscheckPriority">Priority empty</label>
+					</div>
+
+					<!-- Maximum Size -->
+					<div class="group col-md-6" ng-if='datastore.Type !== "DHuS Remote Data Store"'>
+						<div>
+							<input type="number" ng-model="datastore.MaximumSize" value="datastore.MaximumSize"
+								ng-click="resetErrorDivs()">
+							<span class="highlight"></span>
+							<span class="bar"></span>
+							<label class="lbl-field">Maximum Size</label>
+							<label class="invalid-field" id="dscheckMaximumSize">Maximum Size empty</label>
+						</div>
+					</div>
+
+					<!-- Current Size -->
+					<div class="group col-md-6" ng-if='datastore.Type !== "DHuS Remote Data Store"'>
+						<div>
+							<input type="number" ng-model="datastore.CurrentSize" value="datastore.CurrentSize"	ng-click="resetErrorDivs()">
+							<span class="highlight"></span>
+							<span class="bar"></span>
+							<label class="lbl-field">Current Size</label>
+							<label class="invalid-field" id="dscheckCurrentSize">Current Size empty</label>
+						</div>
+					</div>
+ 
+					<!-- AutoEviction -->
+					<div class="group col-md-6" ng-if='datastore.Type !== "DHuS Remote Data Store"'>
+						<div>
+							<span>Auto Eviction</span>
+							<input tabindex="-1" type="checkbox" style="display:inline-block; width:30px;" ng-model="datastore.AutoEviction" ng-click="resetErrorDivs()" ng-init="false">
+						</div>
+					</div>
+
+					<!-- Readonly -->
+					<div class="group col-md-6" >
+						<div>
+							<span>Read Only</span>
+							<input tabindex="-1" type="checkbox" style="display:inline-block; width:30px;" ng-model="datastore.ReadOnly" ng-click="resetErrorDivs()" ng-init="false">
+						</div>
+					</div>
+				</div>
+
+				<!-- Specific Options for mdoels -->
+				<div class="row">
+					<div class="group col-md-6">
+						<span><b>Data Store Options: {{datastore.Type}}</b></span>
+					</div>
+				</div>
+
+				<!-- Open Stack Options -->
+				<div class="row" ng-if='datastore.Type == "Open Stack Data Store"'>
+
+					<!-- Provider -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Provider" value="datastore.Provider" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Provider</label>
+						<label class="invalid-field" id="dscheckProvider">Provider empty</label>
+					</div>
+
+					<!-- Identity -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Identity" value="datastore.Identity" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Identity</label>
+						<label class="invalid-field" id="dscheckIdentity">Identity empty</label>
+					</div>
+
+					<!-- Credential -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Credential" value="datastore.Credential" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Credential</label>
+						<label class="invalid-field" id="dscheckCredential">Credential empty</label>
+					</div>
+
+					<!-- Url -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Url" value="datastore.Url" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Url</label>
+						<label class="invalid-field" id="dscheckUrl">Url empty</label>
+					</div>
+
+					<!-- Region -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Region" value="datastore.Region" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Region</label>
+						<label class="invalid-field" id="dscheckRegion">Region empty</label>
+					</div>
+
+					<!-- Container -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Container" value="datastore.Container" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Container</label>
+						<label class="invalid-field" id="dscheckContainer">Container empty</label>
+					</div>
+				</div>
+ 
+				<!-- HFS Options -->
+				<div class="row" ng-if='datastore.Type == "HFS Data Store"'>
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Path" value="datastore.Path" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Path</label>
+						<label class="invalid-field" id="dscheckPath">Path Empty</label>
+					</div>
+
+					<div class="group col-md-6" >
+						<input type="number" ng-model="datastore.MaxFileDepth" value="datastore.MaxFileDepth" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">MaxFileDepth</label>
+						<label class="invalid-field" id="dscheckMaxFileDepth">MaxFileDepth empty</label>
+					</div>
+
+					<div class="group col-md-6" >
+						<input type="number" ng-model="datastore.MaxItems" value="datastore.MaxItems" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">MaxItems</label>
+						<label class="invalid-field" id="dscheckMaxItems">MaxItems empty</label>
+					</div>
+				</div>
+
+				<!-- GMP Options -->
+				<div class="row" ng-if='datastore.Type == "GMP Data Store"'>
+
+					<!-- GMPRepoLocation -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.RepoLocation" value="datastore.RepoLocation" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">RepoLocation</label>
+						<label class="invalid-field" id="dscheckGMPRepoLocation">RepoLocation Empty</label>
+					</div>
+
+					<!-- HFSLocation -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.HFSLocation" value="datastore.HFSLocation" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">HFSLocation</label>
+						<label class="invalid-field" id="dscheckHFSLocation">HFSLocation Empty</label>
+					</div>
+
+					<!-- MaxQueuedRequest -->
+					<div class="group col-md-6" >
+						<input type="number" ng-model="datastore.MaxQueuedRequest" value="datastore.MaxQueuedRequest" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">MaxQueuedRequest</label>
+						<label class="invalid-field" id="dscheckMaxQueuedRequest">MaxQueuedRequest empty</label>
+					</div>
+
+					<!-- Quotas MaxQueryPerUser -->
+					<div class="group col-md-6" >
+						<input type="number" ng-model="datastore.QuotasMaxQueryPerUser" value="datastore.QuotasMaxQueryPerUser" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">Quotas MaxQueryPerUser</label>
+						<label class="invalid-field" id="dscheckQuotasMaxQueryPerUser">Quotas MaxQueryPerUser empty</label>
+					</div>
+
+					<!-- Quotas Timespan -->
+					<div class="group col-md-6" >
+						<input type="number" ng-model="datastore.QuotasTimespan" value="datastore.QuotasTimespan" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field">Quotas Timespan</label>
+						<label class="invalid-field" id="dscheckQuotasTimespan">Quotas Timespan empty</label>
+					</div>
+ 
+					<!-- IsMaster -->
+					<div class="group col-md-6" >
+						<span>IsMaster</span>
+						<input tabindex="-1" type="checkbox" style="display:inline-block; width:30px;" ng-model="datastore.IsMaster" ng-click="resetErrorDivs()">
+					</div>
+
+					<!-- DatabaseUrl -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.MySQLConnectionInfoDatabaseUrl" value="datastore.MySQLConnectionInfoDatabaseUrl" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">MySQL DatabaseUrl</label>
+						<label class="invalid-field" id="dscheckMySQLConnectionInfoDatabaseUrl">MySQL DatabaseUrl Empty</label>
+					</div>
+
+					<!-- User -->
+					<div class="group col-md-6">
+						<input type="text" ng-model="datastore.MySQLConnectionInfoUser" value="datastore.MySQLConnectionInfoUser" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">MySQL User</label>
+						<label class="invalid-field" id="dscheckMySQLConnectionInfoUser">MySQL User Empty</label>
+					</div>
+
+					<!-- Password -->
+					<div class="group col-md-6" >
+						<input type="password" ng-model="datastore.MySQLConnectionInfoPassword"
+							value="datastore.MySQLConnectionInfoPassword" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">MySQL Password</label>
+						<label class="invalid-field" id="dscheckMySQLConnectionInfoPassword">MySQL Password Empty</label>
+					</div>
+
+					<!-- Configuration AgentId -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.ConfigurationAgentId" value="datastore.ConfigurationAgentId" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">AgentId</label>
+						<label class="invalid-field" id="dscheckConfigurationAgentId">AgentId Empty</label>
+					</div>
+
+					<!-- Configuration TargetId -->
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.ConfigurationTargetId" value="datastore.ConfigurationTargetId" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">TargetId</label>
+						<label class="invalid-field" id="dscheckConfigurationTargetId">TargetId Empty</label>
+					</div>
+				</div>
+
+				<!-- Remote DS Options -->
+				<div class="row" ng-if='datastore.Type == "DHuS Remote Data Store"'>
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.ServiceUrl" value="datastore.ServiceUrl" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">ServiceUrl</label>
+						<label class="invalid-field" id="dscheckRMServiceUrl">ServiceUrl Empty</label>
+					</div>
+					<div class="group col-md-6" >
+						<input type="text" ng-model="datastore.Login" value="datastore.Login" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Login</label>
+						<label class="invalid-field" id="dscheckRMLogin">Login Empty</label>
+					</div>
+					<div class="group col-md-6" >
+						<input type="password" ng-model="datastore.Password" value="datastore.Password" ng-click="resetErrorDivs()">
+						<span class="highlight"></span>
+						<span class="bar"></span>
+						<label class="lbl-field ">Password</label>
+						<label class="invalid-field" id="dscheckRMPassword">Password Empty</label>
+					</div>
+				</div>
+				<!-- PDGS Options TODO... -->
+			</div>
+
+			<!-- BOTTOM -->
+			<div class="modal-footer eviction-details-modal-footer">
+				<div class="left col-md-6">
+					<div ng-show="isNew" class="left-button fab-details fab-left fab-reset-eviction" title="Reset Fields"
+						ng-click="resetFields()">
+						<div class="glyphicon glyphicon-erase"></div>
+					</div>
+				</div>
+
+				<!-- Close -->
+				<div class="right col-md-6">
+					<div class="fab-details fab-right" title="Close" ng-click="close()">
+						<svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet">
+							<g>
+								<path
+									d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+							</g>
+						</svg>
+					</div>
+					<!-- Save -->
+					<div class="fab-details fab-right" title="Save" ng-click="save()">
+						<svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet">
+							<g>
+								<path
+									d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+							</g>
+						</svg>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,25 +1,25 @@
 <div>
-<!-- 
+<!--
   Data HUb Service (DHuS) - For Space data distribution.
   Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
   Copyright (C) 2013,2014,2015,2016 GAEL Systems
   Copyright (C) 2013,2014,2015,2016 Serco Spa
-  
+
   This file is part of DHuS software sources.
- 
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU Affero General Public License for more details.
- 
+
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
- 
+
 -->
 <style type="text/css">
 .user-button {
@@ -54,9 +54,9 @@ hr{
   border: 0px;
 }
 
-.group            { 
-  position:relative; 
-  margin-bottom:35px; 
+.group            {
+  position:relative;
+  margin-bottom:35px;
 }
 input               {
   font-size:13px;
@@ -70,14 +70,14 @@ input:focus         { outline:none; }
 
 /* LABEL ======================================= */
 label                {
-  color:#999; 
+  color:#999;
   font-size:13px;
   font-weight:normal;
   position:absolute;
-  pointer-events:none;  
+  pointer-events:none;
   top:10px;
-  transition:0.2s ease all; 
-  -moz-transition:0.2s ease all; 
+  transition:0.2s ease all;
+  -moz-transition:0.2s ease all;
   -webkit-transition:0.2s ease all;
 }
 
@@ -110,20 +110,20 @@ input:invalid ~ .invalid-field{
 .bar    { position:relative; display:block; width:100%; }
 .bar:before, .bar:after     {
   content:'';
-  height:2px; 
+  height:2px;
   width:0;
-  bottom:1px; 
+  bottom:1px;
   position:absolute;
-  background:rgb(55, 59, 80); 
-  transition:0.2s ease all; 
-  -moz-transition:0.2s ease all; 
+  background:rgb(55, 59, 80);
+  transition:0.2s ease all;
+  -moz-transition:0.2s ease all;
   -webkit-transition:0.2s ease all;
 }
 .bar:before {
   left:50%;
 }
 .bar:after {
-  right:50%; 
+  right:50%;
 }
 
 /* active state */
@@ -134,9 +134,9 @@ input:focus ~ .bar:before, input:focus ~ .bar:after {
 /* HIGHLIGHTER ================================== */
 .highlight {
   position:absolute;
-  height:60%; 
-  width:100px; 
-  top:25%; 
+  height:60%;
+  width:100px;
+  top:25%;
   left:0;
   pointer-events:none;
   opacity:0.5;
@@ -155,7 +155,7 @@ select {
   background-color: transparent;
   width: 100%;
   padding: 8px 0;
-  font-size: 13px;  
+  font-size: 13px;
   border: none;
   border-bottom: 1px solid rgb(0,0,0);
 }
@@ -171,10 +171,10 @@ select:focus {
 
 .mdl-selectfield {
   font-family: 'Roboto','Helvetica','Arial',sans-serif;
-  position: relative;    
+  position: relative;
 }
 
-.mdl-selectfield::after {  
+.mdl-selectfield::after {
         position: absolute;
         top: 0.75em;
         right: 0.5em;
@@ -186,15 +186,15 @@ select:focus {
         border-left: .25em solid transparent;
         border-right: .25em solid transparent;
         border-top: .375em solid rgba(0,0,0, 1);
-        pointer-events: none;   
-        color: black;     
-  
+        pointer-events: none;
+        color: black;
+
 }
 
 .mdl-selectfield select {-webkit-appearance: none;
                          -moz-appearance: none;}
 
-.mdl-selectfield select::-ms-expand {display: none;}                         
+.mdl-selectfield select::-ms-expand {display: none;}
 
 /* ANIMATIONS ================ */
 @-webkit-keyframes inputHighlighter {
@@ -224,8 +224,8 @@ select:focus {
   </div>
   <hr></hr>
   <div class="row">
-    <div class="group col-md-6">      
-      <div > 
+    <div class="group col-md-6">
+      <div >
         <input type="text" ng-model="user.firstname" value="user.firstname" ng-blur="checkName()">
         <span class="highlight"></span>
         <span class="bar"></span>
@@ -233,8 +233,8 @@ select:focus {
         <label class="invalid-field" id="checkName">Firstname empty</label>
       </div>
     </div>
-    <div class="group col-md-6">    
-      <div >  
+    <div class="group col-md-6">
+      <div >
         <input type="text" ng-model="user.lastname"  value="user.lastname" ng-blur="checkLastname()">
         <span class="highlight"></span>
         <span class="bar"></span>
@@ -244,53 +244,53 @@ select:focus {
     </div>
   </div>
 
-  <hr></hr>  
-  
+  <hr></hr>
+
 
   <div class="row">
-    <div class="group col-md-6">      
+    <div class="group col-md-6">
       <input  id="email" type="email" ng-model="user.email" value="user.email" ng-blur="checkEmail()">
       <span class="highlight"></span>
       <span class="bar"></span>
-      <label class="lbl-field">E-mail</label> 
-      <label class="invalid-field" id="checkEmail">E-mail not valid</label>     
+      <label class="lbl-field">E-mail</label>
+      <label class="invalid-field" id="checkEmail">E-mail not valid</label>
     </div>
-    <div class="group col-md-6">      
+    <div class="group col-md-6">
       <input id="confirmemail" type="text" ng-blur="checkConfimEmail()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field">Confirm E-mail</label>
-      <label class="invalid-field" id="checkConfirmEmail">E-mail doesn't match</label>      
+      <label class="invalid-field" id="checkConfirmEmail">E-mail doesn't match</label>
     </div>
   </div>
   <hr></hr>
 
   <div class="row">
-    <div class="group col-md-6">    
-      <div class="mdl-selectfield">  
-        <label id="domainLbl" class="select-label">Select Domain</label>   
+    <div class="group col-md-6">
+      <div class="mdl-selectfield">
+        <label id="domainLbl" class="select-label">Select Domain</label>
         <select class="browser-default" ng-model="user.domain" ng-change="checkDomain()">
           <option value="unknown" disabled selected>Select Domain</option>
           <option value="{{domain}}" ng-repeat="domain in domains">{{domain}}</option>
         </select>
       </div>
-      <label class="invalid-field" id="checkDomain">Domain empty</label>      
+      <label class="invalid-field" id="checkDomain">Domain empty</label>
     </div>
 
-    <div class="group col-md-6">      
+    <div class="group col-md-6">
       <input id="domainDesc" style="display:none !important" type="text" ng-model="user.subDomain" value="user.subDomain" ng-blur="checkSubDomain()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field" id="domainLabel" style="display:none !important">Domain</label>
       <label class="invalid-field" id="checkSubDomain">Domain empty</label>
-    </div>    
+    </div>
   </div>
   <hr></hr>
   <div class="row">
 
-    <div class="group col-md-6">    
-      <div class="mdl-selectfield">  
-        <label id="usageLbl" class="select-label">Select Usage</label>   
+    <div class="group col-md-6">
+      <div class="mdl-selectfield">
+        <label id="usageLbl" class="select-label">Select Usage</label>
         <select class="browser-default" ng-model="user.usage" ng-change="checkUsage()">
           <option value="unknown" disabled selected>Select Usage</option>
           <option value="{{usage}}" ng-repeat="usage in usages">{{usage}}</option>
@@ -299,24 +299,24 @@ select:focus {
       <label class="invalid-field" id="checkUsage">Usage empty</label>
     </div>
 
-    <div class="group col-md-6">      
+    <div class="group col-md-6">
       <input id="usageDesc" style="display:none !important" type="text" ng-model="user.subUsage" value="user.subUsage" ng-blur="checkSubUsage()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field" id="usageLabel" style="display:none !important">Usage</label>
       <label class="invalid-field" id="checkSubUsage">Usage empty</label>
-    </div>      
+    </div>
 
   </div>
   <hr></hr>
   <div class="row">
 
-    <div class="group col-md-6">    
+    <div class="group col-md-6">
       <div class="mdl-selectfield">
         <label id="countryLbl" class="select-label">Select your country</label>
         <select id="country" class="browser-default" ng-model="user.country" ng-change="checkCountry()">
           <option value="unknown" disabled selected >Select your country</option>
-          <option value="{{country}}" ng-repeat="country in countries">{{country}}</option>          
+          <option value="{{country}}" ng-repeat="country in countries">{{country}}</option>
         </select>
       </div>
       <label class="invalid-field" id="checkCountry">Country empty</label>
@@ -331,12 +331,14 @@ select:focus {
   <hr></hr>
 
   <div class="row">
-    <h3>Change password</h3>
+    <h3>Change password</h3>    
   </div>
+  Password field accepts only alphanumeric characters plus "!", "@", "#", "$", "%", "^", "&", "*", ")", "(", "+", "=", ".", "_", "-".<br/>
+  Password fields minimum length is 8 characters.
   <hr></hr>
   <div class="row">
-    <div class="group col-md-6">      
-      <input id="oldpassword" type="password" ng-blur="checkOldPwd()">
+    <div class="group col-md-6">
+      <input autocomplete="new-password" class="oldpassword" type="password" ng-blur="checkOldPwd()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field">Old Password</label>
@@ -344,30 +346,31 @@ select:focus {
     </div>
   </div>
   <hr></hr>
-  
+
   <div class="row">
-    <div class="group col-md-6">      
-      <input id="password" type="password" ng-blur="checkPwd()">
+    <div class="group col-md-6">
+      <input autocomplete="new-password" class="password" type="password" ng-blur="checkPwd()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field">Password</label>
       <label class="invalid-field" id="checkPasswordLength">Password too short. Minimum 8 characters.</label>
       <label class="invalid-field" id="checkPassword">Password empty</label>
+      <label class="invalid-field" id="checkPasswordNonLatin">Password cannot contain special characters</label>
     </div>
-    <div class="group col-md-6">      
-      <input id="confirmpassword" type="password" ng-blur="checkConfimPwd()">
+    <div class="group col-md-6">
+      <input autocomplete="new-password" class="confirmpassword" type="password" ng-blur="checkConfimPwd()">
       <span class="highlight"></span>
       <span class="bar"></span>
       <label class="lbl-field">Confirm Password</label>
-      <label class="invalid-field" id="checkConfirmPassword" >Password doesn't match</label> 
+      <label class="invalid-field" id="checkConfirmPassword" >Password doesn't match</label>
     </div>
   </div>
 
   <hr></hr>
 
   <div class="row" style="text-align:right">
-    <div class="user-button" id="changepasswd"  ng-click="changePassword()">CHANGE PASSWORD</div>    
-  </div>      
+    <div class="user-button" id="changepasswd"  ng-click="changePassword()">CHANGE PASSWORD</div>
+  </div>
 
   <hr></hr>
 </div>

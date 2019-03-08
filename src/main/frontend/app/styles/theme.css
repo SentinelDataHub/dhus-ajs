@@ -1,16 +1,16 @@
-/* 
+/*
  * Data HUb Service (DHuS) - For Space data distribution.
  * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
  * Copyright (C) 2013,2014,2015,2016 GAEL Systems
  * Copyright (C) 2013,2014,2015,2016 Serco Spa
- * 
+ *
  * This file is part of DHuS software sources.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -32,8 +32,24 @@ html, body{
 body {
 	background-color: white;
   overflow: hidden;
-
+  user-drag: none;
+  -webkit-user-drag: none;
 }
+
+*:focus {
+    outline:none !important
+}
+
+/** ---- Unselectable class ---- */
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    /*-moz-user-select: none;*/
+    -ms-user-select: none;
+    user-select: none;
+}
+
 
 /** ------------------------------ FORM ELEMENTS --------------------------------- */
 .form-control, .form-control.focus, .form-control:focus {
@@ -114,7 +130,7 @@ svg:hover{
 
 
 .modal-content{
-    border-radius: 0px; 
+    border-radius: 0px;
 }
 
 
@@ -170,13 +186,13 @@ svg:hover{
 
 
 .panel-default{
-       border-color: white; 
+       border-color: white;
 }
 
 .panel-default>.panel-heading {
     color: #333;
-    background-color: white; 
-    border-color: #DFDFE2; 
+    background-color: white;
+    border-color: #DFDFE2;
 }
 
 .panel-title{
@@ -203,4 +219,13 @@ svg:hover{
   -o-transform: rotate(180deg) !important;
   -ms-transform: rotate(180deg) !important;
   transform: rotate(180deg) !important;
+}
+
+.unselectable {
+    user-drag: none;
+    user-select: none;
+    -moz-user-select:none;
+    -webkit-user-select:none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }

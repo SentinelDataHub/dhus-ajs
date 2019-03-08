@@ -1,0 +1,92 @@
+<div>
+  <!--
+    Data HUb Service (DHuS) - For Space data distribution.
+    Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+    Copyright (C) 2013,2014,2015,2016 GAEL Systems
+    Copyright (C) 2013,2014,2015,2016 Serco Spa
+  
+    This file is part of DHuS software sources.
+  
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+  
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License for more details.
+  
+    You should have received a copy of the GNU Affero General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+  -->
+  <div>
+    <style>
+      .map-graticule-container {
+        position: absolute;
+        background-color: #373B50;
+        color: #FFFFFF;
+        font-weight: bold;
+        bottom: 10px;
+        left: 350px;
+        z-index: 100;
+        width: 77px;
+        height: 19px;
+        font-family: Trebuchet, Arial, sans-serif;
+        font-size: 12px;
+        box-shadow: 3px 5px 19px 0 rgba(49, 50, 50, .62);
+      }
+
+      .graticule-parent {
+        display: table;
+      }
+
+      .graticule-child {
+        display: table-cell;
+        vertical-align: middle;
+        padding-bottom: 5px;
+      }
+
+      .unselectable {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .graticule-icon {
+        transform: scale(0.6)
+      }
+    </style>
+
+    <!-- Configurable Graticule -->
+    <div ng-if=!hide_graticule class="map-graticule-container">
+
+      <!-- Graticule On -->
+      <div ng-if=st ng-click="graticuleOn()" title="Show Graticule">
+        <span class="graticule-parent">
+          <svg class="graticule-icon" fill="white" height="20px" width="20px">
+            <g transform="translate(-3,-3)">
+              <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+            </g>
+          </svg>
+          <div class="graticule-child unselectable">Graticule</div>
+        </span>
+      </div>
+
+      <!-- Graticule Off -->
+      <div ng-if=!st ng-click="graticuleOff()" title="Hide Graticule">
+        <span class="graticule-parent">
+          <svg class="graticule-icon" fill="white" height="20px" width="20px">
+            <g transform="translate(-3,-3)">
+              <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+            </g>
+          </svg>
+          <span class="graticule-child unselectable">Graticule</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

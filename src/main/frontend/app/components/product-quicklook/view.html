@@ -58,20 +58,33 @@
     padding-bottom: 10px;       
   }
 
-
   .carousel {text-align: center;}
+
+  .undraggable {
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
   
   </style>    
 
-  <div class="col-md-12">
+  <div class="col-md-12 undraggable unselectable">
 
-    <div ng-show="product.quicklook" id="carousel-container" data-ride="carousel">      
+    <div ng-show="product.quicklook" id="carousel-container" data-ride="carousel" class="unselectable undraggable">
         <a href="{{url}}" target="_blank">
-          <img ng-src="{{url}}" alt="quicklook" fallback-src="{{noquicklook}}">      
+          <img draggable="false" ng-src="{{url}}" alt="quicklook" fallback-src="{{noquicklook}}">
         </a>      
     </div>
     <div ng-show="!product.quicklook" id="noquicklook-container" data-ride="carousel">              
-          <img ng-src="{{noquicklook}}">              
+          <img draggable="false" ng-src="{{noquicklook}}">
     </div>
   </div>               
 </div>

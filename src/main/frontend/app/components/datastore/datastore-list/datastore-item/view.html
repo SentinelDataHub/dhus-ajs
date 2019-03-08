@@ -1,0 +1,106 @@
+<div>
+	<span>
+		<!-- 
+  Data HUb Service (DHuS) - For Space data distribution.
+  Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+  Copyright (C) 2013,2014,2015,2016 GAEL Systems
+  Copyright (C) 2013,2014,2015,2016 Serco Spa
+  
+  This file is part of DHuS software sources.
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU Affero General Public License for more details.
+ 
+  You should have received a copy of the GNU Affero General Public License
+  along with this program. If not, see <http://www.gnu.org/licenses/>.
+ 
+-->
+	</span>
+	<div>
+		<style>
+			#datastore-item {
+				width: 100%;
+				position: relative;
+				background-color: inherit;
+				border-top: 1px solid #bdc3c7;
+				color: #34495e;
+				height: 90px;
+				padding-top: 4px;
+			}
+
+			#datastore-item .attributes {
+				font-size: 13px;
+				padding-left: 10px;
+				font-style: italic;
+			}
+
+			#ds-name {
+				font-size: 13px;
+				font-weight: bold;
+				line-height: 20px;
+			}
+
+			.ds-property {
+				font-size: 13px;
+				font-style: italic;
+			}
+
+			.ds-value {
+				color: black;
+			}
+
+			.item-buttons {
+				position: absolute;
+				right: 15px;
+				bottom: 10px;
+			}
+
+			.item-button {
+				cursor: pointer;
+			}
+		</style>
+		<div id="datastore-item" class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()">
+
+			<!-- Common Properties -->
+			<div id="ds-name" title="{{datastore.Name}}">{{datastore.Name}}
+				<span style="float: right">{{datastore.dstype}}</span>
+			</div>
+
+			<div class="ds-property">Priority:<span class="ds-value">{{datastore.Priority}}</span></div>
+			<div class="ds-property">Read Only:<span class="ds-value">{{datastore.ReadOnly}}</span></div>
+
+			<!-- Open Stack -->
+			<div ng-if='datastore.dstype == "Open Stack Data Store"' class="ds-property">
+				Container: <span class="ds-value">{{datastore.Container}}</span>
+			</div>
+
+			<!-- HFS -->
+			<div ng-if='datastore.dstype == "HFS Data Store"' class="ds-property">
+				Path: <span class="ds-value">{{datastore.Path}}</span>
+			</div>
+
+			<!-- GMP -->
+			<div ng-if='datastore.dstype == "GMP Data Store"' class="ds-property">
+				HFSLocation: <span class="ds-value">{{datastore.HFSLocation}}</span>
+				IsMaster: <span class="ds-value">{{datastore.IsMaster}}</span>
+			</div>
+
+			<!-- Remote DS -->
+			<div ng-if='datastore.dstype == "DHuS Remote Data Store"' class="ds-property">
+				ServiceUrl: <span class="ds-value">{{datastore.ServiceUrl}}</span>
+			</div>
+
+			<div class="item-buttons" ng-show="visibleItemButton">
+				<div class="glyphicon glyphicon-remove item-button" ng-click="deleteDatastore()" title="Delete {{objName}}"></div>
+				<div class="glyphicon glyphicon-pencil item-button" ng-click="editDatastore()" title="Edit {{objName}}"></div>
+			</div>
+		</div>
+	</div>
+</div>

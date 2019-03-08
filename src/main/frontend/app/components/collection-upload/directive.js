@@ -310,13 +310,13 @@ angular.module('DHuS-webclient')
             scope.getSelectedCollectionsIds = function(){
                 var selected = [];
                 $('.collection_checkbox').each(function() {
-                    console.log("$(this).attr('checked')",$(this).prop('checked'));
+                    //console.log("$(this).attr('checked')",$(this).prop('checked'));
                     if($(this).prop('checked')==true) {
-                        console.log("$(this).parent()",$(this).parent());
+                        //console.log("$(this).parent()",$(this).parent());
                         selected.push($(this).parent().attr('nodeid'));
                     }
                 });
-                console.log("selected", selected);
+                //  console.log("selected", selected);
                 return selected;
             };
 

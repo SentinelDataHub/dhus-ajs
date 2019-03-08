@@ -21,6 +21,7 @@
  */
 angular.module('DHuS-webclient')
 
+
 .directive('infoElement', function($location) {  
   return {
     restrict: 'AE',

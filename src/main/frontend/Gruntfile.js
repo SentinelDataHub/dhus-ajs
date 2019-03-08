@@ -19,44 +19,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
-
-
+(function () { 'use strict'; }());
 module.exports = function (grunt) {
-  require('time-grunt')(grunt);
-  require('jit-grunt')(grunt, {
+  require('time-grunt')(grunt); //Show grunt tasks execution time
+  require('jit-grunt')(grunt, { //A JIT(Just In Time) plugin loader for Grunt.
     useminPrepare: 'grunt-usemin',
     ngtemplates: 'grunt-angular-templates',
     cdnify: 'grunt-google-cdn'
   });
 
   var appConfig = {
-    app: require('./bower.json').appPath || 'app',
+    app: 'app',
     dist: 'dist'
   };
 
+  //Initial configuration
   grunt.initConfig({
     yeoman: appConfig,
     connect: {
       options: {
         port: 8333,
         hostname: '0.0.0.0'
-      },
-      test: {
-        options: {
-          port: 8333,
-          middleware: function (connect) {
-            return [
-              connect.static('.tmp'),
-              connect.static('test'),
-              connect().use(
-                '/bower_components',
-                connect.static('./bower_components')
-              ),
-              connect.static(appConfig.app)
-            ];
-          }
-        }
       },
       dist: {
         options: {
@@ -66,21 +49,11 @@ module.exports = function (grunt) {
       }
     },
     jshint: {
-      options: {
-        jshintrc: '.jshintrc',
-        reporter: require('jshint-stylish')
-      },
       all: {
         src: [
           'Gruntfile.js',
-         '<%= yeoman.app %>/scripts/{,*/}*.js'
+          '<%= yeoman.app %>/scripts/{,*/}*.js'
         ]
-      },
-      test: {
-        options: {
-          jshintrc: 'test/.jshintrc'
-        },
-        src: ['test/spec/{,*/}*.js']
       }
     },
     clean: {
@@ -120,28 +93,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-    wiredep: {
-      app: {
-        src: ['<%= yeoman.app %>/index.html'],
-        ignorePath:  /\.\.\//
-      },
-      test: {
-        devDependencies: true,
-        src: '<%= karma.unit.configFile %>',
-        ignorePath:  /\.\.\//,
-        fileTypes:{
-          js: {
-            block: /(([\s\t]*)\/{2}\s*?bower:\s*?(\S*))(\n|\r|.)*?(\/{2}\s*endbower)/gi,
-              detect: {
-             //   js: /'(.*\.js)'/gi
-              },
-              replace: {
-              //  js: '\'{{filePath}}\','
-              }
-            }
-          }
-      }
-    },
     filerev: {
       dist: {
         src: [
@@ -169,18 +120,15 @@ module.exports = function (grunt) {
         }
       }
     },
-     uglify: {
-        options: {
-            compress: false
-        }
+    uglify: {
+      options: {
+        compress: false
+      }
     },
     usemin: {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
-
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
-      js: [
-        '<%= yeoman.dist %>/scripts/{,*/}*.js'
-      ],
+      js: ['<%= yeoman.dist %>/scripts/{,*/}*.js'],
       options: {
         assetsDirs: [
           '<%= yeoman.dist %>',
@@ -193,8 +141,7 @@ module.exports = function (grunt) {
         }
       }
     },
-
-     imagemin: {
+    imagemin: {
       dist: {
         files: [{
           expand: true,
@@ -204,7 +151,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-
     svgmin: {
       dist: {
         files: [{
@@ -215,7 +161,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-
     htmlmin: {
       dist: {
         options: {
@@ -232,7 +177,6 @@ module.exports = function (grunt) {
         }]
       }
     },
-
     ngtemplates: {
       dist: {
         options: {
@@ -242,11 +186,11 @@ module.exports = function (grunt) {
         },
         cwd: '<%= yeoman.app %>',
         src: [
-            'views/{,*/}*.html',
-            'application_layout.html',
-            'sections/**/*.html',
-            'components/**/*.html'
-          ],
+          'views/{,*/}*.html',
+          'application_layout.html',
+          'sections/**/*.html',
+          'components/**/*.html'
+        ],
         dest: '.tmp/templateCache.js'
       }
     },
@@ -293,7 +237,7 @@ module.exports = function (grunt) {
           src: ['generated/*']
         }, {
           expand: true,
-          cwd: 'bower_components/bootstrap/dist',
+          cwd: 'node_modules/@bower_components/bootstrap/dist',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
         }]
@@ -314,44 +258,28 @@ module.exports = function (grunt) {
       ],
       dist: [
         'copy:styles',
-        'imagemin',
-        'svgmin'
+        'imagemin'
       ]
     },
-    karma: {
-      unit: {
-        configFile: 'test/karma.conf.js',
-        singleRun: true
-      }
-    }
   });
+
+  //grunt serve:dist OR npm run-script gruntserve
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {
       return grunt.task.run(['build', 'connect:dist:keepalive']);
     }
     grunt.task.run([
       'clean:server',
-      'wiredep',
       'concurrent:server',
       'autoprefixer:server'
     ]);
   });
-  grunt.registerTask('server', 'DEPRECATED TASK. Use the "serve" task instead', function (target) {
-    grunt.log.warn('The `server` task has been deprecated. Use `grunt serve` to start a server.');
-    grunt.task.run(['serve:' + target]);
-  });
-  grunt.registerTask('test', [
-    'clean:server',
-    'wiredep',
-    'concurrent:test',
-    'autoprefixer',
-    'karma'
-  ]);
+
+  //grunt OR grunt build OR npm run-script gruntbuild
   grunt.registerTask('build', [
     'clean:dist',
-    'wiredep',
     'useminPrepare',
-    'concurrent:dist',
+    'concurrent:dist', 
     'autoprefixer',
     'ngtemplates',
     'concat',
@@ -359,13 +287,27 @@ module.exports = function (grunt) {
     'copy:dist',
     'cdnify',
     'cssmin',
-     'uglify',
+    'uglify',
     'filerev',
     'usemin',
     'htmlmin'
   ]);
+
+  //TODO Remove not necessary tasks for dev
+  grunt.registerTask('dev', [
+    'useminPrepare',
+    'concurrent:dist', 
+    'autoprefixer',
+    'ngtemplates',
+    'concat',
+    'ngAnnotate',
+    'copy:dist',
+    'cdnify',
+    'uglify',
+    'usemin'
+  ]);
+
   grunt.registerTask('default', [
-    /*'test',*/
     'build'
   ]);
 };

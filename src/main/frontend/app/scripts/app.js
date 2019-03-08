@@ -43,6 +43,10 @@ var DHuSModule = angular
         'ngToast',
         'ui.bootstrap'
     ]);
+
+/*
+*   <DhUS Module> routing Configuration
+*/
 DHuSModule.config(function($routeProvider) {
     $routeProvider
         .when('/home', {
@@ -98,10 +102,11 @@ DHuSModule.config(function($routeProvider) {
             templateUrl: 'sections/upload-product/view.html',
             controller: 'UploadCtrl'
         })
-        .when('/user-products', {
-            templateUrl: 'sections/user-products/view.html',
-            controller: 'UserProductsCtrl'
-        })
+        //TODO delete?
+        // .when('/user-products', {
+        //     templateUrl: 'sections/user-products/view.html',
+        //     controller: 'UserProductsCtrl'
+        // })
         // .when('/reset-password/:r', {
         //    templateUrl: 'sections/reset-password/view.html',
         //    controller: 'ResetPasswordCtrl',
@@ -118,32 +123,42 @@ DHuSModule.config(function($routeProvider) {
 })
 
   /** APPLICATION INITIALIZATION **/
-  .run(function(LayoutManager, StyleService, ConfigurationService, $rootScope,$location, $http){
-
+  /*
+  * Dependency              Path
+  *
+  * LayoutManager           src/main/frontend/app/scripts/layout_manager.js
+  * StyleService            src/main/frontend/app/scripts/services/style-service.js
+  * ConfigurationService    src/main/frontend/app/scripts/services/configuration-service.js
+  * $rootScope
+  * $location
+  * $http
+  * Session                 src/main/frontend/app/scripts/services/session-service.js
+  *
+  * ApplicationService      src/main/frontend/app/scripts/services/application-service.js
+  */
+  .run(function(LayoutManager, StyleService, ConfigurationService, $rootScope, $location, $http, Session){
     window.http= $http;
+
+    // Identify requests coming from GUI application
+    $http.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+    //Initialize LayoutManager and StyleService
     LayoutManager.init();
     StyleService.init();
 
     var self = this;
-
       if (!ConfigurationService.isLoaded()) {
-    
         ConfigurationService.getConfiguration().then(function(data) {
-            // promise fulfilled
-            if (data) {
+            if (data) { // promise fulfilled
                 ApplicationService = data;
-                $rootScope.debugMode = ApplicationService.debugMode;
-            } else {
-
-                $rootScope.debugMode = ApplicationService.debugMode;
             }
+            $rootScope.debugMode = ApplicationService.debugMode;
         }, function(error) {
-            // promise rejected, could log the error with: console.log('error', error);
-
+           //console.log('app.js - Error in ConfigurationService');
         });
-    } else
+      } else {
         $rootScope.debugMode = ApplicationService.debugMode;
-
+      }
     jQuery.ajaxSettings = null; //super test
-
+    Session.checkSession();
   });

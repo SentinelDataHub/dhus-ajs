@@ -1,25 +1,25 @@
 <div>
-<!-- 
+<!--
   Data HUb Service (DHuS) - For Space data distribution.
   Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
   Copyright (C) 2013,2014,2015,2016 GAEL Systems
   Copyright (C) 2013,2014,2015,2016 Serco Spa
-  
+
   This file is part of DHuS software sources.
- 
+
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU Affero General Public License for more details.
- 
+
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
- 
+
 -->
 
 <div >
@@ -32,12 +32,12 @@
         width: 100%;
         height:100%;
         z-index: 10;
-        
+
     }
 
     .fab-map {
           vertical-align: middle;
-          margin-top: 110px;          
+          margin-top: 110px;
           padding: 10px;
           line-height: 20px;
           font-size: 15px;
@@ -49,10 +49,10 @@
           color: #fff;
           fill: currentColor;
           cursor: pointer;
-          text-decoration: none;            
-          border-radius: 50%;          
-          overflow: hidden;                
-          box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+          text-decoration: none;
+          border-radius: 50%;
+          overflow: hidden;
+          box-shadow: 3px 5px 19px 0 rgba(49,50,50,.62) !important;
           background-color: #373B50;
       }
     .bgimage {
@@ -66,14 +66,16 @@
 	</style>
 	<!-- style="background: url('images/bg_s3.jpg') no-repeat scroll center center / 100% auto #000024" -->
     <div ng-if="showmap"><dhus-map ></dhus-map></div>
-    <div ng-if="!showmap" class="nomap bgimage" ><img id="bgimage" src="" class="bgimage"/></div>                
+    <div ng-if="!showmap" class="nomap bgimage" ><img id="bgimage" src="" class="bgimage"/></div>
     <list-container></list-container>
     <div id="search-box-container" >
         <search-box></search-box>
     </div>
-    <div advanced-search></div advanced-search> 
-    <div ng-if="!showmap" info-badge></div>     
+    <div advanced-search></div advanced-search>
+		<div cart-menu></div cart-menu> 
+    <div ng-if="!showmap" info-badge></div>
     <div ng-if="!showmap" info-element></div>
+    <div ng-if="!showmap" map-graticule></div>
     <!-- <div style="position:fixed; background-color: red; width: 100px; height:500px;    z-index: 999;"></div> -->
 </div>
 </div>

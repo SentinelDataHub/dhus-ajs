@@ -29,9 +29,9 @@
  * Controller of the DHuS-webclient
  */
 angular.module('DHuS-webclient')
-  .controller('ManagementCtrl', function ($scope, UserService) {
+  .controller('ManagementCtrl', function ($scope, UserService, Session) {
 
-  	$scope.user = UserService.model;
+  	$scope.user = UserService.getUserModel();
   	$scope.isUserManagement = false;
   	$scope.isDataManagement = false;
   	$scope.isSystemManagement = false;
@@ -48,15 +48,20 @@ angular.module('DHuS-webclient')
   			$scope.isSystemManagement = true;
         
   	};
-  	$scope.$watch('$viewContentLoaded', function()
-    {
-       	if ($scope.user) {
-	  		$scope.getAccessRights();
+  	$scope.$watch('$viewContentLoaded', function() {
+     	if ($scope.user) {        
+  		  $scope.getAccessRights();
         setTimeout(function(){$(window).trigger('resize'); },0);
-	  	}
-	  	//console.log("$scope.isUserManagement",$scope.isUserManagement);
-  		//console.log("$scope.isDataManagement",$scope.isDataManagement);
-  		//console.log("$scope.isSystemManagement",$scope.isSystemManagement);
+  	  } else {
+        var username = Session.getSessionUsername();
+        UserService.getODataUser(username).then(function(res){
+          UserService.setUserModel(res);
+          UserService.setUserRolesModel(res);
+          $scope.user = UserService.getUserModel();
+          $scope.getAccessRights();
+          setTimeout(function(){$(window).trigger('resize'); },0);          
+        });
+      }      	  
     });
   	
   	

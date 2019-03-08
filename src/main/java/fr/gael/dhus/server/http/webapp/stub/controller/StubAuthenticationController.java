@@ -28,15 +28,16 @@ public class StubAuthenticationController {
            throws IOException, UserServiceMailingException, UserServiceException
    {
 
-
-
       fr.gael.dhus.service.UserService userService = ApplicationContextProvider
               .getBean (fr.gael.dhus.service.UserService.class);
       User user = new User ();
-
+      
       try
       {
-    	  
+        if (userData.getPassword() == ""){
+            return new ResponseEntity<String>("{\"code\":\"user_password_required\"}",HttpStatus.BAD_REQUEST);
+         }
+         
           user.setUsername (userData.getUsername ());
           user.setFirstname (userData.getFirstname ());
           user.setLastname (userData.getLastname ());
@@ -50,6 +51,8 @@ public class StubAuthenticationController {
           user.setDomain (userData.getDomain ());
           user.setSubDomain (userData.getSubDomain ());
           userService.createTmpUser (user);
+
+
       }
       catch (EmailNotSentException e){
          throw new UserServiceMailingException(e.getMessage ());

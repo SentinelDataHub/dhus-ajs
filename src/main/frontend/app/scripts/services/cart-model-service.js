@@ -19,108 +19,120 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-'use strict';
-
-angular
-  .module('DHuS-webclient')
-.factory('CartModel', function(Logger, StyleService){
-	var CartModelProtocol  = {
+(function () { 'use strict'; }());
+angular.module('DHuS-webclient').factory('CartModel', function (CartStatusService, StyleService) {
+	
+	//CallEventXXX (Cart Model Service) -> EventXXX (Protocol) -> OnXXX (other component method, eg cart item or OlMap)
+	var CartModelProtocol = {
+		'clear-map': 'clearMap',
 		'create': 'createdCartModel',
-		'delete': 'deletedCartModel',
 		'update': 'updatedCartModel',
-		'hilight': 'productDidHighlighted',
-		'nohilight': 'productDidntHighlighted'		
+		'delete': 'deletedCartModel',
+		'EventHighlight': 'OnHighlight',
+		'EventResetUi': 'OnResetUi',
+		'EventSelectProduct': 'OnSelectProduct',
+		'EventDeselectCurrentProduct': 'OnDeselectCurrentProduct'
 	};
 	var PolyStyles = null;
 	var product_styles = {
 		default_style: '',
 		selected_style: '',
-		highlighted_style: '' 
+		highlighted_style: ''
 	};
-    // test    
+
 	return {
-		/* ATTRIBUTES */
-		model: {list:[], count:0},
+		model: { list: [], count: 0 },
 		subscribers: [],
-		/* MODEL CRUD */
-		createModel: function(model, count){
-			if(!PolyStyles)
-			{
-				//console.log("load styles");
-				PolyStyles = StyleService.getDHuSStyles();
-			}
+		createModel: function (model, count) {
+			if (!PolyStyles) PolyStyles = StyleService.getDHuSStyles();
 			this.model.list = model;
 			this.model.count = count;
-			for (var i = 0; i < this.model.list.length; i++)
-			{					
-	            var product_styles = StyleService.getStyleFromProduct(this.model.list[i]); 
-	            this.model.list[i].default_style = product_styles.default_style;          	            
-	            this.model.list[i].label_style = product_styles.label_style;
-	            this.model.list[i].instrlabel_style = product_styles.instrlabel_style;	            
+			for (var i = 0; i < this.model.list.length; i++) {
+				var product_styles = StyleService.getStyleFromProduct(this.model.list[i]);
+				this.model.list[i].default_style = product_styles.default_style;
+				this.model.list[i].selected_style = product_styles.selected_style;
+				this.model.list[i].highlighted_style = product_styles.highlighted_style;
+				this.model.list[i].label_style = product_styles.label_style;
+				this.model.list[i].instrlabel_style = product_styles.instrlabel_style;
+			}
 
-			}
-			var aSubscribers = []; 
-			for(var ii = 0; ii < this.subscribers.length; ii++){
+			var aSubscribers = [];
+			for (var ii = 0; ii < this.subscribers.length; ii++)
 				aSubscribers.push(this.subscribers[ii]);
-			}
-			for(var jj = 0; jj < aSubscribers.length; jj++){
-				if(aSubscribers[jj].id && aSubscribers[jj].id == 'listItem'){				
+
+			for (var jj = 0; jj < aSubscribers.length; jj++)
+				if (aSubscribers[jj].id && aSubscribers[jj].id == 'cartItem')
 					this.unsub(aSubscribers[jj]);
-				}
-			}
+
 			aSubscribers = null;
 			this.pub('create');
 		},
-		readModel: function(){
-			Logger.log("cart-model-service","readModel()");
-			return this.model;
-		},
-		updateModel: function(model){
-			Logger.log("cart-model-service","updateModel()");
 
-		},
-		deleteModel: function(){
-			Logger.log("cart-model-service","deleteModel()");
-		},
-		getProductIndexByUUID: function(uuid){
+		readModel: function () { return this.model; },
+		updateModel: function (model) { },
+		deleteModel: function () { },
+		getProductIndexByUUID: function (uuid) {
 			var self = this;
-			var product =  _.findIndex(self.model.list, function(element) {
-                return (element.uuid == uuid);
-            });
-            return product;
+			return _.findIndex(self.model.list, function (element) {
+				return (element.uuid == uuid);
+			});
 		},
-		getProductByIndex: function(index){
-			var product =  this.model.list[index];
-			return product;
+
+		getProductByIndex: function (index) { return this.model.list[index]; },
+		getProductByUUID: function (uuid) { return this.getProductByIndex(this.getProductIndexByUUID(uuid)); },
+
+		//METHOD USED BY CART ITEM COMPONENTS
+		callEventHighlightProduct: function (param) {
+			var self = this;
+			var index = self.getProductIndexByUUID(param.uuid);
+			self.model.list[index].highlight = true;
+			self.pub('EventHighlight', param);
 		},
-		getProductByUUID: function(uuid){
-			var index = this.getProductIndexByUUID(uuid);
-			var product = this.getProductByIndex(index);
-			return product;
+
+		callEventSelectProduct: function (param) {
+			var self = this;
+			if (CartStatusService.getCartFootprints() == true) {
+				var index = self.getProductIndexByUUID(param.uuid);
+				if (self.model.list[index].selected == true) return; //dont perform actions if item is alreay selected
+				for (var i = 0; i < self.model.list.length; i++)
+					self.model.list[i].selected = false;
+				self.model.list[index].selected = true; //Select this item
+				self.pub('EventSelectProduct', param);
+			} else {}
+				// ToastManager.error("Search Selection disabled when cart footprints are not displayed"); //also use pub/sub ?
 		},
-		highlightProduct: function(param){						
-			var index = this.getProductIndexByUUID(param.uuid);            
-            this.model.list[index].highlight = true;
-			this.pub('hilight',param);
+
+		callEventDeselectCurrentProduct: function (param) {
+			var self = this;
+			var index = self.getProductIndexByUUID(param.uuid);
+			self.model.list[index].selected = false;
+			self.pub('EventDeselectCurrentProduct', param);
 		},
-		nohighlightProduct: function(param){
-			var index = this.getProductIndexByUUID(param.uuid);
-			this.model.list[index].highlight = false;
-			this.pub('nohilight',param);
-		},			
-		/* pub-sub design pattern */		
-		sub: function(delegate){			
-			this.subscribers.push(delegate);      
+
+		//Restore Default UI
+		callEventResetUi: function (param) {
+			var self = this;
+			var index = self.getProductIndexByUUID(param.uuid);
+			self.model.list[index].highlight = false;
+			self.pub('EventResetUi', param);
 		},
-		unsub: function(element){
-			this.subscribers.splice(this.subscribers.indexOf(element), 1);
+
+		//Used by OLMap
+		deselectAll: function (param) {
+			var self = this;
+			for (var i = 0; self.model.list && i < self.model.list.length; i++)
+				self.model.list[i].selected = false;
+			self.pub('EventSelectProduct', param);
 		},
-		pub: function(method,param){
-			var self = this;	
-			for (var i = 0; i < self.subscribers.length; i++){
+
+		/* PUB-SUB Design Pattern */
+		sub: function (delegate) { this.subscribers.push(delegate); },
+		unsub: function (element) { this.subscribers.splice(this.subscribers.indexOf(element), 1); },
+		pub: function (method, param) {
+			var self = this;
+			for (var i = 0; i < self.subscribers.length; i++)
 				if (typeof self.subscribers[i][CartModelProtocol[method]] == 'function')
-				  self.subscribers[i][CartModelProtocol[method]](param);  
-			}
+					self.subscribers[i][CartModelProtocol[method]](param);
 		}
 	};
 });

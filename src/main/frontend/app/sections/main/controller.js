@@ -1,16 +1,16 @@
-/* 
+/*
  * Data HUb Service (DHuS) - For Space data distribution.
  * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
  * Copyright (C) 2013,2014,2015,2016 GAEL Systems
  * Copyright (C) 2013,2014,2015,2016 Serco Spa
- * 
+ *
  * This file is part of DHuS software sources.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -35,31 +35,36 @@ angular.module('DHuS-webclient')
       'AngularJS',
       'Karma'
     ];
-    $scope.showmap=true;   
-    $('#bgimage').attr('src',ApplicationService.settings.bgimage); 
+    
+    //INIT
     $scope.init = function() {
-    	//$scope.backgroundimage = "background: url('"+ApplicationService.settings.background-image+"') no-repeat scroll center center / 100% auto #000024";
-    	$scope.showmap=ApplicationService.settings.showmap;
-    	$('#bgimage').attr('src',ApplicationService.settings.bgimage);
-    	if(!ConfigurationService.isLoaded()) {              
-          ConfigurationService.getConfiguration().then(function(data) {
-                  // promise fulfilled
-              
-              if (data) {
-                  ApplicationService=data;
-                  //console.log('called');
-                  $scope.showmap=ApplicationService.settings.showmap;                  
-                  $('#bgimage').attr('src',ApplicationService.settings.bgimage);
-                  //$scope.backgroundimage = "background: url('"+ApplicationService.settings.background-image+"') no-repeat scroll center center / 100% auto #000024";
-              } else {
-                  console.log("fail");
 
+        //$scope.backgroundimage = "background: url('"+ApplicationService.settings.background-image+"') no-repeat scroll center center / 100% auto #000024";
+    	
+
+        //If Configuration is not loaded, get App Configuration
+    	if(!ConfigurationService.isLoaded()) {
+            ConfigurationService.getConfiguration()
+            .then(function(data) {
+              if (data) {
+                ApplicationService=data;
+                $scope.showmap=ApplicationService.settings.showmap;
+                setTimeout(function(){
+                  $('#bgimage').attr('src',ApplicationService.settings.bgimage);
+                },0);
+                //$scope.backgroundimage = "background: url('"+ApplicationService.settings.background-image+"') no-repeat scroll center center / 100% auto #000024";
               }
-          }, function(error) {
-              // promise rejected, could log the error with: console.log('error', error);
-              console.log("fail",error);
+            }, function(error) {
+              // promise rejected, console.log("fail",error);
           });
-        }      
+        } else {
+          $scope.showmap=ApplicationService.settings.showmap;
+          setTimeout(function(){
+                $('#bgimage').attr('src',ApplicationService.settings.bgimage);
+            },0);
+        }
     }
-    $scope.init(); 
+
+    //Controller init
+    $scope.init();
   });

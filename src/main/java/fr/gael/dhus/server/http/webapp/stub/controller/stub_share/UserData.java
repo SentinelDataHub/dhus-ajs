@@ -332,11 +332,6 @@ public class UserData implements Serializable
       return added || (base && !removed);
    }
 
-   public List<Long> getAuthorizedCollections ()
-   {
-      return authorizedCollections;
-   }
-
    public void setAuthorizedCollections (List<Long> authorizedCollections)
    {
       this.authorizedCollections = authorizedCollections;

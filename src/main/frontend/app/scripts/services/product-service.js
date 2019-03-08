@@ -43,9 +43,28 @@ var ProductService = {
             method: "DELETE"                   
         });  
     },
+    getGranule: function(granuleUrl){     
+        return http({
+            url: ApplicationConfig.baseUrl + granuleUrl,
+            method: "GET"                   
+        });  
+    },
     getTCI: function(tciUrl){     
         return http({
             url: ApplicationConfig.baseUrl + tciUrl,
+            method: "HEAD"                   
+        });  
+    },
+    getProductHeader: function(requestUrl){   
+        return http({
+            url: requestUrl,
+            method: "HEAD"//,
+            //headers: {'Cache-Control': 'no-cache, no-cache, no-cache'}  //NOT NEEDED                
+        });  
+    },
+    getProduct: function(requestUrl){   
+        return http({
+            url: requestUrl,
             method: "GET"                   
         });  
     }

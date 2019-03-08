@@ -1,16 +1,16 @@
-/* 
+/*
  * Data HUb Service (DHuS) - For Space data distribution.
  * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
  * Copyright (C) 2013,2014,2015,2016 GAEL Systems
  * Copyright (C) 2013,2014,2015,2016 Serco Spa
- * 
+ *
  * This file is part of DHuS software sources.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -33,8 +33,8 @@ angular.module('DHuS-webclient')
 
     // ------ ------ ------ ------ //
     $scope.model = SearchBoxService.model;
-    $scope.user = {};  
-    $scope.checkFields = true;    
+    $scope.user = {};
+    $scope.checkFields = true;
 
     // ------ ------ ------ ------ //
 
@@ -73,25 +73,23 @@ angular.module('DHuS-webclient')
                  }
              $scope.countries = countries;
              UserService.getUser()
-            .then(function(result){
-            
-                $scope.user=result;
-                $scope.loadUserInfo();   
-            });
-             //console.log("countries",$scope.countries);
+                .then(function(result){
+                    $scope.user = result;
+                    $scope.loadUserInfo();
+                });
              });
-    
+
   };
-  $scope.init();  
+  $scope.init();
 
   $scope.loadUserInfo = function() {
     $scope.checkUsage();
-    $scope.checkDomain();    
+    $scope.checkDomain();
   }
 
   $scope.$on('$viewContentLoaded',function(){
     if(!$scope.countries){
-        
+
         }
 
   });
@@ -102,7 +100,7 @@ angular.module('DHuS-webclient')
                    return $scope.countries[index] ? $scope.countries[index].id : -1;
                   };
 
-  $scope.checkUsage = function(){    
+  $scope.checkUsage = function(){
     var check = true;
     if(!$scope.user.usage || $scope.user.usage=='unknown')
     {
@@ -114,8 +112,8 @@ angular.module('DHuS-webclient')
     {
       $('#checkUsage').css('display','none');
       $('#usageLbl').css('display','inline-block');
-    }  
-    if ($scope.user.usage == "Other") {          
+    }
+    if ($scope.user.usage == "Other") {
       $('#usageLabel').show();
       $('#usageDesc').show();
     }
@@ -123,9 +121,9 @@ angular.module('DHuS-webclient')
       $('#usageLabel').hide();
       $('#usageDesc').hide();
     }
-    $scope.checkFields = $scope.checkFields && check;    
+    $scope.checkFields = $scope.checkFields && check;
   };
-  
+
   $scope.checkDomain = function(){
     var check = true;
     if(!$scope.user.domain || $scope.user.domain=='unknown')
@@ -138,8 +136,8 @@ angular.module('DHuS-webclient')
     {
       $('#checkDomain').css('display','none');
       $('#domainLbl').css('display','inline-block');
-    }       
-    if ($scope.user.domain == "Other") {          
+    }
+    if ($scope.user.domain == "Other") {
           $('#domainLabel').show();
           $('#domainDesc').show();
     }
@@ -147,7 +145,7 @@ angular.module('DHuS-webclient')
       $('#domainLabel').hide();
       $('#domainDesc').hide();
     }
-    $scope.checkFields = $scope.checkFields && check;    
+    $scope.checkFields = $scope.checkFields && check;
 
   };
 
@@ -156,49 +154,52 @@ angular.module('DHuS-webclient')
     $scope.checkPwd();
     $scope.checkOldPwd();
     $scope.checkConfimPwd();
-    
+
   }
   $scope.changePassword = function() {
-      
+
     var self=this;
     $scope.checkUserPassword();
     if($scope.checkFields)
     {
-      UserService.updateUser({password: $('#password').val()},
-        {oldPassword:$('#oldpassword').val(), confirmPassword:$('#confirmpassword').val()},
+      UserService.updateUser({password: $('.password').val()},
+        {oldPassword:$('.oldpassword').val(), confirmPassword:$('.confirmpassword').val()},
         self)
        // UserService.changeUserPassword(self.$.oldpass.value, self.$.password.value, self)
 
           .then(function(result){
-            $scope.init();                       
-            ToastManager.success("Changed password successfully");
+            $scope.init();
+            //ToastManager.success("Changed password successfully");
+            AlertManager.forceLogout(true);
+            AlertManager.success("Changed password successfully",
+              "Your password has been changed successfully. Please, perform the login again with your new credentials");
 
           }, function(result){
             $scope.init();
             ToastManager.error("Changed password failed");
           });
-    } 
+    }
     $scope.init();
-  }; 
+  };
 
     $scope.checkName = function(){
-       
-      var check = true; 
+
+      var check = true;
       if(!$scope.user.firstname || $scope.user.firstname.trim() == "")
       {
         $('#checkName').css('display','inline-block');
-        check = false; 
+        check = false;
       }
       else
       {
         $('#checkName').css('display','none');
-      } 
-      $scope.checkFields = $scope.checkFields && check;        
-        
+      }
+      $scope.checkFields = $scope.checkFields && check;
+
     };
     $scope.checkLastname = function(){
-      
-      var check = true; 
+
+      var check = true;
       if(!$scope.user.lastname || $scope.user.lastname.trim() == "")
       {
         $('#checkLastname').css('display','inline-block');
@@ -207,13 +208,13 @@ angular.module('DHuS-webclient')
       else
       {
         $('#checkLastname').css('display','none');
-      }  
-      $scope.checkFields = $scope.checkFields && check;        
-        
+      }
+      $scope.checkFields = $scope.checkFields && check;
+
     };
     $scope.checkEmail = function(){
-      
-      var check = true;             
+
+      var check = true;
       if(!$scope.user.email || $scope.user.email.trim() == "")
       {
         $('#checkEmail').css('display','inline-block');
@@ -225,14 +226,14 @@ angular.module('DHuS-webclient')
           $('#checkEmail').css('display','none');
         }
         else {
-          $('#checkEmail').css('display','inline-block'); 
+          $('#checkEmail').css('display','inline-block');
         }
 
-      }      
-      $scope.checkFields = $scope.checkFields && check;     
+      }
+      $scope.checkFields = $scope.checkFields && check;
     };
     $scope.checkConfimEmail = function(){
-       
+
       var check = true;
       if($('#email').val() != $('#confirmemail').val())
       {
@@ -242,12 +243,12 @@ angular.module('DHuS-webclient')
       else
       {
         $('#checkConfirmEmail').css('display','none');
-      }      
-      $scope.checkFields = $scope.checkFields && check;     
-    }; 
- 
+      }
+      $scope.checkFields = $scope.checkFields && check;
+    };
+
     $scope.checkSubDomain = function(){
-       
+
       var check = true;
       if($('#domainLabel').is(':visible'))
       {
@@ -260,11 +261,11 @@ angular.module('DHuS-webclient')
         {
           $('#checkSubDomain').css('display','none');
         }
-      }      
-      $scope.checkFields = $scope.checkFields && check;    
-    };       
+      }
+      $scope.checkFields = $scope.checkFields && check;
+    };
     $scope.checkSubUsage = function(){
-       
+
       var check = true;
       if($('#usageLabel').is(':visible'))
       {
@@ -276,12 +277,12 @@ angular.module('DHuS-webclient')
         else
         {
           $('#checkSubUsage').css('display','none');
-        }  
-      }    
-      $scope.checkFields = $scope.checkFields && check;     
-    }; 
+        }
+      }
+      $scope.checkFields = $scope.checkFields && check;
+    };
     $scope.checkCountry = function(){
-       
+
       var check = true;
       if(!$scope.user.country || $scope.user.country=='unknown')
       {
@@ -294,14 +295,15 @@ angular.module('DHuS-webclient')
         $('#checkCountry').css('display','none');
        //$('#countryLbl').css('display','inline-block');
 
-      } 
-      $scope.checkFields = $scope.checkFields && check;       
-        
-    };  
+      }
+      $scope.checkFields = $scope.checkFields && check;
+
+    };
+
     $scope.checkOldPwd= function(){
 
       var check = true;
-      if(!$('#oldpassword').val() || $('#oldpassword').val().trim() =="")
+      if(!$('.oldpassword').val() || $('.oldpassword').val().trim() =="")
       {
         $('#checkOldPassword').css('display','inline-block');
         check = false;
@@ -309,44 +311,55 @@ angular.module('DHuS-webclient')
       else
       {
         $('#checkOldPassword').css('display','none');
-      }   
-      $scope.checkFields = $scope.checkFields && check;     
+      }
+      $scope.checkFields = $scope.checkFields && check;
     };
     $scope.checkPwd= function(){
 
       var check = true;
-      if(!$('#password').val() || $('#password').val().trim() =="")
+      var rlatins =  /^[a-zA-Z0-9!@#\$%\^\&*\)\(+=._-]+$/g;
+      if(!$('.password').val() || $('.password').val().trim() =="")
       {
         $('#checkPassword').css('display','inline-block');
         $('#checkPasswordLength').css('display','none');
+        $('#checkPasswordNonLatin').css('display','none');
         check = false;
       }
-      else if($('#password').val().length < 8)
+      else if(!rlatins.test($('.password').val()))
+      {
+        $('#checkPasswordLength').css('display','none');
+        $('#checkPassword').css('display','none');
+        $('#checkPasswordNonLatin').css('display','inline-block');
+        check = false;
+      }
+      else if($('.password').val().length < 8)
       {
         $('#checkPasswordLength').css('display','inline-block');
         $('#checkPassword').css('display','none');
+        $('#checkPasswordNonLatin').css('display','none');
         check = false;
       }
       else
       {
         $('#checkPassword').css('display','none');
         $('#checkPasswordLength').css('display','none');
-      }   
-      $scope.checkFields = $scope.checkFields && check;     
+        $('#checkPasswordNonLatin').css('display','none');
+      }
+      $scope.checkFields = $scope.checkFields && check;        
     };
     $scope.checkConfimPwd= function(){
 
       var check = true;
-      if($('#password').val() != $('#confirmpassword').val())
+      if($('.password').val() != $('.confirmpassword').val())
       {
-        $('#checkConfirmPassword').css('display','inline-block');        
+        $('#checkConfirmPassword').css('display','inline-block');
         check = false;
       }
       else
       {
         $('#checkConfirmPassword').css('display','none');
-      }   
-      $scope.checkFields = $scope.checkFields && check;     
+      }
+      $scope.checkFields = $scope.checkFields && check;
     };
     $scope.sendUpdate = function(){
 
@@ -354,8 +367,8 @@ angular.module('DHuS-webclient')
       if($scope.checkFields) {
         $scope.updateUser();
       }
-        
-    }; 
+
+    };
 
     $scope.checkAndUpdateUserInfo = function() {
       $scope.checkFields=true;
@@ -368,15 +381,15 @@ angular.module('DHuS-webclient')
       $scope.checkUsage();
       $scope.checkSubUsage();
       $scope.checkCountry();
-      delete $scope.user["password"];      
+      delete $scope.user["password"];
     };
 
     $scope.updateUser = function() {
-      var self=this;    
+      var self=this;
      //$scope.user.country = $scope.getCountryIdByName().toString();
      // console.log("updateUser******",$scope.user.country);
       UserService.updateUser($scope.user, {},self)
-        .then( function(result){          
+        .then( function(result){
           ToastManager.success("Changed user profile successfully");
            $scope.init();
         }, function(result){

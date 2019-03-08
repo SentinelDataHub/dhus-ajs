@@ -1,16 +1,16 @@
-/* 
+/*
  * Data HUb Service (DHuS) - For Space data distribution.
  * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
  * Copyright (C) 2013,2014,2015,2016 GAEL Systems
  * Copyright (C) 2013,2014,2015,2016 Serco Spa
- * 
+ *
  * This file is part of DHuS software sources.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -27,13 +27,13 @@ angular
      return {
       model: {hidden: true},
       advFilter: '',
-    setAdvancedSearchFilter: function(searchfilter, modelFilter){    
-      
+    setAdvancedSearchFilter: function(searchfilter, modelFilter){
+
       var filter='';
       if(modelFilter.sensingPeriodFrom && modelFilter.sensingPeriodTo)
       {
           filter += '( beginPosition:['+ this.formatDateFrom_(searchfilter.sensingPeriodFrom) +
-          ' TO ' + this.formatToDate(searchfilter.sensingPeriodTo) + '] AND endPosition:[' + 
+          ' TO ' + this.formatToDate(searchfilter.sensingPeriodTo) + '] AND endPosition:[' +
           this.formatDateFrom_(searchfilter.sensingPeriodFrom) + ' TO ' + this.formatDateTo_(searchfilter.sensingPeriodTo) + '] )';
       }
       else if (modelFilter.sensingPeriodFrom)
@@ -58,13 +58,16 @@ angular
       {
           filter += ((filter)?' AND':'') + '( ingestionDate:[ * TO ' + this.formatDateTo_(searchfilter.ingestionTo) + ' ] )';
       }
+      if(modelFilter.sortFilter) {
+        filter += ((filter)?' AND ':'') + searchfilter.sortFilter;
+      }
 
       this.advFilter = filter;
     },
     getAdvancedSearchFilter: function() {
       return this.advFilter;
     },
-    getAdvancedSearchForSave: function(searchfilter){      
+    getAdvancedSearchForSave: function(searchfilter){
       var advSearchMap= {};
       if(searchfilter.sensingFrom)
       {
@@ -92,13 +95,13 @@ angular
       return dateString;
     },
     formatDateTo_ : function(dateInput){
-      var date = new Date(dateInput);      
+      var date = new Date(dateInput);
       date.setUTCHours(23);
       date.setUTCMinutes(59);
       date.setUTCSeconds(59);
-      date.setUTCMilliseconds(999);    
+      date.setUTCMilliseconds(999);
       return date.toISOString();
-    },   
+    },
     //// eof new methods
     formatDate: function(dateInput){
       var date = new Date(dateInput);
@@ -106,11 +109,11 @@ angular
       return dateString;
     },
     formatToDate: function(dateInput){
-      var date = new Date(dateInput);      
+      var date = new Date(dateInput);
       date.setUTCHours(23);
       date.setUTCMinutes(59);
       date.setUTCSeconds(59);
-      date.setUTCMilliseconds(999);    
+      date.setUTCMilliseconds(999);
       return date.toISOString();
     },
     show: function(){},
@@ -123,7 +126,6 @@ angular
       this.hide = method;
     },
     clearAdvFilter: function(){},
-    setClearAdvFilter: function(method){this.clearAdvFilter = method;}      
+    setClearAdvFilter: function(method){this.clearAdvFilter = method;}
   };
 });
-

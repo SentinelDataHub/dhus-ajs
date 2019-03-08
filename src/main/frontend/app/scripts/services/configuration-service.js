@@ -25,34 +25,31 @@ angular
     .module('DHuS-webclient')
     .factory('ConfigurationService', function($q, $http) {
 
-        //var http = $injector.get('$http');
         return {
             loaded: false,
-
+            // cartPanel: true,
             getConfiguration: function() {
-                // the $http API is based on the deferred/promise APIs exposed by the $q service
-                // so it returns a promise for us by default
+                //$http API is based on deferred/promise APIs exposed by the $q service, returns a promise by default
                 var self = this;
-                return $http.get('config/appconfig.json')
+                return $http({
+                    url: ApplicationConfig.baseUrl + 'api/stub/configuration',
+                    method: "GET"})
+
                     .then(function(response) {
                         if (response.data) {
                             self.loaded = true;
                             return response.data;
-                            
-                        } else {
-                            // invalid response
+                        } else { // invalid response
                             return $q.reject(response.data);
                         }
-
-                    }, function(response) {
-                        // something went wrong
+                    }, function(response) { // something went wrong
                         return $q.reject(response.data);
                     });
             },
+
             isLoaded: function() {
                 return this.loaded;
-            }
+            },
 
         };
-
     });

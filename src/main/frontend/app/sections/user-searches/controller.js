@@ -29,14 +29,18 @@
  * Controller of the DHuS-webclient
  */
 angular.module('DHuS-webclient')
-  .controller('UserSearchesCtrl', function ($scope, LayoutManager, SavedSearchModel, SavedSearchService) {
+  .controller('UserSearchesCtrl', function ($scope, LayoutManager, SavedSearchModel, SavedSearchService, UserService) {
 
     // ------ ------ ------ ------ //    
         
 
   LayoutManager.init();
 
-  $scope.init = function () {    
+  $scope.init = function () {
+
+    //Get User Information
+    //TODO: check if the removal can cause problems. removed since caused redirection loop on FireFox
+    //UserService.getUser();
   };
 
   $scope.init();     

@@ -34,23 +34,27 @@
   <li ng-if="false"><a data-toggle="tab" data-target="#mngdataright">DATA RIGHT ACCESS</a></li>
   <li ng-if="isSystemManagement"><a data-toggle="tab" data-target="#mngsystem">SYSTEM</a></li>
   <li ng-if="isSystemManagement"><a data-toggle="tab" data-target="#mngeviction">EVICTION</a></li>
+  <li ng-if="isSystemManagement"><a data-toggle="tab" data-target="#mngdatastore">DATA STORES</a></li>
 </ul>
 </div>
 <div class="tab-content">
-  <div  id="mngusers" class="tab-pane fade in active">
+  <div ng-if="isUserManagement" id="mngusers" class="tab-pane fade in active">
     <management-users></management-users>
   </div>
-  <div  id="mngcollections" class="tab-pane fade">
+  <div  ng-if="isDataManagement" id="mngcollections" class="tab-pane fade">
     <management-collections></management-collections>
   </div>
   <div  id="mngdataright" class="tab-pane fade">
     <h3>Coming Soon</h3>
   </div>
-  <div  id="mngsystem" class="tab-pane fade">
+  <div ng-if="isSystemManagement"  id="mngsystem" class="tab-pane fade">
     <system-panel-container></system-panel-container>
   </div>
-  <div  id="mngeviction" class="tab-pane fade">
+  <div ng-if="isSystemManagement" id="mngeviction" class="tab-pane fade">
     <eviction-container></eviction-container>
+  </div>
+  <div  ng-if="isSystemManagement" id="mngdatastore" class="tab-pane fade">
+    <datastore-list></datastore-list>
   </div>
 </div>
 </div>

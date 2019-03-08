@@ -135,16 +135,6 @@ angular.module('DHuS-webclient')
             scope.test = function(time){
               return moment.utc(time);
             }
-
-            scope.synchronizeLocalArchive = function(){
-              SystemPanelService.synchronizeLocalArchive()
-                .success(function(){
-                  ToastManager.success("Synchronize local archive successfully");
-                })
-                .error(function(){
-                  ToastManager.error("Synchronize local archive failed");
-                });
-            }
           }
         }
       }

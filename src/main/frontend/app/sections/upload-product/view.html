@@ -132,18 +132,29 @@
   padding-top: 15px;
 }
 
-    @media screen and (max-width: 992px) {
+#upload-management-page input:invalid ~ .invalid-field{
+    display: inline-block !important;
+}
 
-    #showPassword {
+#upload-management-page .invalid-field {
+  display:none;
+  color: rgb(255,110,64);
+  top: 30px;
+  font-size: 9px;
+}
+
+@media screen and (max-width: 992px) {
+
+  #showPassword {
     display: none;
-    }
-    }
+  }
+}
 
-    .next-filescanner-box{
-        background-color: #C8C8C8;
-        margin: 20px;
+.next-filescanner-box{
+    background-color: #C8C8C8;
+    margin: 20px;
 
-    }
+}
 
 
 </style>
@@ -180,6 +191,7 @@
           <h3>
            File scanners
           </h3>
+          <div>
           <label>Url to scan</label>
           <input
             id="urltoscan"
@@ -187,6 +199,8 @@
             class="form-control page-selector-input"
             ng-model="urltoscan"
             >
+            <label class="invalid-field" id="checkUrl">Url empty</label>
+          </div>
           <label>Username</label>
           <input
             id="username"
@@ -225,13 +239,7 @@
           <textarea disabled class="bordertextarea form-control" ng-model="scanninginfo" rows="5" id="comment"></textarea>
         </div>
       </div>
-      <!--<div class="row" ng-init="nextFileScannerDate=false">-->
-      <div class="row" ng-init="nextFileScannerDate=false" >
-          <!--<div  ng-if="{{nextFileScannerDate}}" class="list-group-item next-filescanner-box" >-->
-          <div  ng-if="(nextFileScannerDate)" class="list-group-item next-filescanner-box" >
-              The next file scanner is going to run on {{nextFileScannerDate}}
-          </div>
-      </div>
+      
       <div class="row" style="margin-top: auto">
         <div class="col-md-12 col-sd-12 col-xs-12">
           <div class="user-button" style="float: left" ng-click="refreshAllFilescanners()">REFRESH ALL</div>
@@ -250,7 +258,7 @@
               <a href="" ng-click="getScanningInfo(x)" ng-mouseover="setIdFileScannerHovered(x)" ng-mouseleave="resetIdFileScannerHovered()" data-ng-repeat="x in names" ng-class="{'notActive': x.toggle==false, 'active': x.toggle==true}" class="list-group-item" style="height: 60px;">
               <div id="infoFileScanner">
                 <span class="{{x.classicon}}"></span>
-                {{ x.url }}
+                {{ x.Url }}
               </div>
               <div id="buttons" ng-class="{'notVisible': (x.toggleHover || x.toggle)==false, 'visible': (x.toggleHover || x.toggle)==true}">
                 <div class="glyphicon glyphicon-remove icon" ng-click="removeFileScanner(x)" title="Remove File Scanner"></div>

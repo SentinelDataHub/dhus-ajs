@@ -34,7 +34,16 @@
             width: 100%;
             text-align:center;
         }
+
+        .selectable {
+            -moz-user-select: text;
+            -khtml-user-select: text;
+            -webkit-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
     </style>
-    <div class="title-component" >{{title}}</div>
+    <!--using selectable class because the whole div wrapping this element has unselectable class, but this text must be selectable-->
+    <div class="title-component selectable" >{{title}}</div>
 </div>
 </div>

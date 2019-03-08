@@ -26,11 +26,9 @@ angular
             TOOLBAR_ID = '#dhus-toolbar-container';
 
         var resizeContainer = function(){
-
-                var self = this;
-                $(PAGE_CONTAINER_ID).css('height',$(window).height()-$(TOOLBAR_ID).height());
-                $(PAGE_CONTAINER_ID).css('top',$(TOOLBAR_ID).height());
-
+            var self = this;
+            $(PAGE_CONTAINER_ID).css('height',$(window).height()-$(TOOLBAR_ID).height());
+            $(PAGE_CONTAINER_ID).css('top',$(TOOLBAR_ID).height());
           };
 
         var Obj = {

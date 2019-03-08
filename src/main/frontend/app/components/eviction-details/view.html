@@ -1,0 +1,511 @@
+<div>
+    <!-- 
+      Data HUb Service (DHuS) - For Space data distribution.
+      Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+      Copyright (C) 2013,2014,2015,2016 GAEL Systems
+      Copyright (C) 2013,2014,2015,2016 Serco Spa
+      
+      This file is part of DHuS software sources.
+     
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+      
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      GNU Affero General Public License for more details.
+     
+      You should have received a copy of the GNU Affero General Public License
+      along with this program. If not, see <http://www.gnu.org/licenses/>.
+     
+    -->
+    <div>
+        <style>
+
+            #evtDetails .panel-heading {
+                height: 30px;    
+                background-color: lightgray;    
+                line-height: 10px;
+            }
+
+            #evtDetails .panel-default {
+                border: 1px #aaa solid;
+                width: 50%;
+            }
+
+            @media screen and (min-width: 993px) and (max-width: 1200px) { 
+
+                #evtDetails .panel-default {
+                    width: 50%;
+                }
+            } 
+
+            @media screen and (min-width: 769px) and(max-width: 992px) { 
+
+                #evtDetails .panel-default {
+                    width: 100%;
+                }
+            } 
+
+            @media screen and (max-width: 768px) { 
+
+                #evtDetails .panel-default {
+                    width: 100%;
+                }
+            }
+
+            #evtDetails   .group            { 
+                position:relative; 
+                margin-bottom:35px; 
+            }
+
+            #evtDetails   .checkFunction  { 
+                top: -5px; 
+            }
+            #evtDetails input               {
+                font-size:13px;
+                padding:2px;
+                display:block;
+                width:100%;
+                border:none;
+                border-bottom:1px solid #757575;
+            }
+            #evtDetails input:focus         { outline:none; }
+
+            /* LABEL ======================================= */
+            #evtDetails label                {
+                color:#999; 
+                font-size:13px;
+                font-weight:normal;
+                position:absolute;
+                pointer-events:none;  
+                top:10px;
+                transition:0.2s ease all; 
+                -moz-transition:0.2s ease all; 
+                -webkit-transition:0.2s ease all;
+            }
+
+            #evtDetails .fixed-field  {
+                top:-15px;
+                font-size:13px;
+                color: rgb(55, 59, 80);
+            }
+
+            /* active state */
+            #evtDetails input:focus ~ .lbl-field, #evtDetails input:valid ~ .lbl-field, #evtDetails input:invalid ~ .lbl-field  {
+                top:-15px;
+                font-size:13px;
+                color: rgb(55, 59, 80);
+            }
+
+            #evtDetails input:invalid ~ .invalid-field{
+                display: inline-block !important;
+            }
+
+            #evtDetails .invalid-field {
+                display:none;
+                color: rgb(255,110,64);
+                top: 30px;
+                font-size: 9px;
+            }
+
+            #evtDetails .select-label {      
+                top: -20px;
+                color: rgb(55, 59, 80);
+                font-size: 13px;
+            }
+
+            /* BOTTOM BARS ================================= */
+            #evtDetails .bar    { position:relative; display:block; width:100%; }
+            #evtDetails .bar:before, .bar:after     {
+                content:'';
+                height:2px; 
+                width:0;
+                bottom:1px; 
+                position:absolute;
+                background:rgb(55, 59, 80); 
+                transition:0.2s ease all; 
+                -moz-transition:0.2s ease all; 
+                -webkit-transition:0.2s ease all;
+            }
+            #evtDetails .bar:before {
+                left:50%;
+            }
+            #evtDetails .bar:after {
+                right:50%; 
+            }
+
+            /* active state */
+            #evtDetails input:focus ~ .bar:before, #evtDetails input:focus ~ .bar:after {
+                width:50%;
+            }
+
+            /* HIGHLIGHTER ================================== */
+            #evtDetails .highlight {
+                position:absolute;
+                height:60%; 
+                width:100px; 
+                top:25%; 
+                left:0;
+                pointer-events:none;
+                opacity:0.5;
+            }
+
+            /* active state */
+            #evtDetails input:focus ~ .highlight {
+                -webkit-animation:inputHighlighter 0.3s ease;
+                -moz-animation:inputHighlighter 0.3s ease;
+                animation:inputHighlighter 0.3s ease;
+            }
+
+            /* Style Select Field */
+            #evtDetails select {
+                font-family: inherit;
+                background-color: transparent;
+                width: 100%;
+                padding: 2px 0;
+                font-size: 13px;  
+                border: none;
+                border-bottom: 1px solid rgb(0,0,0);
+            }
+
+            /* Remove focus */
+            #evtDetails select:focus {
+                outline: none;
+            }                          
+
+            /* ANIMATIONS ================ */
+            @-webkit-keyframes inputHighlighter {
+                from { background:rgb(55, 59, 80); }
+                to    { width:0; background:transparent; }
+            }
+            @-moz-keyframes inputHighlighter {
+                from { background:rgb(55, 59, 80); }
+                to    { width:0; background:transparent; }
+            }
+            @keyframes inputHighlighter {
+                from { background:rgb(55, 59, 80); }
+                to    { width:0; background:transparent; }
+            }
+            #evtDetails   .fab-details {
+                background-color: #373B50 !important;
+                vertical-align: middle;      
+                margin-left: 20px;
+                padding: 6px;
+                line-height: 20px;
+                font-size: 15px;
+                position: relative;        
+                display: block;
+                height: 40px;
+                width: 40px;
+                color: #fff;
+                fill: currentColor;
+                cursor: pointer;
+                text-decoration: none;            
+                border-radius: 50%;          
+                overflow: hidden;
+                transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                transition-delay: 0.2s;
+                box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+            }
+
+            @media screen and (max-width: 480px) { 
+                #evtDetails .fab-details {
+                    background-color: #373B50 !important;
+                    vertical-align: middle;      
+                    margin-left: 20px;
+                    padding: 6px;
+                    line-height: 20px;
+                    font-size: 15px;
+                    position: relative;        
+                    display: block;
+                    height: 32px !important;
+                    width: 32px !important;
+                    color: #fff;
+                    fill: currentColor;
+                    cursor: pointer;
+                    text-decoration: none;            
+                    border-radius: 50%;          
+                    overflow: hidden;
+                    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                    transition-delay: 0.2s;
+                    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+                }
+            }
+
+            #evtDetails   .fab-reset-eviction {
+
+                font-size: 26px;        
+            }
+
+            @media screen and (max-width: 480px) { 
+                #evtDetails .fab-reset-eviction {
+                    font-size: 22px; 
+                    padding: 4px;
+                }
+            }
+
+            #evtDetails  .fab-details.fab-right {
+                float: right;
+            }
+
+            #evtDetails  .fab-details.fab-left {
+                float: left;
+            }
+
+            #evtDetails .modal-dialog {         
+                width: 60%;
+                max-height: 65%;
+                margin: 0px auto;
+                position: relative;
+                margin-top: 2%;
+                margin-bottom: 2%
+                    position: fixed;
+                height: 65%;
+                padding: 0;
+                background: white;
+                padding-bottom: 30px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            #evtDetails .btn{
+                background: #373B50;
+                color: #FFF;
+            }  
+
+            @media screen and (min-width: 500px) { 
+                #evtDetails .eviction-details-modal-dialog {
+                    width: 60% !important;  
+                    max-width: 60% !important;                            
+                }
+            }
+
+            #evtDetails .modal-header{  
+                background: #373B50;
+                color: #FFF;
+            }        
+
+            #evtDetails .sectiontitle{
+                background-color: rgb(55, 59, 80);
+                color: #fff;
+                text-align: left;
+                padding: 10px;
+                margin-bottom: 15px;
+            }            
+
+            #evtDetails .modal-container {
+                padding: 20px;
+            }
+
+
+            #evtDetails   .eviction-details-modal {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                overflow: hidden;
+            }
+
+            #evtDetails   .eviction-details-modal-content {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            #evtDetails   .eviction-details-modal-header {
+                position: absolute;
+                top: 0;
+                right: 0;
+                left: 0;
+                height: 40px;
+                padding: 10px;        
+                border: 0;
+                text-align: center;
+                font-size: bold;
+            }
+
+            #evtDetails   .eviction-details-modal-body {
+                position: absolute;        
+                top: 51px;
+                bottom: 30px;
+                width: 100%;
+                overflow-y: auto;
+                overflow-x: hidden;            
+            }
+
+            #evtDetails   .eviction-details-modal-footer {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                background: #f1f3f5;
+                padding: 5px;
+                height: 50px;
+            }
+            #evtDetails   .modal-footer .left{
+                text-align: left;      
+            }
+            #evtDetails   .modal-footer .right{
+                text-align: right;        
+            }      
+
+            #evtDetails   .eviction-details-modal-row {
+                margin: 0px;
+            }          
+
+
+
+        </style>    
+
+        <div class="modal fade eviction-details-modal" data-keyboard="false" data-backdrop="static" id="evtDetails" tabindex="-1" role="dialog" aria-labelledby="evictionTitle" aria-hidden="true">      
+            <div class="modal-dialog eviction-details-modal-dialog">
+                <div class="modal-header eviction-details-modal-header">Eviction Properties</div>      
+                <div class="modal-body eviction-details-modal-body container-fluid">
+                    <div class="row">
+                        <div class="group col-md-6">                  
+                            <div ng-if="!isNew"> 
+                                <input type="text" ng-model="eviction.Name" value="eviction.Name" readonly='true'>
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="fixed-field ">Name</label>              
+                            </div>   
+                            <div ng-if="isNew"> 
+                                <input type="text" ng-model="eviction.Name" value="eviction.Name" >
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="lbl-field ">Name</label> 
+                                <label class="invalid-field" id="evtcheckName">Name empty</label>             
+                            </div>            
+                        </div>
+
+                        <div class="group col-md-6">      
+                            <input  type="number" ng-model="eviction.MaxEvictedProducts" value="eviction.MaxEvictedProducts">
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label class="lbl-field">Maximum Evicted Products</label>     
+                            <label class="invalid-field" id="evtcheckMaxEvictedProducts">Maximum Evicted Products empty</label>           
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="group col-md-6">      
+                            <div > 
+                                <input type="number" ng-model="eviction.KeepPeriod" value="eviction.KeepPeriod">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="lbl-field">Keep Period</label> 
+                                <label class="invalid-field" id="evtcheckKeepPeriod">Keep Period empty</label>             
+                            </div>
+                        </div>
+                        <div class="group col-md-6">      
+                            <div >                                 
+                                <label class="select-label">Keep Period Unit</label>  
+                                <select ng-model="eviction.KeepPeriodUnit">
+                                    <option ng-repeat="x in periods" value="{{x}}">{{x}}</option>
+                                </select>            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="group col-md-6">    
+                            <div >  
+                                <input type="text" ng-model="eviction.Filter" value="eviction.Filter">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="lbl-field">Filter</label>                                       
+                            </div>
+                        </div>
+                        <div class="group col-md-6">    
+                            <div >  
+                                <input type="text" ng-model="eviction.OrderBy" value="eviction.OrderBy">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="lbl-field">Order By</label>           
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="group col-md-6">       
+                            
+                            <div>  
+                                <label class="select-label">Status</label>  
+                                <select ng-model="eviction.Status">                                    
+                                    <option value="STARTED">STARTED</option>
+                                    <option value="STOPPED" ng-selected="STOPPED">STOPPED</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="group col-md-6">    
+                            <div>  
+                                
+                                <label class="select-label">Target Collection</label>
+                                <select ng-model="eviction.TargetCollection">
+                                    <option ng-repeat="x in collectionsName" value="{{x}}">{{x}}</option>
+                                </select>                                            
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="group col-md-6">      
+                            <div > 
+                                <span>is Soft Eviction</span>
+                                <input type="checkbox" style="width:30px;display:inline-block;" ng-model="eviction.SoftEviction">             
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="group col-md-6"> 
+                            <span><b>Eviction Scheduling</b></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="group col-md-6">       
+                            <div >  
+                                <input type="text" ng-model="eviction.Cron.Schedule" value="eviction.Cron.Schedule">
+                                <span class="highlight"></span>
+                                <span class="bar"></span>
+                                <label class="lbl-field">Schedule</label>    
+                                <label class="invalid-field" id="evtcheckCron">Schedule empty</label>       
+                            </div>                            
+                        </div>
+
+                        <div class="group col-md-6">      
+                            <div > 
+                                <span>is Active</span>
+                                <input type="checkbox" style="width:30px;display:inline-block;" ng-model="eviction.Cron.Active">             
+                            </div>
+                        </div>
+                    </div>                                                                                                                            
+                </div>
+                <div class="modal-footer eviction-details-modal-footer">
+                    <div class="left col-md-6">
+                        
+                        <div ng-show="isNew" class="left-button fab-details fab-left fab-reset-eviction" title="Reset Fields" ng-click="resetFields()"><div class="glyphicon glyphicon-erase"></div>            
+                        </div>              
+                    </div>
+                    <div class="right col-md-6">            
+                        <div class="fab-details fab-right" title="Close" ng-click="close()">
+                            <svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;">
+                            <g id="close"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></g>
+                            </svg>
+                        </div>
+                        <div class="fab-details fab-right" title="Save" ng-click="save()">
+                            <svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;">
+                            <g id="save"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></g>
+                            </svg>
+                        </div>            
+                    </div>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>

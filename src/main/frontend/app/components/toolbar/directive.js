@@ -85,7 +85,7 @@ angular.module('DHuS-webclient')
             scope.goToNewUI = function() {
                 var isChrome = !!window.chrome && !!window.chrome.webstore;
                 if(!isChrome) {
-                  alert("Browser not supported. \nThis web application runs only on Google Chrome.");
+                  alert("Browser not supported. \nThis web application currently is available only on browser supporting web components.");
                   return;
                 }
                 window.location.href = scope.newgui_link;

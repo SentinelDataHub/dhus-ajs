@@ -1,8 +1,8 @@
 /* 
  * Data HUb Service (DHuS) - For Space data distribution.
- * Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
- * Copyright (C) 2013,2014,2015,2016 GAEL Systems
- * Copyright (C) 2013,2014,2015,2016 Serco Spa
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 European Space Agency (ESA)
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 GAEL Systems
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 Serco Spa
  * 
  * This file is part of DHuS software sources.
  *
@@ -19,23 +19,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
+ /*TODO: remove*/
 'use strict';
-
-
-angular.module('DHuS-webclient')
-
-.directive('cartContainer', function(UIUtils, $document,$window, CartModel,ProductCartService, UserService ) {
+angular.module('DHuS-webclient').directive('cartContainer', function(
+  UIUtils,
+  $document,
+  $window,
+  CartModel,
+  ProductCartService,
+  UserService,
+  Session,
+  UserInfoService ) {
   var PAGE_LABEL_ID = '#page-label-id',
       PAGE_COUNT_ID = '#page-count-id',
       PAGE_NUM_ID = '#page-num-id',
-      FAB_CART_CLASS = '.fab-cart', 
-      CART_BUTTON_CLASS = '.cart-button';     
-  var showHideLabel = function(){    
+      FAB_CART_CLASS = '.fab-cart',
+      CART_BUTTON_CLASS = '.cart-button';
+  var showHideLabel = function(){
         UIUtils.responsiveLayout(
             function xs(){
                 $(PAGE_LABEL_ID).css('display','none');
                 $(PAGE_NUM_ID).css('display','none');
-                $(PAGE_COUNT_ID).css('display','none');                
+                $(PAGE_COUNT_ID).css('display','none');
                 $(CART_BUTTON_CLASS).css('display','none');
                 $(FAB_CART_CLASS).css('display','inline');
 
@@ -59,28 +64,28 @@ angular.module('DHuS-webclient')
             },
             function lg(){
                 $(PAGE_LABEL_ID).css('display','inline-block');
-                $(PAGE_NUM_ID).css('display','inline-block'); 
+                $(PAGE_NUM_ID).css('display','inline-block');
                 $(PAGE_COUNT_ID).css('display','inline-block');
                 $(CART_BUTTON_CLASS).css('display','inline');
-                $(FAB_CART_CLASS).css('display','none');                
+                $(FAB_CART_CLASS).css('display','none');
 
             }
-        );        
-    };  
-  return {    
+        );
+    };
+  return {
     restrict: 'AE',
     replace: true,
     templateUrl: 'components/cart/view.html',
     scope: {
       text: "="
     },
-    // SearchModelService Protocol implemenation 
+    // SearchModelService Protocol implemenation
     createdCartModel: function(){},
     compile: function(tElem, tAttrs){
       var self = this;
         return {
-          pre: function(scope, iElem, iAttrs){            
-            CartModel.sub(self);            
+          pre: function(scope, iElem, iAttrs){
+            CartModel.sub(self);
             scope.productCount = 0;
             scope.currentPage = 1;
             setTimeout(function(){angular.element($document).ready(showHideLabel);},0);
@@ -88,82 +93,82 @@ angular.module('DHuS-webclient')
           post: function(scope, iElem, iAttrs){
              self.productsPerPagePristine   = true;
              self.currentPagePristine       = true;
-             scope.currentPage = 1;    
-             scope.currentPageCache = 1; 
+             scope.currentPage = 1;
+             scope.currentPageCache = 1;
              angular.element($document).ready(showHideLabel);
-             angular.element($window).bind('resize',showHideLabel);              
-             
+             angular.element($window).bind('resize',showHideLabel);
+
              function init() {
                 //showHideLabel();
                 scope.initCart();
              }
-             var goToPage = function(pageNumber,free){                
+
+             var goToPage = function(pageNumber,free){
                 if((pageNumber <= scope.pageCount && pageNumber > 0) || free){
                     scope.currentPage = pageNumber;
                     ProductCartService.gotoPage(pageNumber).then(function(){
                         scope.refreshCounters();
-                    });                    
+                    });
                 }
              };
              scope.initCart = function() {
                 ProductCartService.getCart();
                 scope.refreshCounters();
-            };             
+            };
              scope.refreshCounters = function(){
                 scope.productCount = CartModel.model.count;
                 scope.pageCount =  Math.floor(CartModel.model.count / scope.productsPerPage) + ((CartModel.model.count % scope.productsPerPage)?1:0);
              };
-             self.createdCartModel = function(){             
-                scope.model = CartModel.model.list;    
+             self.createdCartModel = function(){
+                scope.model = CartModel.model.list;
                 scope.productCount = CartModel.model.count;
-                scope.refreshCounters();                
+                scope.refreshCounters();
                 scope.visualizedProductsFrom    = (CartModel.model.count)?ProductCartService.offset + 1:0;
                 scope.visualizedProductsTo      = (((CartModel.model.count)?(scope.currentPage * scope.productsPerPage):0)> scope.productCount)?scope.productCount:((CartModel.model.count)?(scope.currentPage * scope.productsPerPage):0);
              };
-             self.updatedCartModel = function(){              
-             };             
+             self.updatedCartModel = function(){
+             };
              scope.productsPerPage = '25';
              scope.$watch('productsPerPage', function(productsPerPage){
                 if(self.productsPerPagePristine){
                     self.productsPerPagePristine = false;
                     return;
                 }
-                ProductCartService.setLimit(productsPerPage);                 
+                ProductCartService.setLimit(productsPerPage);
                 goToPage(1, true);
              });
 
-             
-            var managePageSelector = function(){                    
+
+            var managePageSelector = function(){
                     var newValue  = parseInt(scope.currentPage);
                     if(isNaN(newValue)) {
                         scope.$apply(function () {
                             scope.currentPage = scope.currentPageCache;
                         });
-                        return;   
+                        return;
                     }
 
                     if(newValue <= 0 ){
                       scope.$apply(function () {
                         scope.currentPage = scope.currentPageCache;
-                      });                        
+                      });
                       return;
                     }
 
                     if(newValue > scope.pageCount){
                       scope.$apply(function () {
                         scope.currentPage = scope.currentPageCache;
-                      });                      
+                      });
                       return;
                     }
 
                     goToPage(scope.currentPage);
-            }
-
+            };
              $('#cart-page-selector').bind("enterKey",function(e){
-                  managePageSelector();  
+                  managePageSelector();
             });
              $('#cart-page-selector').focusout(function(e){
-                  managePageSelector();  
+                  managePageSelector();
             });
             $('#cart-page-selector').keyup(function(e){
                 if(e.keyCode == 13)
@@ -174,41 +179,52 @@ angular.module('DHuS-webclient')
              scope.currentPage = 1;
 
              scope.gotoFirstPage = function(){
-                goToPage(1); 
+                goToPage(1);
              };
 
              scope.gotoPreviousPage = function(){
                 goToPage(scope.currentPage - 1);
              };
-             
+
              scope.gotoNextPage = function() {
                 goToPage(scope.currentPage + 1);
              };
-             
+
              scope.gotoLastPage = function(){
-                goToPage(scope.pageCount); 
+                goToPage(scope.pageCount);
              };
 
-             scope.selectPageDidClicked = function(xx){              
-
-             };
+             scope.selectPageDidClicked = function(xx){ };
 
             scope.downloadCart = function()
-            {                
+            {
                 if(scope.productCount==0) return;
-                var self=this;   
-                var user = UserService.getUserModel();       
-                //var urlRequest = "api/stub/users/0/cart/0/download";
-                var urlRequest = "odata/v1/Users(':userid')/Cart?$format=application/metalink4%2Bxml";
-                var url = ApplicationConfig.baseUrl  + urlRequest.replace(':userid',((user.username) ? user.username : ''));        
-                
-                window.location=url; 
+                var self=this;
+                var urlRequest = "odata/v1/Users(':userid')/Cart?$format=application/metalink4%2Bxml&$top=" + scope.productCount;
+                var url;
+                var user = UserService.getUserModel();
+                if(!user) {
+                  var username = Session.getSessionUsername();
+                  UserService.getODataUser(username).then(function(res){
+                    UserService.setUserModel(res);
+                    UserService.setUserRolesModel(res);
+                    Session.setUserLoggedIn();
+                    UserInfoService.userInfo.isLogged = true;
+                    user = UserService.getUserModel();
+                    url = ApplicationConfig.baseUrl  + urlRequest.replace(':userid',((user.username) ? user.username : ''));
+                    window.location=url;
+                  });
+                } else {
+                  url = ApplicationConfig.baseUrl  + urlRequest.replace(':userid',((user.username) ? user.username : ''));
+                  window.location=url;
+                }
+
             };
             scope.clearCart = function()
             {
                 if(scope.productCount==0) return;
                 ProductCartService.clearCart()
-                .then(function(result){                    
+                .then(function(result){
                     if(result.status == 200)
                     {
                         scope.initCart();
@@ -217,12 +233,13 @@ angular.module('DHuS-webclient')
                     else
                     {
                        ToastManager.error("error cleaning user cart");
-                    }                    
+                    }
                 });
             };
             init();
           }
-        }
+        };
       }
   };
-});
+}
+);

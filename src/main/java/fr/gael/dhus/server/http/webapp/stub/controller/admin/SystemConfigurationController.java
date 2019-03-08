@@ -138,27 +138,7 @@ public class SystemConfigurationController {
 
     }
 
-    @RequestMapping (value = "/admin/system/archive", method= RequestMethod.POST)
-    public ResponseEntity<?>  vitaloca (@RequestParam(value="reset", defaultValue="") String reset) {
-        fr.gael.dhus.service.ArchiveService archiveService = ApplicationContextProvider
-                .getBean(fr.gael.dhus.service.ArchiveService.class);
-        try {
-            return new ResponseEntity<>("{\"code\":\""+archiveService.synchronizeLocalArchive()+"\"}", HttpStatus.OK);
-        }
-        catch (EmailNotSentException e)
-        {
-            e.printStackTrace ();
-            return new ResponseEntity<>("{\"code\":\"email_not_sent\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        catch (AccessDeniedException e) {
-            return new ResponseEntity<>("{\"code\":\"unauthorized\"}", HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace ();
-            return new ResponseEntity<>("{\"code\":\""+e.getMessage()+"\"}" , HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
 
     /**

@@ -30,6 +30,8 @@
  */
 angular.module('DHuS-webclient')
   .controller('CheckResetCtrl', function ($scope, $routeParams, UserService ) {
+
+    console.log("CheckresetController");
     // $scope.$watch('$viewContentLoaded', function()
     // {
     //   var param = $routeParams.r;

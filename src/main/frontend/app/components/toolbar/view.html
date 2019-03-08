@@ -1,52 +1,53 @@
 <div>
-<!-- 
-  Data HUb Service (DHuS) - For Space data distribution.
-  Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
-  Copyright (C) 2013,2014,2015,2016 GAEL Systems
-  Copyright (C) 2013,2014,2015,2016 Serco Spa
-  
-  This file is part of DHuS software sources.
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
- 
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
- 
--->
-<div>
-    <style>
+    <!--
+      Data HUb Service (DHuS) - For Space data distribution.
+      Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
+      Copyright (C) 2013,2014,2015,2016 GAEL Systems
+      Copyright (C) 2013,2014,2015,2016 Serco Spa
+
+      This file is part of DHuS software sources.
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      GNU Affero General Public License for more details.
+
+      You should have received a copy of the GNU Affero General Public License
+      along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+    -->
+    <div>
+        <!--ToolBar CSS-->
+        <style>
         /* EUROPEAN COMMISSION LOGO */
         .toolbar-logo {
             float: left;
-            padding-left: 5px;            
+            padding-left: 5px;
         }
 
         .toolbar-logo-right {
             float: right;
-            padding-left: 5px;            
+            padding-left: 5px;
         }
 
-        @media screen and (min-width: 993px) and (max-width: 1200px) { 
-        
+        @media screen and (min-width: 993px) and (max-width: 1200px) {
+
             .toolbar-logo {
-               
+
             }
 
             .toolbar-logo-right {
 
             }
-          } 
+          }
 
-          @media screen and (min-width: 769px) and(max-width: 992px) { 
-            
+          @media screen and (min-width: 769px) and(max-width: 992px) {
+
             .toolbar-logo {
                display: none;
             }
@@ -54,10 +55,10 @@
             .toolbar-logo-right {
                 display: none;
             }
-          } 
+          }
 
-          @media screen and (max-width: 768px) { 
-            
+          @media screen and (max-width: 768px) {
+
             .toolbar-logo {
                 display: none;
             }
@@ -95,14 +96,14 @@
             position:relative;
             float: left;
         }
-        
-        .def-home {            
+
+        .def-home {
             height: 30px;
             width: 0px;
-            top:11px;            
+            top:11px;
             position:relative;
-            float: right;        
-        }        
+            float: right;
+        }
 
         .toolbar-actions{
             float: right;
@@ -114,11 +115,11 @@
             position: relative;
         }
 
-         
+
 
         .map-button{
             vertical-align: middle;
-            margin-top: 8px;            
+            margin-top: 8px;
             padding: 6px;
             line-height: 20px;
             font-size: 15px;
@@ -127,7 +128,7 @@
             display: block;
             height: 40px;
             width: 40px;
-            color: #fff;            
+            color: #fff;
             cursor: pointer;
             fill:currentColor;
             text-decoration: none;
@@ -199,7 +200,7 @@
 
         .old-link {
             color: white;
-            font-size: 11px;            
+            font-size: 11px;
             font-style: italic;
         }
 
@@ -219,7 +220,7 @@
         .rowminimum {
             height: 20px !important;
             float: right;
-            width: 100%;            
+            width: 100%;
             position: absolute;
             padding-right: 15px;
         }
@@ -228,66 +229,81 @@
             margin-top: 6px !important;
         }
 
-    </style>
+        .unselectable {
+            -moz-user-select: -moz-none;
+            -khtml-user-select: none;
+            -webkit-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
 
-    <div id="toolbar" class="navbar toolbar" role="navigation">
-        <div class="row">
-            <!-- left element -->
-            <div class=" col-md-4">
-                <div class="row">
-                    <!-- logos -->
+
+        </style>
+
+        <div ondragstart="return false;" ondrop="return false;" id="toolbar" class="navbar toolbar unselectable" role="navigation">
+            <div class="row">
+
+                <!-- left element -->
+                <div class=" col-md-4">
+                    <div class="row">
+                        <!-- logos -->
                     <span ng-repeat="logo in logos">
                         <a href="{{logo.link}}" target="_blank">
-                        <span class="toolbar-logo" title="{{logo.link}}"><img class="toolbar-image" src="{{logo.image}}"  ></span></a>
-                    </span>                    
-
-                    <!-- <a href="{{home_link}}" target="_blank"><span ng-show="show_home" class="map-button home-button" title="{{home_title}}"><svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;"><g id="home"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></g></svg>
-                    </span></a>  -->                                   
-
-
+                            <span class="toolbar-logo" title="{{logo.link}}">
+                                <img draggable="false" class="toolbar-image" src="{{logo.image}}">
+                            </span>
+                        </a>
+                    </span>
+                    </div>
                 </div>
-            </div>
-            <!-- center element TITLE -->
-            <div class=" col-md-4"><apptitle></apptitle></div>
-            <!-- right element -->
-            <div class=" col-md-4 ">
-                
-                <div class="row rowbar">
-                    <div class="row little">
-                    <!-- buttons -->
-                    <!--<map-button></map-button>-->   
-                     
 
-                    <a href="{{home_link}}" home target="_blank"><div ng-show="show_home" class="map-button home-button" title="{{home_title}}"><svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;"><g id="home"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></g></svg>
-                    </div>
-                    </a> 
+                <!-- center element TITLE -->
+                <div class=" col-md-4">
+                    <apptitle></apptitle>
+                </div>
 
-                     <a href="{{userguide_link}}" target="_blank"><div ng-show="show_userguide" class="map-button guide" title="{{userguide_title}}"><svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;"><g id="help"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></g></svg>
-                    </div>
-                    </a> 
-                    <!--
-                    <a href="{{home_link}}" target="_blank"><span ng-show="show_home" class="map-button home-button" title="{{home_title}}"><svg viewBox="0 0 24 24" height="100%" width="100%" preserveAspectRatio="xMidYMid meet" fit="" style="pointer-events: none; display: block;"><g id="home"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></g></svg>
-                    </span></a>   
-                    -->
-                    <span ng-repeat="logo in rightlogos">
+                <!-- right element -->
+                <div class=" col-md-4 ">
+                    <div class="row rowbar">
+                        <div class="row little">
+                            <!-- buttons -->
+                            <!--<map-button></map-button>-->
+
+
+                            <a href="{{home_link}}" home target="_blank">
+                                <div ng-show="show_home" class="map-button home-button" title="{{home_title}}">
+                                    <svg viewBox="0 0 24 24" height="100%" width="100%"
+                                         preserveAspectRatio="xMidYMid meet" fit=""
+                                         style="pointer-events: none; display: block;">
+                                        <g id="home">
+                                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="{{userguide_link}}" target="_blank">
+                                <div ng-show="show_userguide" class="map-button guide" title="{{userguide_title}}">
+                                    <svg viewBox="0 0 24 24" height="100%" width="100%"
+                                         preserveAspectRatio="xMidYMid meet" fit=""
+                                         style="pointer-events: none; display: block;">
+                                        <g id="help">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                                        </g>
+                                    </svg>
+                                </div>
+                            </a>
+                        <span ng-repeat="logo in rightlogos">
                         <a href="{{logo.link}}" target="_blank">
-                        <span class="toolbar-logo-right" title="{{logo.link}}"><img class="toolbar-image-right" src="{{logo.image}}"  ></span></a>
-                    </span>                 
-                    <login-button ng-show="!userInfo.isLogged"></login-button>
-                    <signup-button ng-show="!userInfo.isLogged" ></signup-button>
-                    <login-dialog></login-dialog>                    
+                    </span>
+
+                    <login-button ng-show="!userInfo.isLogged" ></login-button>
+                    <!-- <signup-button ng-show="!userInfo.isLogged" ></signup-button> -->
+                    <!-- <login-dialog></login-dialog> -->
                     <user-button ng-show="userInfo.isLogged"></user-button>
+
                     </div>
-                    <div ng-show="show_newgui_link" class="row rowminimum"> <div class="col-md-12 col-old-link" ng-click="goToNewUI()">
-                    <div class="old-link">{{newgui_label}}</div>                      
-                             </div></div>
-                    <div ng-show="!show_newgui_link"class="row rowminimum"> <div class="col-md-12 col-old-link"></div></div>   
-
-                                                          
-
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>

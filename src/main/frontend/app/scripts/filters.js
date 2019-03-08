@@ -19,41 +19,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-angular
-  .module('DHuS-webclient').filter('beautifuldate', function() {
 
-  return function(date) {
+ /*
+ *  App filters:
+    -
+ *
+ */
 
-    //return moment(date).format('LLLL');
-    return moment(date).format();
 
-  }
+angular.module('DHuS-webclient')
 
-})
+    .filter('beautifuldate', function() {
+        return function(date) {
+            return moment(date).format();
+        }
+    })
 
-  .filter('utcdatefromtime', function() {
-
-  return function(time) {
-    
-    return moment.utc(time);
-
-  }
-
-});
+    .filter('utcdatefromtime', function() {
+        return function(time) {
+            return moment.utc(time);
+        }
+    });
 
 angular
   .module('DHuS-webclient').filter('checkHTML', function() {
-
-  return function(value) {  	 
-    if (value.indexOf("<a") == 0  && value.indexOf("</a>" == value.length-1)) {
-        var d = document.createElement('div');
-        d.innerHTML = value;        
-        return d.firstChild.innerHTML;
-      }
-      else {
+    return function(value) {
+        if (value.indexOf("<a") == 0  && value.indexOf("</a>" == value.length-1)) {
+            var d = document.createElement('div');
+            d.innerHTML = value;
+            return d.firstChild.innerHTML;
+      } else {
         return value;
       }
-
   }
-
 });

@@ -49,7 +49,19 @@ public class MetadataIndexData
    @Override
    public boolean equals(Object o)
    {
-      return o instanceof MetadataIndexData && ((MetadataIndexData)o).getName().equals(this.getName());
+     if(!(o instanceof MetadataIndexData )){
+       return false;
+     }
+
+     if(this.getName() == null){
+       return false;
+     }
+
+     if(((MetadataIndexData)o).getName() == null){
+       return false;
+     }
+
+     return  ((MetadataIndexData)o).getName().equals(this.getName());
    }
 
    @Override

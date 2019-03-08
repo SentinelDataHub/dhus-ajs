@@ -18,7 +18,6 @@
     "jquery-ui": "1.11.4",
     "moment": "2.10.3",
     "ngToast": "ngtoast#~1.5.5",
-    "ol3-bower": "3.4.0",
     "underscore": "1.8.3"
   },
   "devDependencies": {

@@ -79,7 +79,7 @@ angular.module('DHuS-webclient')
                         scope.synch.lastCreationDate = moment(result.data.d.LastCreationDate).utc().format('YYYY-MM-DDTHH:mm:ss.SSS');
                                            
                       scope.synch.collections = result.collections;
-                      scope.synchOld = angular.copy(scope.synch);
+                      scope.synchOld = angular.copy(scope.synch);                      
                     }
                                           
                   }                
@@ -97,30 +97,24 @@ angular.module('DHuS-webclient')
 
             scope.getSynchronizerDetails = function(id, isNew) {
               scope.isNew = isNew;
-              initSynchronizer(id, isNew);
+              ODataSynchronizerService.collections().then(function (synchronizersCollections) {
+                  var collectionsName = [];
+                  for(var i = 0; i < synchronizersCollections.data.d.results.length;i++){
+                      collectionsName.push(synchronizersCollections.data.d.results[i].Name);
+                  }
+                  scope.collectionsName = collectionsName;
+                  initSynchronizer(id, isNew);
+                  if(!$('#synchDetails').hasClass('in'))
+                    $('#synchDetails').modal('show');   
 
-                               
-              if(!$('#synchDetails').hasClass('in'))
-                $('#synchDetails').modal('show');                      
-              
+              }, function(){
+
+                  initSynchronizer(id, isNew);
+                  if(!$('#synchDetails').hasClass('in'))
+                    $('#synchDetails').modal('show');   
+              });
             };  
             
-            $('#synchDetails').on('shown.bs.modal', function (e) {
-                //if(!scope.collectionsName){
-                ODataSynchronizerService.collections().then(function (synchronizersCollections) {
-                        var collectionsName = [];
-                        for(var i = 0; i < synchronizersCollections.data.d.results.length;i++){
-                            collectionsName.push(synchronizersCollections.data.d.results[i].Name);
-                        }
-                        scope.collectionsName = collectionsName;
-                        
-                        
-                    });
-                
-            //}
-            });
-            
-
             scope.checkPassword= function(){
               $('#serviceConfirmPwd').css('display','none');
               var check = true;
@@ -197,18 +191,19 @@ angular.module('DHuS-webclient')
                   .then(function(response) {             
                     var modelFromServer = response.data.d.results;
                     OdataModel.createModel(modelFromServer,modelFromServer.length);
-                    ToastManager.success("odata synchronizer created");    
+                    ToastManager.success("odata synchronizer created"); 
+                    scope.close();   
                   });                             
                 }
                 else {
                   ToastManager.error("synchronizer creation failed");
                 }
-                scope.close();
+               
                                          
               }, function(result){
                 //update list  
                 ToastManager.error("synchronizer creation failed"); 
-                scope.close();         
+                        
               });              
             };
 
@@ -228,18 +223,18 @@ angular.module('DHuS-webclient')
                   .then(function(response) {             
                     var modelFromServer = response.data.d.results;
                     OdataModel.createModel(modelFromServer,modelFromServer.length);
-                    ToastManager.success("odata synchronizer updated");       
+                    ToastManager.success("odata synchronizer updated"); 
+                    scope.close();      
                   });                            
                 }
                 else {
                   ToastManager.error("synchronizer update failed");
                 }
-                scope.close();
+                
                                          
               }, function(result){
                 //update list  
-                ToastManager.error("synchronizer update failed"); 
-                scope.close();         
+                ToastManager.error("synchronizer update failed");                       
               });
             };
 

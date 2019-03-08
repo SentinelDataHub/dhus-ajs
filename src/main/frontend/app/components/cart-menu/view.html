@@ -1,0 +1,204 @@
+<div>
+	<!--/* 
+ * Data HUb Service (DHuS) - For Space data distribution.
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 European Space Agency (ESA)
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 GAEL Systems
+ * Copyright (C) 2013,2014,2015,2016,2017,2018 Serco Spa
+ * 
+ * This file is part of DHuS software sources.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+	<style>
+		/*CONTAINER*/
+		#cart-menu-container {
+			z-index: 998;
+			position: fixed;
+			min-height: 150px;
+			width: 40%;
+			background-color: white;
+			box-shadow: 3px 5px 19px 0 rgba(49, 50, 50, .62);
+			opacity: 1;
+		}
+
+		/**************************TOP****************************/
+		#cart-top-container {
+			padding: 7px;
+			height: 55px;
+			width: 100%;
+			background-color: #FAFAFA;
+			margin-bottom: 4px;
+		}
+
+		/*panel header info*/
+		#cart-header-title-container {
+			float: left;
+			width: 100%;
+			font-weight: bold;
+			font-size: 14px;
+			color: #373b50;
+		}
+
+		/*Top right buttons in cart-menu-container*/
+		#cart-header-top-right-container {
+			position: absolute;
+			top: 4px;
+			right: 16px;
+			height: 20px;
+			width: 40px;
+		}
+
+		#cart-panel-resize-button {
+			float: right;
+			top: 6px;
+		}
+
+		#cart-panel-close-button-container {
+			float: right;
+			margin-left: 3px;
+			height: 20px;
+		}
+
+		#cart-panel-close-button {
+			height: 20px;
+			width: 20px;
+		}
+
+		/****************************MID*****************************/
+		#cart-middle-container {
+			height: calc(100% - 105px);
+			background-color: white;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		/**************************BOTTOM****************************/
+		#cart-bottom-container {
+			padding: 10px;
+			height: 50px;
+			width: 100%;
+			background-color: #FAFAFA;
+			font-size: 14px;
+		}
+
+		.select-page-button {
+			cursor: pointer;
+			margin-right: 2.5px;
+			margin-left: 2.5px;
+		}
+
+		#cart-page-selector {
+			text-align: center;
+			cursor: pointer;
+			padding: 7px;
+			width: 40px !important;
+			border: 1px solid #9A9A9A !important;
+		}
+
+		.svg-cart-icon-container {
+			float: right;
+			padding-right: 10px;
+		}
+
+		.svg-cart-icon {
+			fill: #333;
+			height: 26px;
+			width: 26px;
+		}
+
+		.svg-cart-icon:hover {
+			fill: gray;
+		}
+	</style>
+
+	<!-- CART LIST PANEL -->
+	<div id="cart-menu-container">
+
+		<!-- TOP -->
+		<div id="cart-top-container">
+			<div id="cart-header-title-container">
+				<div ng-if="productCount==0">{{MSG_CART_EMPTY}}</div>
+				<div ng-if="productCount>0">
+					<div>Your cart contains {{productCount}} products.</div>
+					<div>Display {{visualizedProductsFrom}} to {{visualizedProductsTo}} of {{productCount}} products.</div>
+				</div>
+			</div>
+
+			<!-- Floating Buttons -->
+			<span id="cart-header-top-right-container">
+				<span id="cart-panel-close-button-container" ng-click="closeCartMenuPanel()" title="{{toggleClosePanelTitle}}">
+					<svg id="cart-panel-close-button">
+						<path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+					</svg>
+				</span>
+				<span id="cart-panel-resize-button" ng-click="toggleExpandCartMenu()" ng-class="toggleButtonClass" title={{toggleExpandTitle}}></span>
+			</span>
+		</div>
+
+		<!-- MID - Instantiate ROW-cart-ITEMS -->
+		<div id="cart-middle-container">
+			<div ng-repeat="product in model">
+				<cart-item product="product" uuid="product.uuid"></cart-item>
+			</div>
+		</div>
+
+		<!-- BOTTOM -->
+		<!-- Pagination Handlers -->
+		<div id="cart-bottom-container" ng-hide="productCount==0">
+			<span>Products per page:</span>
+			<select ng-model="productsPerPage" title={{productsPerPageTitle}}>
+				<option value="25">25</option>
+				<option value="50">50</option>
+				<option value="75">75</option>
+				<option value="100">100</option>
+				<option value="125">125</option>
+				<option value="150">150</option>
+			</select>
+			<span ng-class="{'disabled-button': (currentPage == 1 || pageCount == 1)}">
+				<span class="select-page-button" ng-click="gotoFirstPage()" title={{goToFirstPageTitle}}>&lt;&lt;</span>
+				<span class="select-page-button" ng-click="gotoPreviousPage()" title={{goToPreviousPageTitle}}>&lt;</span>
+			</span>
+			<span>page: </span>
+			<input id="cart-page-selector" ng-click="selectPageDidClicked(this)" ng-model="currentPage" title={{currentPageTitle}}>
+			<span>of {{pageCount}} </span>
+			<span ng-class="{'disabled-button': (currentPage == pageCount || pageCount == 1)}">
+				<span class="select-page-button" ng-click="gotoNextPage()" title={{goToNextPageTitle}}>&gt;</span>
+				<span class="select-page-button" ng-click="gotoLastPage()" title={{goToLastPageTitle}}>&gt;&gt;</span>
+			</span>
+			</span>
+
+			<!-- Download Cart icon-button -->
+			<span class="svg-cart-icon-container" title="{{downloadCartTitle}}">
+				<svg class="svg-cart-icon" ng-click="downloadCart()" viewBox="0 0 22 22">
+					<path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+				</svg>
+			</span>
+
+			<!-- Clear Cart icon-button -->
+			<span class="svg-cart-icon-container" title="{{clearCartTitle}}">
+				<svg class="svg-cart-icon" ng-click="clearCart()" viewBox="0 0 22 22">
+					<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+				</svg>
+			</span>
+
+			<!-- Cart Menu footprints icon-button -->
+			<!-- <span class="svg-cart-icon-container" title="{{cartFootprintsTitle}}">
+				<svg ng-class="{'activate-button': (toggleShowCartFootprints)}" class="svg-cart-icon" ng-click="getCartFootprints()"
+				 viewBox="0 0 22 22">
+					<path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z" />
+				</svg>
+			</span> -->
+		</div>
+	</div>

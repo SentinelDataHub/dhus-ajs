@@ -34,7 +34,7 @@ angular.module('DHuS-webclient')
 .directive('searchItem', function($rootScope, SavedSearchModel, 
   SavedSearchService, SearchService, AdvancedSearchService, 
   SearchBoxService, $window) {
-  var SELECTED_ITEM_BACKGROUND_COLOR = '#ecf0f1';
+  var SELECTED_ITEM_BACKGROUND_COLOR = '#eCF0F1';
   var HIGHLIGHT_ITEM_BACKGROUND_COLOR = '#F5F5F5';
   var DEFAULT_ITEM_BACKGROUND_COLOR = 'transparent';
   var directive = {
