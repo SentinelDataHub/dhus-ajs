@@ -132,7 +132,7 @@
         var sqTolerance = tolerance !== undefined ? tolerance * tolerance : 1;
 
         points = highestQuality ? points : simplifyRadialDist(points, sqTolerance);
-        points = simplifyDouglasPeucker(points, sqTolerance);
+        // points = simplifyDouglasPeucker(points, sqTolerance);
 
         return points;
     }
@@ -1701,6 +1701,7 @@ angular.module('DHuS-webclient').directive('dhusMap', function ($document, $loca
                         OLMap.switchCoordinate(scope.format);
                     }
                     scope.isMapLayerSwitcherVisible = ApplicationService.settings.isMapLayerSwitcherVisible;
+                    scope.showmap = ApplicationService.settings.showmap;
                     init();
                     if (!scope.drawByDefault) scope.toggleActivedSelection();
                 }

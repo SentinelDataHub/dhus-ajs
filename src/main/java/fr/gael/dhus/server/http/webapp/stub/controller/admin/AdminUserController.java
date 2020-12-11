@@ -26,9 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,35 +36,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.gael.dhus.database.dao.UserDao;
 import fr.gael.dhus.database.object.Role;
 import fr.gael.dhus.database.object.User;
 import fr.gael.dhus.database.object.restriction.AccessRestriction;
 import fr.gael.dhus.database.object.restriction.LockedAccessRestriction;
-import fr.gael.dhus.messaging.mail.MailServer;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.RoleData;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.UserData;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.UserServiceException;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.UserServiceMailingException;
 import fr.gael.dhus.service.exception.EmailNotSentException;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
-import fr.gael.dhus.system.config.ConfigurationManager;
 
 
 @RestController
 public class AdminUserController {
 	
-	private static Log logger = LogFactory.getLog (AdminUserController.class);
-	
-	@Autowired
-	private UserDao userDao;
-	
-	@Autowired
-	private ConfigurationManager cfgManager;
-   
-	@Autowired
-	private MailServer mailer;
-
 	/**
 	 * List of users
 	 *

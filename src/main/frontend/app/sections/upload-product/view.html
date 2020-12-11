@@ -1,5 +1,5 @@
 <div>
-<!--
+	<!--
   Data HUb Service (DHuS) - For Space data distribution.
   Copyright (C) 2013,2014,2015,2016 European Space Agency (ESA)
   Copyright (C) 2013,2014,2015,2016 GAEL Systems
@@ -21,261 +21,303 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<style>
-.borderdiv{
-  border: inset;
-  border-radius: 20px;
-}
-.bordertextarea{
-  background: #B0B0B0 !important;
-}
-.upload-button {
-        border-radius: 0px;
-        vertical-align: middle;
-        margin-bottom: 20px;
-        line-height: 20px;
-        font-weight: bold;
-        position: relative;
-        text-decoration: none;
-        text-align: center;
-        background-color: rgb(55, 59, 80);
-        color: white;
-        cursor: pointer;
-        margin-top: 10px;
-        font-size: 1.5vw;
-}
-.icon{
-  float: right;
-  margin-right: 10px;
-  padding: 7px;
-}
-.icon:hover {
-        /*background-color: rgb(55, 59, 80) !important;
+	<style>
+		.borderdiv {
+			border: inset;
+			border-radius: 20px;
+		}
+
+		.bordertextarea {
+			background: #B0B0B0 !important;
+		}
+
+		.upload-button {
+			border-radius: 0px;
+			vertical-align: middle;
+			margin-bottom: 20px;
+			line-height: 20px;
+			font-weight: bold;
+			position: relative;
+			text-decoration: none;
+			text-align: center;
+			background-color: rgb(55, 59, 80);
+			color: white;
+			cursor: pointer;
+			margin-top: 10px;
+			font-size: 1.5vw;
+		}
+
+		.icon {
+			float: right;
+			margin-right: 10px;
+			padding: 7px;
+		}
+
+		.icon:hover {
+			/*background-color: rgb(55, 59, 80) !important;
         color: white !important;*/
-        cursor: pointer !important;
-        color: black !important;
-    }
-.user-button {
-    background-color: rgb(55, 59, 80)!important;
-    vertical-align: middle;
-    margin-top: 12px;
-    line-height: 20px;
-    font-size: 14px;
-    margin-left: 5px;
-    position: relative;
-    padding: 10px;
-    cursor: pointer;
-    color:white;
-    text-decoration: none;
-    text-align: center;
-}
-.user-button:hover{
-    color:white;
-    text-decoration: none;
-}
-.user-button:visited{
-    color:white;
-    text-decoration: none;
-}
-.visible
-{
-  display: inline;
-}
-.notVisible
-{
-  display: none;
-}
-.selectedColor
-{
-  background: yellow;
-}
-.notSelectedColor
-{
-  background: green;
-}
-.btn-file {
-    position: relative;
-    overflow: hidden;
-}
-.btn-file input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 100%;
-    min-height: 100%;
-    font-size: 100px;
-    text-align: right;
-    filter: alpha(opacity=0);
-    opacity: 0;
-    outline: none;
-    background: white;
-    cursor: inherit;
-    display: block;
-}
-.fab-cart-disabled
-{
-    background-color: #afb1b9 !important;
-    cursor: default !important;
-    color: black !important;
-}
-.notActive
-{
-  background: none !important;
-}
+			cursor: pointer !important;
+			color: black !important;
+		}
 
-#upload-management-page header {
-  width: 100%;
-  height: 60px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
-  padding-top: 15px;
-}
+		.user-button {
+			background-color: rgb(55, 59, 80) !important;
+			vertical-align: middle;
+			margin-top: 12px;
+			line-height: 20px;
+			font-size: 14px;
+			margin-left: 5px;
+			position: relative;
+			padding: 10px;
+			cursor: pointer;
+			color: white;
+			text-decoration: none;
+			text-align: center;
+		}
 
-#upload-management-page input:invalid ~ .invalid-field{
-    display: inline-block !important;
-}
+		.user-button:hover {
+			color: white;
+			text-decoration: none;
+		}
 
-#upload-management-page .invalid-field {
-  display:none;
-  color: rgb(255,110,64);
-  top: 30px;
-  font-size: 9px;
-}
+		.user-button:visited {
+			color: white;
+			text-decoration: none;
+		}
 
-@media screen and (max-width: 992px) {
+		.visible {
+			display: inline;
+		}
 
-  #showPassword {
-    display: none;
-  }
-}
+		.notVisible {
+			display: none;
+		}
 
-.next-filescanner-box{
-    background-color: #C8C8C8;
-    margin: 20px;
+		#upload-management-page .showftp {
+			visibility: visible !important;
+		}
 
-}
+		#upload-management-page .hideftp {
+			visibility: hidden !important;
+		}
 
+		.selectedColor {
+			background: yellow;
+		}
 
-</style>
-<div id="upload-management-page" class="container" ng-controller="UploadCtrl">
-  <header class="row" style="margin-top: auto">
-    <div class="col-md-1 col-sd-1 col-xs-1">
-    </div>
-    <div class="col-md-10 col-sd-8 col-xs-8">Upload Management
-    </div>
-    <div id="gotomap" class="col-md-1 col-sd-3 col-xs-3">
-      <gotomap-button></gotomap-button>
-    </div>
-  </header>
-  <div style="width: 70%;float:left;">
-      <div class="row" style="margin-top: auto">
-        <div class="col-md-12 col-sd-12 col-xs-12">
-             <h3>
-              Upload Product
-             </h3>
-             <div class="fileinput fileinput-new" data-provides="fileinput">
-                <span class="btn btn-default btn-file"><span>Choose file</span><input onchange='text = $(this).val();
-                text = text.substring(text.lastIndexOf("\\") + 1, text.length);$("#upload-file-info").html(text);angular.element(this).scope().setIfSelectedFile(this)' type="file" file-model="fileToUpload"/></span>
-                <span id="upload-file-info" class="fileinput-filename">No file choosen</span>
-            </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12 col-sd-12 col-xs-12">
-          <div ng-class="{'': isSelectedFile == true, 'fab-cart-disabled': isSelectedFile == false}" class="user-button" style="float: right" ng-click="uploadProduct()">UPLOAD</div>
-        </div>
-      </div>
-      <div class="row" style="margin-top: auto">
-        <div class="col-md-12 col-sd-12 col-xs-12">
-          <h3>
-           File scanners
-          </h3>
-          <div>
-          <label>Url to scan</label>
-          <input
-            id="urltoscan"
-            type="text"
-            class="form-control page-selector-input"
-            ng-model="urltoscan"
-            >
-            <label class="invalid-field" id="checkUrl">Url empty</label>
-          </div>
-          <label>Username</label>
-          <input
-            id="username"
-            type="text"
-            class="form-control page-selector-input"
-            ng-model="username"
-            >
+		.notSelectedColor {
+			background: green;
+		}
 
-            <div class="row">
-                <div class="col-md-10 col-sd-10 col-xs-10" style="padding-left:0px;">
-                    <label>Password</label>
-                </div>
-                <div class="col-md-1 col-sd-1 col-xs-1" style="text-align: right;padding-left: 35px;padding-right:0px!important;">
-                    <label id="showPassword">Show</label>
-                </div>
-                <div class="col-md-1 col-sd-2 col-xs-2" style="text-align: leftt;padding-left: 25px;padding-right:0px!important;">
-                    <input type="checkbox" ng-model="showpassword" ng-checked="false" title="Show Password">
-                </div>
-            </div>
-            <input
-            id="password"
-            type="{{showpassword ? 'text' : 'password'}}"
-            class="form-control page-selector-input"
-            placeholder="*********"
-            ng-model="password"
-            >
+		.btn-file {
+			position: relative;
+			overflow: hidden;
+		}
 
-          <label>Pattern</label>
-          <input
-            id="pattern"
-            type="text"
-            class="form-control page-selector-input"
-            ng-model="pattern"
-            >
-          <label>Scanning information</label>
-          <textarea disabled class="bordertextarea form-control" ng-model="scanninginfo" rows="5" id="comment"></textarea>
-        </div>
-      </div>
-      
-      <div class="row" style="margin-top: auto">
-        <div class="col-md-12 col-sd-12 col-xs-12">
-          <div class="user-button" style="float: left" ng-click="refreshAllFilescanners()">REFRESH ALL</div>
-          <div ng-class="{'visible': toggle==false, 'notVisible': toggle==true}" class="user-button" style="float: right" ng-click="addFileScanner()">ADD</div>
-          <div ng-class="{'visible': toggle==true, 'notVisible': toggle==false}" class="user-button" style="float: right" ng-click="saveFileScanner()">SAVE</div>
-        </div>
-      </div>
+		.btn-file input[type=file] {
+			position: absolute;
+			top: 0;
+			right: 0;
+			min-width: 100%;
+			min-height: 100%;
+			font-size: 100px;
+			text-align: right;
+			filter: alpha(opacity=0);
+			opacity: 0;
+			outline: none;
+			background: white;
+			cursor: inherit;
+			display: block;
+		}
 
-      <div class="row" style="margin-top: 5%">
-        <div class="col-md-12 col-sd-12 col-xs-12">
-          <div style="margin-left: -5%" data-ng-app="" data-ng-init="names=[]">
-            <ul>
-              <li class="list-group-item" style="background-color: #C8C8C8">
-                Display {{ names.length }} elements
-              </li>
-              <a href="" ng-click="getScanningInfo(x)" ng-mouseover="setIdFileScannerHovered(x)" ng-mouseleave="resetIdFileScannerHovered()" data-ng-repeat="x in names" ng-class="{'notActive': x.toggle==false, 'active': x.toggle==true}" class="list-group-item" style="height: 60px;">
-              <div id="infoFileScanner">
-                <span class="{{x.classicon}}"></span>
-                {{ x.Url }}
-              </div>
-              <div id="buttons" ng-class="{'notVisible': (x.toggleHover || x.toggle)==false, 'visible': (x.toggleHover || x.toggle)==true}">
-                <div class="glyphicon glyphicon-remove icon" ng-click="removeFileScanner(x)" title="Remove File Scanner"></div>
-                <div class="glyphicon glyphicon-time icon" style="{{x.styleColor}}" ng-click="scheduleFileScanner(x)" title="Schedule File Scanner"></div>
-                <div class="glyphicon glyphicon-stop icon" ng-click="stopFileScanner(x)" title="Stop File Scanner"></div>
-                <div class="glyphicon glyphicon-play icon" ng-click="playFileScanner(x)" title="Play File Scanner"></div>
-              </div>
-              </a>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="width: 30%;float: right;margin-top:2%;">
-      <collection-upload collections-ids="{{collections}}"></collection-upload>
-    </div>
+		.fab-cart-disabled {
+			background-color: #afb1b9 !important;
+			cursor: default !important;
+			color: black !important;
+		}
 
+		.notActive {
+			background: none !important;
+		}
 
-</div>
+		#upload-management-page header {
+			width: 100%;
+			height: 60px;
+			text-align: center;
+			font-size: 22px;
+			font-weight: bold;
+			padding-top: 15px;
+		}
+
+		#upload-management-page input:invalid~.invalid-field {
+			display: inline-block !important;
+		}
+
+		#upload-management-page .invalid-field {
+			display: none;
+			color: rgb(255, 110, 64);
+			top: 30px;
+			font-size: 9px;
+		}
+
+		@media screen and (max-width: 992px) {
+
+			#showPassword {
+				display: none;
+			}
+		}
+
+		.next-filescanner-box {
+			background-color: #C8C8C8;
+			margin: 20px;
+
+		}
+	</style>
+	<div id="upload-management-page" class="container" ng-controller="UploadCtrl">
+		<header class="row" style="margin-top: auto">
+			<div class="col-md-1 col-sd-1 col-xs-1">
+			</div>
+			<div class="col-md-10 col-sd-8 col-xs-8">Upload Management
+			</div>
+			<div id="gotomap" class="col-md-1 col-sd-3 col-xs-3">
+				<gotomap-button></gotomap-button>
+			</div>
+		</header>
+		<div style="width: 70%;float:left;">
+			<div class="row" style="margin-top: auto">
+				<div class="col-md-12 col-sd-12 col-xs-12">
+					<h3>
+						Upload Product
+					</h3>
+					<div class="fileinput fileinput-new" data-provides="fileinput">
+						<span class="btn btn-default btn-file"><span>Choose file</span><input
+								onchange='text = $(this).val();
+                text = text.substring(text.lastIndexOf("\\") + 1, text.length);$("#upload-file-info").html(text);angular.element(this).scope().setIfSelectedFile(this)' type="file"
+								file-model="fileToUpload" /></span>
+						<span id="upload-file-info" class="fileinput-filename">No file choosen</span>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-sd-12 col-xs-12">
+					<div ng-class="{'': isSelectedFile == true, 'fab-cart-disabled': isSelectedFile == false}" class="user-button"
+						style="float: right" ng-click="uploadProduct()">UPLOAD</div>
+				</div>
+			</div>
+			<div class="row" style="margin-top: auto">
+				<div class="col-md-12 col-sd-12 col-xs-12">
+					<h3>File scanners</h3>
+					<div class="row">
+						<div class="col-md-4 col-sd-4 col-xs-4" style="padding-left: 0px;">
+							<label>
+								<span>FtpScanner</span>
+							</label>
+							<input style="margin-left: 5px;" ng-disabled="toggle" type="checkbox" ng-model="isFtp" ng-checked="false"
+								title="Ftp Scanner" ng-click="cleanFields()">
+						</div>
+						<div class="col-md-4 col-sd-4 col-xs-4"></div>
+
+						<div class="col-md-4 col-sd-4 col-xs-4" style="text-align: right;padding-right: 25px;">
+							<label>
+								<span>SourceRemove</span>
+							</label>
+							<input type="checkbox" ng-model="isSourceRemove" title="Source Remove">
+						</div>
+					</div>
+
+					<div>
+						<label>Url to scan</label>
+						<input id="urltoscan" class="form-control page-selector-input" ng-model="urltoscan">
+						<label class="invalid-field" id="checkUrl">Url empty</label>
+					</div>					
+
+					<label>Pattern</label>
+					<input id="pattern" type="text" class="form-control page-selector-input" ng-model="pattern">
+
+					<!-- Cron2 -->
+					<div class="row">
+						<div class="col-md-10 col-sd-10 col-xs-10" style="padding-left:0px;">
+							<label>Schedule</label>
+						</div>
+						<div class="col-md-1 col-sd-1 col-xs-1"
+							style="text-align: right;padding-left: 20px;padding-right:0px!important;">
+							<label id="showPassword">isActive</label>
+						</div>
+						<div class="col-md-1 col-sd-1 col-xs-1"
+							style="text-align: left;padding-left: 25px;padding-right:0px!important;">
+
+							<input type="checkbox" ng-model="isCron" ng-checked="false" title="isActive">
+						
+						</div>
+					</div>
+					<input id="cronValue" type="text" class="form-control page-selector-input" ng-model="cronValue">
+
+					<label ng-class="{'hideftp': isFtp==false, 'showftp': isFtp==true}">Username</label>
+					<input ng-class="{'hideftp': isFtp==false, 'showftp': isFtp==true}" id="username" class="form-control page-selector-input" ng-model="username" autocomplete="false">
+
+					<div class="row" ng-class="{'hideftp': isFtp==false, 'showftp': isFtp==true}">
+						<div class="col-md-10 col-sd-10 col-xs-10" style="padding-left:0px;">
+							<label>Password</label>
+						</div>
+						<div class="col-md-1 col-sd-1 col-xs-1"
+							style="text-align: right;padding-left: 35px;padding-right:0px!important;">
+							<label id="showPassword">Show</label>
+						</div>
+						<div class="col-md-1 col-sd-1 col-xs-1"
+							style="text-align: left;padding-left: 25px;padding-right:0px!important;">
+							<input type="checkbox" ng-model="showpassword" ng-checked="false" title="Show Password">
+						</div>
+					</div>
+					<input ng-class="{'hideftp': isFtp==false, 'showftp': isFtp==true}" id="password" type="{{showpassword ? 'text' : 'password'}}"
+						class="form-control page-selector-input" placeholder="*********" ng-model="password" autocomplete="false"> 
+
+					<label>Scanning information</label>
+					<textarea disabled class="bordertextarea form-control" ng-model="scanninginfo" rows="5"
+						id="comment"></textarea>
+				</div>
+			</div>
+
+			<div class="row" style="margin-top: auto">
+				<div class="col-md-12 col-sd-12 col-xs-12">
+					<div class="user-button" style="float: left" ng-click="refreshAllFilescanners()">REFRESH ALL</div>
+					<div ng-class="{'visible': toggle==false, 'notVisible': toggle==true}" class="user-button"
+						style="float: right" ng-click="addFileScanner()">ADD</div>
+					<div ng-class="{'visible': toggle==true, 'notVisible': toggle==false}" class="user-button"
+						style="float: right" ng-click="saveFileScanner(x)">SAVE</div>
+				</div>
+			</div>
+
+			<div class="row" style="margin-top: 5%">
+				<div class="col-md-12 col-sd-12 col-xs-12">
+					<div style="margin-left: -5%" data-ng-app="" data-ng-init="names=[]">
+						<ul>
+							<li class="list-group-item" style="background-color: #C8C8C8">Display {{ names.length }} elements</li>
+							<a href="" ng-click="getScanningInfo(x)" ng-mouseover="setIdFileScannerHovered(x)"
+								ng-mouseleave="resetIdFileScannerHovered()" data-ng-repeat="x in names"
+								ng-class="{'notActive': x.toggle==false, 'active': x.toggle==true}" class="list-group-item"
+								style="height: 60px;">
+								<div id="infoFileScanner">
+									<span class="{{x.classicon}}"></span>
+									<span>{{ x.Url }}</span>
+								</div>
+								<div id="buttons"
+									ng-class="{'notVisible': (x.toggleHover || x.toggle)==false, 'visible': (x.toggleHover || x.toggle)==true}">
+									<div class="glyphicon glyphicon-remove icon" ng-click="removeFileScanner(x)"
+										title="Remove File Scanner"></div>
+									<div class="glyphicon glyphicon-time icon" ng-click="scheduleFileScanner(x)" style="{{x.styleColor}}"	title="Schedule File Scanner"></div>
+									<div class="glyphicon glyphicon-stop icon" ng-click="stopFileScanner(x)" title="Stop File Scanner">
+									</div>
+									<div class="glyphicon glyphicon-play icon" ng-click="playFileScanner(x)" title="Play File Scanner">
+									</div>
+								</div>
+							</a>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="width: 30%;float: right;margin-top:2%;">
+			<collection-upload collections-ids="{{collections}}"></collection-upload>
+		</div>
+	</div>
 </div>

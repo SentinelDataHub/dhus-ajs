@@ -102,7 +102,9 @@ function($q, $http, SearchModel, ProductCartService, AuthenticationService){
     setSearchMaxLength: function(maxlength) {
       this.search_max_length = maxlength;
     },
-
+    setInvalidGeometryMessage: function(message){
+      this.invalid_geometry_message = (message) ? message : "This geometry is not yet supported. Please try with a different one.";
+    },    
     //GET GEOQUERY COORDS
     getGeoQueryByCoordsOld: function(coords){
         if(!coords) return;
@@ -214,7 +216,6 @@ function($q, $http, SearchModel, ProductCartService, AuthenticationService){
         },
 
         function(response){
-
           switch (response.status){
             case 401:
 
@@ -226,6 +227,12 @@ function($q, $http, SearchModel, ProductCartService, AuthenticationService){
             case 400:
                 var error_title = (self.error_title) ? self.error_title : "Invalid request";
                 var error_message = (self.error_message) ? self.error_message : "Your request cannot be processed by the server. Please check the request's parameters.";
+                AlertManager.error(error_title, error_message);
+                break;
+
+            case 412:
+                var error_title = (self.error_title) ? self.error_title : "Invalid request";
+                var error_message = (self.invalid_geometry_message) ? self.invalid_geometry_message : "This geometry is not yet supported. Please try with a different one.";
                 AlertManager.error(error_title, error_message);
                 break;
 

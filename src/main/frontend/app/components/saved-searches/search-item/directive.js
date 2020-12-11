@@ -31,7 +31,7 @@ angular.module('DHuS-webclient')
 ////-----
 angular.module('DHuS-webclient')
 
-.directive('searchItem', function($rootScope, SavedSearchModel, 
+.directive('searchItem', function($rootScope, SavedSearchModel, CartMenuService, 
   SavedSearchService, SearchService, AdvancedSearchService, 
   SearchBoxService, $window) {
   var SELECTED_ITEM_BACKGROUND_COLOR = '#eCF0F1';
@@ -114,7 +114,8 @@ angular.module('DHuS-webclient')
                //SearchService.setMissionFilter('');
                //SearchService.setGeoselection(''); 
                SearchService.search(scope.product.complete);                      
-               AdvancedSearchService.hide(); 
+               AdvancedSearchService.hide();
+               CartMenuService.hide(); 
                SearchBoxService.model.textQuery=scope.product.complete;             
                window.location.href = '#/home';           
             }; 

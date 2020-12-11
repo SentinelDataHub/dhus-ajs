@@ -40,14 +40,14 @@
         "superuser": "root",
         "enable_lta": true,
         "search_error_title":"Invalid request",
-        "search_error_message":"Your request connot be processed by the server. Please check the request's parameters.",
+        "search_error_message":"Your request cannot be processed by the server. Please check the request's parameters.",
         "deleted_product": {
             "show_deletion_cause": true,
             "causes": ["Invalid: bad geometry", "Invalid: reprocessed"],
             "default_cause": "Invalid"
         },
         "toolbar": {
-            "title": "Data Hub System - OSF Installation",
+            "title": "Copernicus Scientific Data Hub",
             "userguide_link": "https://scihub.copernicus.eu/userguide",
             "userguide_title": "User Guide",
             "home_link": "https://scihub.copernicus.eu",

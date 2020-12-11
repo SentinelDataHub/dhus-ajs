@@ -21,26 +21,23 @@
  */
 package fr.gael.dhus.webclient;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+
+import org.springframework.stereotype.Component;
+
 //import fr.gael.dhus.gwt.services.annotation.RPCService;
 
 import fr.gael.dhus.server.http.webapp.WebApp;
 import fr.gael.dhus.server.http.webapp.WebApplication;
-import java.io.File;
-import java.io.IOException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.InputStream;
-import java.net.URL;
-import org.springframework.stereotype.Component;
 
 @Component
 @WebApp(name = "",welcomeFiles="home")
 public class WebClientWebapp extends WebApplication
 {
-   private static Log logger = LogFactory.getLog (WebClientWebapp.class);
-
-  
+     
      @Override
    public void configure(String dest_folder) throws IOException
    {

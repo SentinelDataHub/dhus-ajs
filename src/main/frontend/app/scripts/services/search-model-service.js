@@ -75,7 +75,7 @@ angular
 				var length = this && this.model && this.model.list && this.model.list.length;
 				for (var i = 0; i < length; i++) {
 					if (_.contains(this.model.cartids, this.model.list[i].id))
-						this.model.list[i].isincart = true;
+						this.model.list[i].isincart = true;						
 					else
 						this.model.list[i].isincart = false;
 					var product_styles = StyleService.getStyleFromProduct(this.model.list[i]);

@@ -32,6 +32,7 @@ angular
 	addProductToCartUrl: "api/stub/users/0/cart/0/addproduct?productId=:productId",
 	getCartsIdsUrl: "api/stub/users/0/cart/0/getcartids", //TODO to refactor: it is not restful!
     odataReqUrl:"odata/v1/",
+    removeTransformationFromCartUrl: "api/stub/users/0/transformations/:transformationId",
     offset: 0, 
     limit: 25,  
     setOffset: function(offset){
@@ -60,7 +61,7 @@ angular
             url: ApplicationConfig.baseUrl + self.createCartRequest(self.offset,self.limit),
             method: "GET"}).then(function(result){  
           CartModel.model.count = result.data.totalresults;  
-          CartModel.createModel(result.data.products,CartModel.model.count);                               
+          CartModel.createModel(result.data.products,CartModel.model.count, result.data.totalproducts);                               
         }, function(response){
             if(response.status == 401) {
                 AuthenticationService.refresh(); //calls a service to reload page
@@ -70,7 +71,7 @@ angular
             }
             else
 // Create empty model in case of error
-            CartModel.createModel([],0); 
+            CartModel.createModel([],0, 0); 
         });                
     },
 
@@ -101,6 +102,14 @@ angular
         return $http({
             url: ApplicationConfig.baseUrl + self.getCartsIdsUrl
         });        
-	}
+	},
+    removeTransformationFromCart: function(transformationId){
+        var self = this;          
+        return $http({
+            url: (ApplicationConfig.baseUrl + self.removeTransformationFromCartUrl).replace(":transformationId",transformationId),
+            method: "POST"
+        }); 
+        
+    },
 };
 });

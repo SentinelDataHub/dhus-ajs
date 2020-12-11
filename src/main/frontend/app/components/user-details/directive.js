@@ -34,6 +34,7 @@ angular.module('DHuS-webclient').directive('userDetails', function(
         pre: function (scope, iElem, iAttrs) {
         },
         post: function (scope, iElem, iAttrs) {
+          scope.temp = {};
           scope.user = {};
           scope.users = {};
           scope.checkFields = true;
@@ -165,6 +166,9 @@ angular.module('DHuS-webclient').directive('userDetails', function(
                   var user = scope.currentList[i];
 
                   scope.user = user;
+                  scope.temp = _.clone(scope.user);
+
+
                   if (scope.user.lockedReason)
                     scope.isLocked = true;
                   else
@@ -511,6 +515,17 @@ angular.module('DHuS-webclient').directive('userDetails', function(
           };
 
           scope.close = function () {
+            
+            //Restore
+            if (scope.currentList) {
+              for (var i = 0; i < scope.currentList.length; i++) {
+                if (scope.currentList[i].uuid == scope.currentUuid) {
+                  //Restore with old values
+                  scope.currentList[i] = scope.temp;
+                }
+              }
+            }  
+
             $('#userView').modal('hide');
           };
           init();

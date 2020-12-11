@@ -222,6 +222,7 @@ angular.module('DHuS-webclient')
             //scope.selectedColelctions = [];
             scope.isAllSelected = false;
             AdminCollectionManager.setSelectedCollectionsIds( function(){return scope.getSelectedCollectionsIds()});
+            AdminCollectionManager.setSelectedCollectionsUUID( function(){return scope.getSelectedCollectionsUUID()});
             iAttrs.$observe('collectionsIds',
               function(newValue){
                 selectedCollections = JSON.parse(newValue);
@@ -275,9 +276,9 @@ angular.module('DHuS-webclient')
                                 //nodelink=nodelink.replace((new RegExp("'", 'g')),"%27");
 
                                 if(entry.hasChildren)//console.log('builtlink',builtlink);
-                                    $('#collection-upload-tree').append("<ul><li loaded='false' nodeid='"+entry.Name+"'><span nodeid='"+entry.Name+"'><input type='checkbox' class='collection_checkbox'><span class='glyphicon glyphicon-folder-close'></span><a href='javascript: void(0);''> "+entry.Name+"</a></span></li></ul>");
+                                    $('#collection-upload-tree').append("<ul><li loaded='false' nodeuuid='"+entry.UUID+"' nodeid='"+entry.Name+"'><span nodeuuid='"+entry.UUID+"' nodeid='"+entry.Name+"'><input type='checkbox' class='collection_checkbox'><span class='glyphicon glyphicon-folder-close'></span><a href='javascript: void(0);''> "+entry.Name+"</a></span></li></ul>");
                                 else
-                                    $('#collection-upload-tree').append("<ul><li loaded='false' nodeid='"+entry.Name+"'><span nodeid='"+entry.Name+"'><input type='checkbox' class='collection_checkbox'><span class='glyphicon glyphicon-file'></span><a href='javascript: void(0);''> "+entry.Name+"</a></span></li></ul>");
+                                    $('#collection-upload-tree').append("<ul><li loaded='false' nodeuuid='"+entry.UUID+"' nodeid='"+entry.Name+"'><span nodeuuid='"+entry.UUID+"' nodeid='"+entry.Name+"'><input type='checkbox' class='collection_checkbox'><span class='glyphicon glyphicon-file'></span><a href='javascript: void(0);''> "+entry.Name+"</a></span></li></ul>");
                                 $('#collection-upload-tree').CollectionUploadTree({addable: true, editable: false,deletable: false}, entry);
                             }
                         }
@@ -308,6 +309,7 @@ angular.module('DHuS-webclient')
             };
 
             scope.getSelectedCollectionsIds = function(){
+                // console.log('collection-upload : getSelectedCollectionsIds');
                 var selected = [];
                 $('.collection_checkbox').each(function() {
                     //console.log("$(this).attr('checked')",$(this).prop('checked'));
@@ -319,12 +321,21 @@ angular.module('DHuS-webclient')
                 //  console.log("selected", selected);
                 return selected;
             };
-
-
-
-
+			
+	    scope.getSelectedCollectionsUUID = function(){
+                // console.log('collection-upload : getSelectedCollectionsUUID');
+                var selected = [];
+                $('.collection_checkbox').each(function() {
+                    //console.log("$(this).attr('checked')",$(this).prop('checked'));
+                    if($(this).prop('checked')==true) {
+                        //console.log("$(this).parent()",$(this).parent());
+                        selected.push($(this).parent().attr('nodeuuid'));
+                    }
+                });
+                //  console.log("selected", selected);
+                return selected;
+            };
           }
-
         }
       }
     }

@@ -20,20 +20,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
-angular.module('DHuS-webclient').directive('listItem', function (
-  $rootScope,
-  $window,
-  CartModel,
-  CartMenuService,
-  ConfigurationService,
-  ProductCartService,
-  ProductListService,
-  SearchModel,
-  SearchService,
-  Session,
-  UserInfoService,
-  UserService
-) {
+angular.module('DHuS-webclient').directive('listItem', function ($rootScope, $window, CartModel, CartMenuService, ConfigurationService, ProductCartService, 
+  ProductListService, SearchModel, SearchService, Session, UserInfoService, UserService, UIUtils) {
   var SELECTED_ITEM_BACKGROUND_COLOR = '#dbdbdb';
   var HIGHLIGHT_ITEM_BACKGROUND_COLOR = '#F5F5F5';
   var DEFAULT_ITEM_BACKGROUND_COLOR = 'transparent';
@@ -76,11 +64,8 @@ angular.module('DHuS-webclient').directive('listItem', function (
               }
             }, 0);
           }
-          //Reset UI
-          // setTimeout(function () removeAllSelected{scope.$apply();}, 0);
-          //Scroll to item if selecting from map
 
-          if (param.uuid == this.product.uuid && param.sender == 'OLMap') {            
+          if (param.uuid == this.product.uuid && param.sender == 'OLMap') {
             ProductListService.scrollToItem(this.element);
           }
         },
@@ -108,16 +93,25 @@ angular.module('DHuS-webclient').directive('listItem', function (
         pre: function (scope, iElem, iAttrs) {
           scope.showquicklook = ApplicationService.settings.showquicklook;
           scope.showcart = ApplicationService.settings.showcart;
+          scope.hide_on_demand = ApplicationService.settings.hide_on_demand;
           scope.enableLta = ApplicationService.settings.enable_lta;
+          scope.hideorder = ApplicationService.settings.hideorder;
+          scope.order_properties = (ApplicationService.settings.order_properties) ? ApplicationService.settings.order_properties : ConfigurationService.default_order_properties;
+          scope.order_style = (ApplicationService.settings.order_style) ? ApplicationService.settings.order_style : ConfigurationService.default_order_style;
           if (!ConfigurationService.isLoaded()) {
             ConfigurationService.getConfiguration().then(function (data) {
               if (data) {
                 ApplicationService = data;
                 scope.showquicklook = ApplicationService.settings.showquicklook;
                 scope.showcart = ApplicationService.settings.showcart;
+                scope.hide_on_demand = ApplicationService.settings.hide_on_demand;
                 baseUrl = ApplicationConfig.baseUrl;
                 scope.enableLta = ApplicationService.settings.enable_lta;
                 scope.hide_popover_list = ApplicationService.settings.hide_popover_list;
+                scope.hideorder = ApplicationService.settings.hideorder;
+                scope.order_properties = (ApplicationService.settings.order_properties) ? ApplicationService.settings.order_properties : ConfigurationService.default_order_properties;
+                scope.order_style = (ApplicationService.settings.order_style) ? ApplicationService.settings.order_style : ConfigurationService.default_order_style;
+                
               }
             },
               function (error) { });
@@ -177,20 +171,65 @@ angular.module('DHuS-webclient').directive('listItem', function (
             scope.bigQuicklooksrc = baseUrl + "odata/v1/Products('" + scope.product.uuid + "')/Products('Quicklook')/$value";
           }
 
-          //Popover   
+          //Popover
           //prevent other popover fade in before showing the new one       
-          $("[data-toggle='pop']").on('show.bs.popover', function(){
-              $('.popover').removeClass('in');          
+          $("[data-toggle='pop']").on('show.bs.popover', function () {
+            $('.popover').removeClass('in');
           });
-          //show popover
+          $("[data-toggle='pop-order']").on('show.bs.popover', function () {
+            $('.popover').removeClass('in');
+          });
+          //Get LTA status for offline products and set lta values
+          if (scope.product.offline && !scope.hideorder && scope.product.order) {
+                scope.product.isOrderOn = true;             
+          } else {
+            scope.product.isOrderOn = false; 
+          }
+
+          //POPOVER 1  
           $("[data-toggle=pop]").popover({
             html: true,
-            content: function () {              
+            content: function () {
               if (scope.hide_popover_list == true) return undefined; //Configurable Popover              
-              var popoverData = ('<img style="opacity:1; max-width: 300px; max-height: 200px;  display: inline-block; " src=' + scope.bigQuicklooksrc + '>');
-              return (scope.bigQuicklooksrc != undefined) ? popoverData : undefined;
+              var popoverData = ('<img class="popover-image" src=' + scope.bigQuicklooksrc + '>');
+              return (scope.bigQuicklooksrc !== undefined) ? popoverData : undefined;
             }
-          });          
+          }).on('show.bs.popover', function () { $('.popover').removeClass('in'); });
+
+          //POPOVER 2
+          $("[data-toggle='pop-order']").popover({
+            placement: function (context, src) {
+              $(context).addClass('popp2'); //Add custom class to handle different popover-content
+              var position = (UIUtils.getElement2ScreenRatio('#list-container') < 0.7) ? 'right' : 'bottom';
+              return position;
+            },
+            container: "body",
+            trigger: "hover",
+            html: true,
+            delay: {
+              show: 600,
+              hide: 500
+            },
+            content: function () {
+              // var key = Math.floor(Math.random() * (4 - 1)) + 1;
+              var key = scope.product.order.status;
+              var classColor = scope.order_style[key];
+              var ltaCapitalized = 'def';
+              var html = "";
+              if (scope.order_properties["status"])
+                html += "<div><span class=\"pop2-inner-title\">Status: </span><span class=\"pop-inner-status "+ classColor +"\">" + key + "</span></div>";
+              if (scope.order_properties["statusMessage"])
+                html += "<div><span class=\"pop2-inner-title\">Status Message: </span><span class=\"pop-inner-2\">" + scope.product.order.statusMessage + "</span></div>";
+              if (scope.order_properties["id"])
+                html += "<div ><span class=\"pop2-inner-title\">Order Id: </span><span class=\"pop-inner-2\">" + scope.product.order.id + "</span></div>";
+              if (scope.order_properties["submissionTime"])
+                html += "<div ><span  class=\"pop2-inner-title\">Submission Time: </span><span class=\"pop-inner-2\">" + moment.utc(scope.product.order.submissionTime).format('YYYY-MM-DDTHH:mm:ss.SSS') + "</span></div>";
+              if (scope.order_properties["estimatedTime"])
+                html += "<div ><span  class=\"pop2-inner-title\">Estimated Time: </span><span class=\"pop-inner-2\">" + moment.utc(scope.product.order.estimatedTime).format('YYYY-MM-DDTHH:mm:ss.SSS') + "</span></div>";
+              return html;
+                          
+            }
+          }).on('show.bs.popover', function () { $('.popover').removeClass('in'); });          
 
           scope.hoverIn = function () {
             SearchModel.highlightProduct({ uuid: scope.product.uuid, sender: "listItem" });
@@ -220,12 +259,10 @@ angular.module('DHuS-webclient').directive('listItem', function (
 
           //Show Details
           scope.showProductDetails = function () {
-            if(!scope.product.selected){
+            if (!scope.product.selected) {
               scope.selectProduct();
             }
             ProductDetailsManager.getProductDetails(scope.product.uuid, SearchModel.model.list);
-
-
           };
 
           //Cart Add
@@ -238,7 +275,6 @@ angular.module('DHuS-webclient').directive('listItem', function (
               .error(function () {
                 ToastManager.error("Added product failed");
               });
-              // ProductCartService.getCart();
           };
 
           //Cart Remove
@@ -251,54 +287,57 @@ angular.module('DHuS-webclient').directive('listItem', function (
               .error(function () {
                 ToastManager.error("Removed product failed");
               });
-              // ProductCartService.getCart();
           };
 
-          scope.isInCart = function (){
+          scope.isInCart = function () {
             var res = false;
-            CartModel.model.list.forEach(function(element) {
-              if(scope.product.id === element.id){
+            CartModel.model.list.forEach(function (element) {
+              if (scope.product.id === element.id) {
                 res = true;
               }
             });
             return res;
-          };
+          };          
 
           //Download
           scope.downloadProduct = function () {
             if (!scope.product.offline) {
               window.location = scope.link;
-            } else {
-              var errMsg = "Product " + scope.product.identifier + " is offline";
-              ProductService.getProduct(scope.link).then(function (response) {
-                if (response.status == 202) {
-                  if (scope.product.isincart) {
-                    AlertManager.success("Offline product retrieval initiated", "Offline product retrieval has been initiated. Please check again your Cart to know when it will be online.");
+            } else {//Product offline, trigger 
+              var ltaRequest = ApplicationConfig.baseUrl + "odata/v2/Products('" + scope.uuid + "')/OData.DHuS.Order";
+              var errMsg="The retrieval of offline data is temporary unavailable, please try again later.";
+              ProductService.getLTAProduct(ltaRequest)
+                .then(function (response) {
+                  if (response.status >= 200 && response.status <= 202) {
+                    scope.product.order = ProductService.getOrder(response.data);
+                    scope.product.isOrderOn = true;
+                    if (scope.product.isincart) {
+                      AlertManager.success("Offline product retrieval initiated", "Offline product retrieval has been initiated. Please check again your Cart to know when it will be online.");
+                    } else {
+                      ProductCartService.addProductToCart(scope.product.id)
+                        .success(function () {
+                          AlertManager.success("Offline product retrieval initiated", "Offline product retrieval has been initiated and the product has been moved to Cart. Please check your Cart to know when it will be online.");
+                          scope.product.isincart = true;
+                        })
+                        .error(function () {
+                          AlertManager.warning("Offline product retrieval initiated", "Offline product retrieval has been initiated, but there was an error while adding product to cart. Please check again product list to know when it will be online.");
+                        });
+                    }
                   } else {
-                    ProductCartService.addProductToCart(scope.product.id)
-                      .success(function () {
-                        AlertManager.success("Offline product retrieval initiated", "Offline product retrieval has been initiated and the product has been moved to Cart. Please check your Cart to know when it will be online.");
-                        scope.product.isincart = true;
-                      })
-                      .error(function () {
-                        AlertManager.warning("Offline product retrieval initiated", "Offline product retrieval has been initiated, but there was an error while adding product to cart. Please check again product list to know when it will be online.");
-                      });
+                    (response.data && response.data.error && response.data.error.message && response.data.error.message.value)
+                      ? errMsg = response.data.error.message.value : errMsg = errMsg;
+                    AlertManager.error("Product unavailable", errMsg);
                   }
-                } else {
+                }, function (response) {
                   (response.data && response.data.error && response.data.error.message && response.data.error.message.value)
                     ? errMsg = response.data.error.message.value : errMsg = errMsg;
                   AlertManager.error("Product unavailable", errMsg);
-                }
-              }, function (response) {
-                (response.data && response.data.error && response.data.error.message && response.data.error.message.value)
-                  ? errMsg = response.data.error.message.value : errMsg = errMsg;
-                AlertManager.error("Product unavailable", errMsg);
 
-              }).catch(function (response) {
-                (response.data && response.data.error && response.data.error.message && response.data.error.message.value)
-                  ? errMsg = response.data.error.message.value : errMsg = errMsg;
-                AlertManager.error("Product unavailable", errMsg);
-              });
+                }).catch(function (response) {
+                  (response.data && response.data.error && response.data.error.message && response.data.error.message.value)
+                    ? errMsg = response.data.error.message.value : errMsg = errMsg;
+                  AlertManager.error("Product unavailable", errMsg);
+                });
             }
           };
 
@@ -331,8 +370,56 @@ angular.module('DHuS-webclient').directive('listItem', function (
                 });
             }
           };
+
+          scope.isOnDemandEnabled = function() {
+            var s2L1CRegex = new RegExp("S2(A|B)_MSIL1C.*", "g");
+            return s2L1CRegex.test(scope.product.identifier);
+          };
+
+          //Request On-Demand Product
+          scope.requestOnDemandProduct = function () {
+            var confirmMessage = ApplicationService.settings.confirm_ondemand_request || "Are you sure you want to submit the L2A On-Demand processing request?";
+            var errMsg="The L2A On-Demand processing request is temporary unavailable, please try again later.";
+            var outcome = confirm(confirmMessage);
+            if (outcome) {
+              ProductService.submitOnDemandRequest(scope.product.uuid)
+                .then(function (response) {
+                  console.log('response is', response);
+                  if (response.status >= 200 && response.status <= 202) {
+                    if (response.data && response.data.Status == 'COMPLETED') {
+                      ProductService.getProductOut(response.data.Id).then(function (res) {
+                        var name = res.data.Name;
+                        var downloadUrl = ApplicationConfig.baseUrl + "odata/v1/Products('" + res.data.Id + "')/$value";
+                        AlertManager.success("Product already available", "The demanded product is already available.\nThe product reference is " + name + ".\nThe Download URL is " + downloadUrl);
+                      }, function (response) {
+                        AlertManager.success("Product already available", "The demanded product is already available.");
+                      }).catch(function (response) {
+                        AlertManager.success("Product already available", "The demanded product is already available.");
+                      });
+                      
+                    }
+                    else {
+                      AlertManager.success("L2A On-Demand processing request initiated", "L2A On-Demand processing request has been initiated. Please check your Cart to know when the requested product will be available.");                      
+                    }
+                  } else {
+                    (response.data && response.data.error && response.data.error.message )
+                      ? errMsg = response.data.error.message : errMsg = errMsg;
+                    AlertManager.error("Processing unavailable", errMsg);
+                  }
+                }, function (response) {
+                  (response.data && response.data.error && response.data.error.message )
+                    ? errMsg = response.data.error.message : errMsg = errMsg;
+                  AlertManager.error("Processing unavailable", errMsg);
+
+                }).catch(function (response) {
+                  (response.data && response.data.error && response.data.error.message )
+                    ? errMsg = response.data.error.message : errMsg = errMsg;
+                  AlertManager.error("Processing unavailable", errMsg);
+                });
+            }            
+          };
         }
-      }
+      };
     }
   };
   return directive;

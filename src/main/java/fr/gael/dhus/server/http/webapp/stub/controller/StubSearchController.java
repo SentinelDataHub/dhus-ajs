@@ -9,12 +9,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
+import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.apache.solr.common.SolrDocumentList;
 import org.dhus.store.derived.DerivedProductStoreService;
-import org.geotools.gml2.GMLConfiguration;
-import org.geotools.xml.Configuration;
-import org.geotools.xml.Parser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.gael.dhus.database.object.MetadataIndex;
+import fr.gael.dhus.database.object.Order;
 import fr.gael.dhus.database.object.Product;
-import fr.gael.dhus.search.SolrDao;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.MetadataIndexData;
+import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.OrderData;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.ProductData;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.ProductsData;
 import fr.gael.dhus.server.http.webapp.stub.util.FootprintUtility;
@@ -34,9 +32,6 @@ import fr.gael.dhus.spring.context.ApplicationContextProvider;
 public class StubSearchController {
 
 	private static Log logger = LogFactory.getLog(StubSearchController.class);
-
-	@Autowired
-	private SolrDao solrDao;
 
 	@RequestMapping(value = "/products")
 	public ResponseEntity<?> newsearch(
@@ -51,7 +46,9 @@ public class StubSearchController {
 		final fr.gael.dhus.service.ProductService productService = ApplicationContextProvider
 				.getBean(fr.gael.dhus.service.ProductService.class);
 		final org.dhus.store.derived.DerivedProductStoreService derivedProductService = ApplicationContextProvider
-				.getBean(org.dhus.store.derived.DerivedProductStoreService.class);		
+				.getBean(org.dhus.store.derived.DerivedProductStoreService.class);	
+		final fr.gael.dhus.service.OrderService orderService = ApplicationContextProvider
+				.getBean(fr.gael.dhus.service.OrderService.class);
 		ArrayList<ProductData> productDatas = new ArrayList<ProductData>();
 		ProductsData productList = new ProductsData();
 		try {
@@ -95,7 +92,7 @@ public class StubSearchController {
 						ArrayList<MetadataIndexData> indexes = new ArrayList<MetadataIndexData>();
 
 						for (MetadataIndex index : productService
-								.getIndexes(product.getId())) {
+								.getIndexes(product.getUuid())) {
 							MetadataIndexData category = new MetadataIndexData(
 									index.getCategory(), null);
 							int i = indexes.indexOf(category);
@@ -144,6 +141,26 @@ public class StubSearchController {
 						productData.setHasQuicklook(derivedProductService.hasDerivedProduct(product.getUuid(), DerivedProductStoreService.QUICKLOOK_TAG));
 						productData.setHasThumbnail(derivedProductService.hasDerivedProduct(product.getUuid(), DerivedProductStoreService.THUMBNAIL_TAG));
 						productData.setOffline(!product.isOnline());
+						Order productOrder = orderService.getOrderByProductUuid(product.getUuid());						
+						if (productOrder != null && productOrder.getOrderId() != null) {
+							String status = "RUNNING";
+							String orderId = productOrder.getOrderId().getDataStoreName()+"-"+productOrder.getOrderId().getProductUuid();
+							try {
+								status = productOrder.getStatus().name();
+							} catch (Exception e) {
+								logger.error("Exception thrown while getting order status name" + e.getMessage());
+							}
+							logger.info("Found order for product " + product.getIdentifier());
+							OrderData orderData = new OrderData(orderId, 
+									status,
+									productOrder.getSubmissionTime(),
+									productOrder.getEstimatedTime(),
+									productOrder.getStatusMessage());
+							
+							productData.setOrder(orderData);
+						} else {
+							productData.setOrder(null);
+						}													
 						productDatas.add(productData);
 					}
 				}
@@ -151,6 +168,13 @@ public class StubSearchController {
 			productList.setProducts(productDatas);
 			
 			return new ResponseEntity<>(productList, HttpStatus.OK);
+		}
+		catch(RemoteSolrException rse) {	
+			logger.error("Solr Exception thrown while searching products" + rse.getMessage());
+			if(rse.getRootThrowable() != null && rse.getRootThrowable().indexOf("InvalidShapeException") >= 0)
+				return new ResponseEntity<>(productList,HttpStatus.PRECONDITION_FAILED);
+			return new ResponseEntity<>(productList,HttpStatus.BAD_REQUEST);
+			
 		}
 		catch (Exception e) {
 			logger.error("Exception thrown while searching products" + e.getMessage());

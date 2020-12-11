@@ -27,6 +27,8 @@
 			background-color: transparent;
 			box-shadow: none;
 			border-radius: 10px;
+			height: 200px;
+			width: 100%;
 		}
 
 		.popover-content {
@@ -34,6 +36,9 @@
 			background-color: rgba(243, 243, 243, 1);
 			box-shadow: 3px 5px 19px 0 rgba(49, 50, 50, .62);
 			border-radius: 10px;
+			position: relative;
+			height: 200px;
+			width: 100%;
 		}
 
 		.arrow,
@@ -111,6 +116,7 @@
 		.item-title {
 			overflow-x: hidden;
 			text-overflow: ellipsis;
+		    white-space: nowrap;
 		}
 
 		.cart-item-button {
@@ -198,33 +204,68 @@
 			right: 20px;
 			margin-bottom: 3px;
 		}
+
+		.popover-image {
+			opacity: 1;
+			max-width: 100%;
+			max-height: 200px;
+			display: inline-block;
+			position: absolute;
+			margin: auto;
+			padding: 5px;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
 	</style>
 
 	<!-- CART-ROW-ITEM VIEW-->
 	<div id="cart-item" class="cart-item " ng-mouseover="hoverIn()" ng-mouseleave="hoverOut()">
-		<div class="row" ng-class="{ ' cart-item-offline': product.offline}">
+		<div class="row" ng-class="{ ' cart-item-offline': !product.transformation && product.offline}">
 			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-right: 20px;">
+				<!-- <span ng-if="showSelect" style="float: right;" class="glyphicon"
+            ng-class="{ ' glyphicon-unchecked': !product.selected, 'glyphicon-check': product.selected, 'selected-item': product.selected }"
+            ng-click="selectProduct(); $event.stopPropagation();" title="Select product"></span> -->
 
+				<span ng-if="!product.transformation || product.transformation.status == 'COMPLETED'" style="float: right; width:14px; height:14px;" class="glyphicon glyphicon-unchecked"
+					ng-click="selectProduct();" title="{{attributeTitles[0]}}"
+					ng-class="{ ' glyphicon-unchecked': !product.selected, 'glyphicon-check': product.selected, 'selected-item': product.selected }"></span>
+				<span ng-show="!product.transformation && product.isOrderOn" class="pop-order-trigger glyphicon glyphicon-time" data-trigger="hover" data-toggle="pop-order" data-container="body" data-placement="right">					
+				</span>
+				<span ng-show="product.transformation" class="pop-order-trigger glyphicon glyphicon-time" data-trigger="hover" data-toggle="pop-transformation" data-container="body" data-placement="right">					
+				</span>
 				<!-- Product Offline -->
-				<div ng-if="product.offline" class="row item-title">
-					<div class="col-xs-10 col-sm-10 col-md-11 col-lg-11" style="display: flex; padding: 0px;">
+				<div ng-if="!product.transformation && product.offline" class="row item-title">
+					<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10" style="display: flex; padding: 0px;">
 						<span class="cart-button raised " style="{{product.label_style}}">{{mission}}</span>
-						<span ng-if="product.instrument" class="cart-button raised " style="{{product.instrlabel_style}}">{{product.instrument}}</span>
-						<div class="list-item-title" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" title="{{product.identifier}}">{{product.identifier}}</div>
+						<span ng-if="product.instrument" class="cart-button raised "
+							style="{{product.instrlabel_style}}">{{product.instrument}}</span>
+						<div class="list-item-title" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+							title="{{product.identifier}}">{{product.identifier}}</div>
 					</div>
-					<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1" style="padding: 0px;">
+					<!-- <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding: 0px;"> -->
+
+					<!-- </div> -->
+					<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" style="padding: 0px;">
 						<span class="cart-button raised cart-offline">Offline</span>
+						<!-- lta status -->
 					</div>
 				</div>
 
 				<!-- Product not Offline -->
-				<div ng-if="!product.offline" class="row item-title">
-					<div style="float: right; width:14px; height:14px;" class="glyphicon glyphicon-unchecked" ng-click="selectProduct();"
-					 title="{{attributeTitles[0]}}" ng-class="{ ' glyphicon-unchecked': !product.selected, 'glyphicon-check': product.selected, 'selected-item': product.selected }"></div>
+				<div ng-if="!product.offline || product.transformation" class="row item-title">
+					<!-- <div style="float: right; width:14px; height:14px;" class="glyphicon glyphicon-unchecked"
+						ng-click="selectProduct();" title="{{attributeTitles[0]}}"
+						ng-class="{ ' glyphicon-unchecked': !product.selected, 'glyphicon-check': product.selected, 'selected-item': product.selected }">
+					</div> -->
 					<div style="display: flex; padding: 0px;">
 						<span class="cart-button raised " style="{{product.label_style}}">{{mission}}</span>
-						<span ng-if="product.instrument" class="cart-button raised " style="{{product.instrlabel_style}}">{{product.instrument}}</span>
-						<div class="list-item-title overflow" title="{{product.identifier}}">{{product.identifier}}</div>
+						<span ng-if="product.instrument" class="cart-button raised "
+							style="{{product.instrlabel_style}}">{{product.instrument}}</span>
+						<div class="list-item-title overflow" title="{{product.identifier}}">
+							<span ng-if="product.transformation && product.transformation.status != 'COMPLETED'" style="font-weight: normal;">L2A On-Demand from Parent: </span>
+							{{product.identifier}}</div>
 					</div>
 				</div>
 
@@ -235,20 +276,24 @@
 						<!-- QuickLook -->
 						<div ng-show="showquicklook">
 							<a class="logo unselectable undraggable">
-								<img ng-if="!product.quicklook" style="opacity:1;" src="images/placeholder.png" alt="no placeholder" draggable="false" />
+								<img ng-if="!product.quicklook" style="opacity:1;" src="images/placeholder.png" alt="no placeholder"
+									draggable="false" />
 								<!-- popover on hover on thumbnail -->
-								<div data-toggle="pop" data-container="body" data-placement="right">
-									<img ng-if="product.quicklook" class="cart-thumbnail" ng-src="{{quicklooksrc}}" alt="quicklook" draggable="false">
+								<div data-trigger="hover" data-toggle="pop" data-container="body" data-placement="right">
+									<img ng-if="product.quicklook" class="cart-thumbnail" ng-src="{{quicklooksrc}}" alt="quicklook"
+										draggable="false">
 								</div>
 							</a>
 						</div>
 
 						<!-- Attributes: Download Url, SUMMARY: Mission, Instrument, Sensing Date, Size -->
 						<div id="cart-row-attributes">
-							<div class="overflow">Download URL:<a href="{{link}}">{{link}}</a></div>
+							<div ng-if="!product.transformation || product.transformation.status == 'COMPLETED'" class="overflow">
+								Download URL:<a href="{{link}}">{{link}}</a></div>
 							<div title="{{summary}}" style="white-space: nowrap;">
 								<span ng-if="satellitename"> Mission:<span class="cart-default-color">{{satellitename}}</span></span>
-								<span ng-if="product.instrument">Instrument:<span class="cart-default-color">{{product.instrument}}</span></span>
+								<span ng-if="product.instrument">Instrument:<span
+										class="cart-default-color">{{product.instrument}}</span></span>
 								<span ng-if="date">Sensing Date:<span class="cart-default-color">{{date}}</span></span>
 								<span ng-if="size">Size:<span class="cart-default-color">{{size}}</span></span>
 							</div>
@@ -259,11 +304,15 @@
 		</div>
 
 		<!-- FLOATING UI Buttons -->
-		<div class="cart-floating-bottom-right-buttons" ng-show="visibleItemButton">
-			<div class="glyphicon-screenshot glyphicon cart-item-button" ng-click="zoomCart(product)" title="{{attributeTitles[1]}}"></div>
-			<div class="glyphicon-trash glyphicon cart-item-button" ng-click="removeProductFromCart();" title="{{attributeTitles[2]}}"></div>
-			<div class="glyphicon-eye-open glyphicon cart-item-button" ng-click="showProductDetails();" title="{{attributeTitles[3]}}"></div>
-			<div class="glyphicon-download-alt glyphicon cart-item-button" ng-click="downloadProduct() ;" title="{{attributeTitles[4]}}"></div>
+		<div ng-if="!product.transformation || product.transformation.status == 'COMPLETED'" class="cart-floating-bottom-right-buttons" ng-show="visibleItemButton">
+			<div class="glyphicon-screenshot glyphicon cart-item-button" ng-click="zoomCart(product)"
+				title="{{attributeTitles[1]}}"></div>
+			<div class="glyphicon-trash glyphicon cart-item-button" ng-click="removeProductFromCart();"
+				title="{{attributeTitles[2]}}"></div>
+			<div class="glyphicon-eye-open glyphicon cart-item-button" ng-click="showProductDetails();"
+				title="{{attributeTitles[3]}}"></div>
+			<div class="glyphicon-download-alt glyphicon cart-item-button" ng-click="downloadProduct() ;"
+				title="{{attributeTitles[4]}}"></div>
 		</div>
 	</div>
 </div>

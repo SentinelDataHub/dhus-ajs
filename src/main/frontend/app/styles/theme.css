@@ -229,3 +229,61 @@ svg:hover{
     -webkit-user-select: none;
     -ms-user-select: none;
 }
+
+.pop-order-trigger {
+  float: right;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+/*Shared pop2 css*/
+.pop-inner-1,
+.pop-inner-2,
+.pop-inner-status{
+  float: right;
+  font-size: 11px;
+  padding: 2px;        
+}
+
+.pop-order-completed{
+ background-color: turquoise;
+ font-weight: bold;
+}
+
+.pop-order-running{
+ background-color: #0f9d58 ;
+ color: white;
+}
+
+.pop-order-failed{
+ background-color: #dc143c ;
+ color: white;
+}
+
+.pop-order-pending{
+ background-color: #ffcc00 ;
+ color: black;
+}
+
+.pop-order-paused{
+ background-color: #b3b3b3 ;
+ color: black;
+}
+
+.pop-inner-1 {
+  background-color: #0f9d58;
+}      
+
+.pop2-inner-title {
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.popp2 .popover-content,
+.popover .popp2,
+.popp2 {
+  min-height: 80px !important;
+  max-width: 420px;        
+  max-height: 110px;
+  display: inline-grid;
+}

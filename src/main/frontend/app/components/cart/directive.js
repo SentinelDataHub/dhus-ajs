@@ -87,6 +87,7 @@ angular.module('DHuS-webclient').directive('cartContainer', function(
           pre: function(scope, iElem, iAttrs){
             CartModel.sub(self);
             scope.productCount = 0;
+            scope.hasProducts = true;
             scope.currentPage = 1;
             setTimeout(function(){angular.element($document).ready(showHideLabel);},0);
           },
@@ -117,11 +118,13 @@ angular.module('DHuS-webclient').directive('cartContainer', function(
             };
              scope.refreshCounters = function(){
                 scope.productCount = CartModel.model.count;
+                scope.hasProducts = CartModel.model.hasProducts;
                 scope.pageCount =  Math.floor(CartModel.model.count / scope.productsPerPage) + ((CartModel.model.count % scope.productsPerPage)?1:0);
              };
              self.createdCartModel = function(){
                 scope.model = CartModel.model.list;
                 scope.productCount = CartModel.model.count;
+                scope.hasProducts = CartModel.model.hasProducts;
                 scope.refreshCounters();
                 scope.visualizedProductsFrom    = (CartModel.model.count)?ProductCartService.offset + 1:0;
                 scope.visualizedProductsTo      = (((CartModel.model.count)?(scope.currentPage * scope.productsPerPage):0)> scope.productCount)?scope.productCount:((CartModel.model.count)?(scope.currentPage * scope.productsPerPage):0);

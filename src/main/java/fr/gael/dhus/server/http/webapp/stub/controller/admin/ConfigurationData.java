@@ -28,7 +28,11 @@ import java.io.Serializable;
 
 public class ConfigurationData implements Serializable
 {
-    private String mailServerSmtp;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String mailServerSmtp;
     private int mailServerPort;
     private boolean mailServerTls;
     private String mailServerUser;

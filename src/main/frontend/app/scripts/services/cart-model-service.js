@@ -21,7 +21,7 @@
  */
 (function () { 'use strict'; }());
 angular.module('DHuS-webclient').factory('CartModel', function (CartStatusService, StyleService) {
-	
+
 	//CallEventXXX (Cart Model Service) -> EventXXX (Protocol) -> OnXXX (other component method, eg cart item or OlMap)
 	var CartModelProtocol = {
 		'clear-map': 'clearMap',
@@ -43,17 +43,18 @@ angular.module('DHuS-webclient').factory('CartModel', function (CartStatusServic
 	return {
 		model: { list: [], count: 0 },
 		subscribers: [],
-		createModel: function (model, count) {
+		createModel: function (model, count, productCount) {
 			if (!PolyStyles) PolyStyles = StyleService.getDHuSStyles();
 			this.model.list = model;
 			this.model.count = count;
+			this.model.hasProducts = (productCount > 0 ) ? true : false;
 			for (var i = 0; i < this.model.list.length; i++) {
 				var product_styles = StyleService.getStyleFromProduct(this.model.list[i]);
 				this.model.list[i].default_style = product_styles.default_style;
 				this.model.list[i].selected_style = product_styles.selected_style;
 				this.model.list[i].highlighted_style = product_styles.highlighted_style;
 				this.model.list[i].label_style = product_styles.label_style;
-				this.model.list[i].instrlabel_style = product_styles.instrlabel_style;
+				this.model.list[i].instrlabel_style = product_styles.instrlabel_style;				
 			}
 
 			var aSubscribers = [];
@@ -98,8 +99,8 @@ angular.module('DHuS-webclient').factory('CartModel', function (CartStatusServic
 					self.model.list[i].selected = false;
 				self.model.list[index].selected = true; //Select this item
 				self.pub('EventSelectProduct', param);
-			} else {}
-				// ToastManager.error("Search Selection disabled when cart footprints are not displayed"); //also use pub/sub ?
+			} else { }
+			// ToastManager.error("Search Selection disabled when cart footprints are not displayed"); //also use pub/sub ?
 		},
 
 		callEventDeselectCurrentProduct: function (param) {

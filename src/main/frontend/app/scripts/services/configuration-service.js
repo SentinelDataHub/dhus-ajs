@@ -27,6 +27,11 @@ angular
 
         return {
             loaded: false,
+            default_order_style: {"FAILED":"pop-order-failed", "COMPLETED": "pop-order-completed", "RUNNING":"pop-order-running", 
+                "PENDING":"pop-order-pending", "PAUSED":"pop-order-paused"},
+                default_transformation_style: {"FAILED":"pop-order-failed", "COMPLETED": "pop-order-completed", "RUNNING":"pop-order-running", 
+                "PENDING":"pop-order-pending", "INGESTING":"pop-order-paused"},
+            default_order_properties: {"id" : true, "status": true, "submissionTime": true, "estimatedTime": false, "statusMessage": true},
             // cartPanel: true,
             getConfiguration: function() {
                 //$http API is based on deferred/promise APIs exposed by the $q service, returns a promise by default

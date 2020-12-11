@@ -20,205 +20,203 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 'use strict';
+angular.module('DHuS-webclient').factory('AdminUploadService', function ($http, Logger) {
+	return {
+		filescannerRequestUrl: "odata/v2/Scanners?$expand=Collections",
+		filescannerCreateRequestUrl: "odata/v2/Scanners",
+		scannerUrl: "odata/v2/Scanners(:fsid)",
+		linkCollectionUrl: "odata/v2/Scanners(:fsid)/Collections/$ref",
+		filescannerUpdateDeleteRequestUrl: "odata/v2/Scanners(:fsid)",
+		filescannerStarStoptUrl: "odata/v2/Scanners(:fsid)",
+		fsCollectionUpdate: "odata/v1/Scanners(:fsid)/$links/Collections",
 
-'use strict';
-angular
-  .module('DHuS-webclient')
-.factory('AdminUploadService', function($http, Logger){
-    return {
-	  filescannerRequestUrl: "odata/v1/Scanners?$expand=Collections",
-    filescannerCreateRequestUrl: "odata/v1/Scanners",
-    filescannerCountRequestUrl: "odata/v1/Scanners/$count",
-    filescannerUpdateDeleteRequestUrl: "odata/v1/Scanners(:fsidL)",
-    filescannerActivateDeactivateUrl: "odata/v1/Scanners(:fsidL)",
-    filescannerStartUrl: "odata/v1/StartScanner?id=:fsid",
-    filescannerStopUrl: "odata/v1/StopScanner?id=:fsid",    
-    fsCollectionUpdate: "odata/v1/Scanners(:fsidL)/$links/Collections",
-    fsCollectionDelete: "odata/v1/Scanners(:fsidL)/$links/Collections(':collName')",
+		// fsCollectionDelete: "odata/v1/Scanners(:fsid)/$links/Collections(':collName')", //V2
+		fsCollectionDelete2: "odata/v2/Scanners(:fsid)/Collections(':coll')/$ref",
+		collectionsUrl: "odata/v2/Collections",
 
+		defaultHeaders: {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		},
 
-  	getFileScanners: function(){
-       var self = this;
-       return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerRequestUrl,
-        contentType: 'application/json',
-        method: "GET",
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-        });
-    },
+		//GET-ALL
+		getFileScanners: function () {
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerRequestUrl,
+				contentType: 'application/json',
+				method: "GET",
+				headers: self.defaultHeaders
+			});
+		},
 
-    getFileScannersCount: function(){
-       var self = this;
-       return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerCountRequestUrl,
-        method: "GET"
-        });
-    },
-  	removeFileScanner: function(fsid){
-          var self = this;
-          return $http({
-              url: (ApplicationConfig.baseUrl + self.filescannerUpdateDeleteRequestUrl).replace(":fsid",fsid),
-              method: "DELETE"
-          }).then(function(result) {
-            //console.log('get response');
-            //console.log("removeFileScanner response",result);
-            return result;
+		//GET-ONE
+		getOneFileScanner: function (fsid) {
+			var self = this;
+			return $http({
+				url: (ApplicationConfig.baseUrl + self.scannerUrl).replace(":fsid", fsid),
+				contentType: 'application/json',
+				method: "GET",
+				headers: self.defaultHeaders
+			});
+		},
 
-          }, function(result){
-              //console.log("removeFileScanner response: ", result);
-              return result;
-          });
-  	},
-    createFileScanner: function(fs) {
-      var self = this;
-      return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerCreateRequestUrl,
-        method: "POST",
-        contentType: 'application/json',
-        data: JSON.stringify(fs),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-      //console.log("createFileScanner response",response);
-      return response;
+		//CREATE
+		createFileScanner: function (fs) {
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerCreateRequestUrl,
+				method: "POST",
+				data: fs,
+				headers: self.defaultHeaders
+			}).then(function (response) {
+				return response;
+			}, function (response) {
+				return response;
+			});
+		},
 
-      }, function(response){
-        //console.log("createFileScanner response: ", response);
-        return response;
-      });
+		//UPDATE
+		updateFileScanner: function (fs) {
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerUpdateDeleteRequestUrl.replace(":fsid", fs.Id),
+				method: "PUT",
+				contentType: 'application/json',
+				data: JSON.stringify(fs),
+				headers: self.defaultHeaders
+			}).then(function (response) {
+				return response;
 
-    },
-    updateFileScanner: function(fs) {
-      var self = this;
-      //console.log('filescanner to update', fs);
-      return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerUpdateDeleteRequestUrl.replace(":fsid",fs.Id),
-        method: "PUT",
-        contentType: 'application/json',
-        data: JSON.stringify(fs),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-        //  console.log("updateFileScanner response",response);
-          return response;
+			}, function (response) {
+				return response;
+			});
+		},
 
-      }, function(response){
-          //  console.log("updateFileScanner response: ", response);
-            return response;
-      });
+		//DELETE
+		removeFileScanner: function (fsid) {
+			var self = this;
+			return $http({
+				url: (ApplicationConfig.baseUrl + self.filescannerUpdateDeleteRequestUrl).replace(":fsid", fsid),
+				method: "DELETE"
+			}).then(function (result) {
+				return result;
+			}, function (result) {
+				return result;
+			});
+		},
 
-    },
-    activateDeactivateFileScanner: function(fsid, status) {
-      var self = this;
-      var fs = {Active: status};
-      return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerActivateDeactivateUrl.replace(":fsid",fsid),
-        method: "PUT",
-        contentType: 'application/json',
-        data: JSON.stringify(fs),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-          //console.log("activateDeactivateFileScanner response",response);
-          return response;
+		//Start Scanner
+		startFileScanner: function (fsid) {
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerStarStoptUrl.replace(":fsid", fsid) + "/OData.DHuS.StartScanner",
+				method: "POST",
+				contentType: 'application/json',
+				data: JSON.stringify({}),
+				headers: self.defaultHeaders
+			}).then(function (response) {
+				console.log("startFileScanner response", response);
+				return response;
 
-      }, function(response){
-            //console.log("activateDeactivateFileScanner response: ", response);
-            return response;
-      });
+			}, function (response) {
+				console.log("startFileScanner response: ", response);
+				return response;
+			});
+		},
 
-    },
-    startFileScanner: function(fsid) {
-      var self = this;
-      return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerStartUrl.replace(":fsid",fsid),
-        method: "POST",
-        contentType: 'application/json',
-        data: JSON.stringify({}),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-          //console.log("startFileScanner response",response);
-          return response;
+		//Stop Scanner
+		stopFileScanner: function (fsid, status) {
+			console.log("stopFileScanner", fsid);
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerStarStoptUrl.replace(":fsid", fsid) + "/OData.DHuS.StopScanner",
+				method: "POST",
+				contentType: 'application/json',
+				data: JSON.stringify({}),
+				headers: self.defaultHeaders
+			}).then(function (response) {
+				console.log("stopFileScanner response", response);
+				return response;
 
-      }, function(response){
-            //console.log("startFileScanner response: ", response);
-            return response;
-      });
+			}, function (response) {
+				console.log("stopFileScanner response: ", response);
+				return response;
+			});
+		},
 
-    },
-    stopFileScanner: function(fsid, status) {
-      var self = this;
-      return $http({
-        url: ApplicationConfig.baseUrl + self.filescannerStopUrl.replace(":fsid",fsid),
-        method: "POST",
-        contentType: 'application/json',
-        data: JSON.stringify({}),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-          //console.log("stopFileScanner response",response);
-          return response;
+		//Get All collections
+		getAllCollections: function () {
+			var self = this;
+			return $http({
+				url: (ApplicationConfig.baseUrl + self.collectionsUrl),
+				contentType: 'application/json',
+				method: "GET",
+				headers: self.defaultHeaders
+			});
+		},
 
-      }, function(response){
-          //  console.log("stopFileScanner response: ", response);
-            return response;
-      });
+		//Add Collection to Scanner
+		addCollectionsToFS: function (fsid, model) {
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.linkCollectionUrl.replace(":fsid", fsid),
+				method: "POST",
+				contentType: 'application/json',
+				data: JSON.stringify(model),
+				headers: self.defaultHeaders
+			}).then(function (response) {
+				return response;
+			}, function (response) {
+				return response;
+			});
+		},
 
-    },
-    uploadProduct: function(file, collections){
-        var fd = new FormData();
-        fd.append('product', file);
-        fd.append('collections', collections);
-        return $http({
-          url: ApplicationConfig.baseUrl + '/api/upload',
-          method: "POST",
-          data: fd,
-          transformRequest: angular.identity,
-          headers: {'Content-Type': undefined}
-        }).then(function(response) {
-            //console.log("uploadProduct response",response);
-            return response;
+		//Remove Collection from Scanner
+		removeCollectionsToFS: function (fsid, collName) {
+			var self = this;
+			return $http({
+				url: (ApplicationConfig.baseUrl + self.fsCollectionDelete2).replace(":fsid", fsid).replace(":coll", collName),
+				method: "DELETE",
+				contentType: 'application/json',
+				headers: self.defaultHeaders
+			}).then(function (result) {
+				return result;
 
-        }, function(response){
-              //console.log("uploadProduct response: ", response);
-              return response;
-        });
-    },
-    addCollectionsToFS: function(fsid,model) {
-      var self = this;
-      return $http({
-        url: ApplicationConfig.baseUrl + self.fsCollectionUpdate.replace(":fsid",fsid),
-        method: "POST",
-        contentType: 'application/json',
-        data: JSON.stringify(model),
-        headers: {'Content-Type': 'application/json',
-                  'Accept':'application/json'}
-      }).then(function(response) {
-      //console.log("createFileScanner response",response);
-      return response;
+			}, function (result) {
+				return result;
+			});
+		},
 
-      }, function(response){
-        //console.log("createFileScanner response: ", response);
-        return response;
-      });
+		uploadProduct: function (file, collections) {
+			var fd = new FormData();
+			fd.append('product', file);
+			fd.append('collections', collections);
+			return $http({
+				url: ApplicationConfig.baseUrl + '/api/upload',
+				method: "POST",
+				data: fd,
+				transformRequest: angular.identity,
+				headers: { 'Content-Type': undefined }
+			}).then(function (response) {
+				//console.log("uploadProduct response",response);
+				return response;
 
-    },
-    removeCollectionsToFS: function(fsid,collName) {
-      var self = this;
-        return $http({
-            url: (ApplicationConfig.baseUrl + self.fsCollectionDelete).replace(":fsid",fsid).replace(":collName",collName),
-            method: "DELETE"
-        }).then(function(result) {
-          //console.log('get response');
-          //console.log("removeFileScanner response",result);
-          return result;
+			}, function (response) {
+				//console.log("uploadProduct response: ", response);
+				return response;
+			});
+		},
 
-        }, function(result){
-            //console.log("removeFileScanner response: ", result);
-            return result;
-        });
-    }
-  };
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//OLD
+		getFileScannersCount: function () {
+			console.log("getting file scanner count");
+			var self = this;
+			return $http({
+				url: ApplicationConfig.baseUrl + self.filescannerCountRequestUrl,
+				method: "GET"
+			});
+		}
+	};
 });

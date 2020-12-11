@@ -25,15 +25,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xsi:schemaLocation="
-      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-      http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/security https://www.springframework.org/schema/security/spring-security.xsd">
 
 	<bean class="fr.gael.dhus.spring.context.DHuSContextLoader" />
 	
 	<security:http use-expressions="true" disable-url-rewriting="true" auto-config="false"
-		create-session="ifRequired">
-    	   
+		create-session="never">
 
 		<security:custom-filter ref="preAuthFilter"
 			position="PRE_AUTH_FILTER" />
@@ -48,5 +47,9 @@
 		<security:logout success-handler-ref="logoutSuccessHandler" delete-cookies="dhusAuth,dhusValidity,dhusIntegrity"
 			invalidate-session="false" logout-url="/logout" />
 
+		<security:session-management session-fixation-protection="none" />
+
+                <security:csrf disabled="true" />
 	</security:http>
+        <security:http-firewall ref="firewall" />
 </beans>

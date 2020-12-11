@@ -1,11 +1,6 @@
 package fr.gael.dhus.server.http.webapp.stub.controller;
 
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Set;
-
-import fr.gael.dhus.service.exception.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,12 +16,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.UserData;
-import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.UserPasswordConfirmationException;
 import fr.gael.dhus.database.object.User;
 import fr.gael.dhus.database.object.User.PasswordEncryption;
+import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.UserData;
+import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.UserPasswordConfirmationException;
 import fr.gael.dhus.service.SecurityService;
 import fr.gael.dhus.service.UserService;
+import fr.gael.dhus.service.exception.EmailNotSentException;
+import fr.gael.dhus.service.exception.RequiredFieldMissingException;
+import fr.gael.dhus.service.exception.RootNotModifiableException;
+import fr.gael.dhus.service.exception.UserBadEncryptionException;
+import fr.gael.dhus.service.exception.UserBadOldPasswordException;
+import fr.gael.dhus.service.exception.UserNotExistingException;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
 
 @RestController

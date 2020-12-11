@@ -48,6 +48,9 @@ angular
           },
           getScreenHeight: function(){
             return angular.element($window).height();
+          },
+          getElement2ScreenRatio: function(element){
+            return parseInt($(element).css('width')) / parseInt(angular.element($window).width());
           }
         };
     });

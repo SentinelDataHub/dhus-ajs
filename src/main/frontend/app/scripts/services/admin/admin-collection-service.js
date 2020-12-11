@@ -64,6 +64,8 @@ angular
 	    collectionProductsUrl: "api/stub/admin/collections/:id/products",	    
     	getSelectedCollectionsIds: function(){},    
 		setSelectedCollectionsIds: function(method){this.getSelectedCollectionsIds = method;},
+		getSelectedCollectionsUUID: function(){},    
+		setSelectedCollectionsUUID: function(method){this.getSelectedCollectionsUUID = method;},
 		getCollectionDetails: function(){},    
 		setCollectionDetails: function(method){this.getCollectionDetails = method;},
 		getCollectionProducts: function(){},    

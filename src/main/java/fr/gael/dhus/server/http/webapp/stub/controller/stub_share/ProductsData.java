@@ -6,10 +6,12 @@ public class ProductsData {
 	
 	ArrayList<ProductData> products;
 	long totalresults;
+	long totalproducts;
 	
 	public ProductsData() {
 		this.products = new ArrayList<ProductData>();
 		this.totalresults = 0;
+		this.totalproducts = 0;
 		
 	}
 	
@@ -28,5 +30,15 @@ public class ProductsData {
 	public long getTotalresults() {
 		return this.totalresults;
 	}
+
+	public long getTotalproducts() {
+		return totalproducts;
+	}
+
+	public void setTotalproducts(long totalproducts) {
+		this.totalproducts = totalproducts;
+	}
+	
+	
 
 }

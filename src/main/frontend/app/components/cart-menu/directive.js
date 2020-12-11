@@ -68,6 +68,7 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
         pre: function (scope, iElem, iAttrs) {
           CartModel.sub(self);
           scope.productCount = 0;
+          scope.hasProducts = true;            
           scope.currentPage = 1;
 
         },
@@ -116,7 +117,9 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
 
           //Toggle Cart/Products Footprints
           scope.getCartFootprints = function () {
-            OLMap.setModel(CartModel.model.list);
+            if (!(Object.keys(OLMap.map).length === 0 && OLMap.map.constructor === Object)) {
+              OLMap.setModel(CartModel.model.list);
+            }
             // OLMap.setModel(!scope.toggleShowCartFootprints ? CartModel.model.list : SearchModel.model.list);
             // scope.toggleShowCartFootprints = !scope.toggleShowCartFootprints;
             // CartStatusService.setCartFootprints(!CartStatusService.getCartFootprints());
@@ -133,14 +136,18 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
               scope.currentPage = pageNumber;
               ProductCartService.gotoPage(pageNumber).then(function () {
                 scope.refreshCounters();
-                if (CartStatusService.getCartFootprints() === true)
-                  OLMap.setModel(CartModel.model.list);
+                if (CartStatusService.getCartFootprints() === true) {
+                  if (!(Object.keys(OLMap.map).length === 0 && OLMap.map.constructor === Object)) {
+                    OLMap.setModel(CartModel.model.list);
+                  }
+                }
               });
             }
           };
 
           scope.refreshCounters = function () {
             scope.productCount = CartModel.model.count;
+            scope.hasProducts = CartModel.model.hasProducts;
             scope.pageCount = Math.floor(CartModel.model.count / scope.productsPerPage) + ((CartModel.model.count % scope.productsPerPage) ? 1 : 0);
           };
 
@@ -206,21 +213,24 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
             AdvancedSearchService.hide();
             scope.initCart();
             CartMenuService.model.hidden = false;
-            OLMap.setDrawOnMap(false);
+            if (!(Object.keys(OLMap.map).length === 0 && OLMap.map.constructor === Object)) {
+              OLMap.setDrawOnMap(false);
+            }
             $(CART_MENU_CONTAINER).animate({ left: '20px' }, 300);
             document.getElementById("menu-cart-icon").classList.add("cart-button-active");
             document.getElementById("search-button").classList.add("grayfy");
           });
 
-          CartMenuService.setHide(function () {                    
-
+          CartMenuService.setHide(function () {
             CartStatusService.setCartActive(false);
             CartStatusService.setCartFootprints(false);
             CartMenuService.model.hidden = true;
             $(CART_MENU_CONTAINER).animate({ left: ('-' + parseInt($(CART_MENU_CONTAINER).width() + 20) + 'px') }, 300);
             scope.gotoFirstPage();
-            OLMap.setDrawOnMap(true);
-            OLMap.setModel(SearchModel.model.list);
+            if (!(Object.keys(OLMap.map).length === 0 && OLMap.map.constructor === Object)) {
+              OLMap.setDrawOnMap(true);
+              OLMap.setModel(SearchModel.model.list);
+            }
             var menuCartItem = document.getElementById("menu-cart-icon");
             if (menuCartItem !== null) {
               menuCartItem.classList.remove("cart-button-active");
@@ -242,7 +252,7 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
           };
 
           scope.downloadCart = function () {
-            if (scope.productCount === 0) return;
+            if (scope.hasProducts === false) return;
             var urlRequest = "odata/v1/Users(':userid')/Cart?$format=application/metalink4%2Bxml&$top=" + scope.productCount;
             var url;
             var user = UserService.getUserModel();
@@ -264,7 +274,7 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
           };
 
           scope.clearCart = function () {
-            if (scope.productCount === 0) return;
+            if (scope.hasProducts === false) return;
             if (!confirm("Want to Clear Cart?")) return;//Delete confirm
             ProductCartService.clearCart()
               .then(function (result) {
@@ -272,13 +282,13 @@ angular.module('DHuS-webclient').directive('cartMenu', function ($document, $win
                   //Update SearchModel
                   ProductCartService.getIdsInCart().then(function (res) {
                     SearchModel.model.cartids = res.data;
-                    if(!SearchModel.model.list) return;
-                    SearchModel.model.list.forEach(function(element){
-                      if (SearchModel.model.cartids.includes(element.id)){
-                            element.isincart = true;
-                          } else{
-                            element.isincart = false;
-                          }             
+                    if (!SearchModel.model.list) return;
+                    SearchModel.model.list.forEach(function (element) {
+                      if (SearchModel.model.cartids.includes(element.id)) {
+                        element.isincart = true;
+                      } else {
+                        element.isincart = false;
+                      }
                     });
                   });
                   setTimeout(function () { scope.closeCartMenuPanel(); }, 1000);

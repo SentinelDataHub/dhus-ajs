@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,9 +43,7 @@ import fr.gael.dhus.spring.context.ApplicationContextProvider;
 
 @RestController
 public class SystemConfigurationController {
-
-    private static Log logger = LogFactory.getLog(SystemConfigurationController.class);
-
+    
     /**
      * List
      *

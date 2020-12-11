@@ -22,8 +22,8 @@ package fr.gael.dhus.server.http.webapp.stub.controller.admin;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -33,22 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.gael.dhus.database.dao.CollectionDao;
 import fr.gael.dhus.database.object.Collection;
 import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.CollectionData;
-import fr.gael.dhus.service.SecurityService;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
-
-import java.util.Set;
 
 @RestController
 public class AdminCollectionController {
-
-    @Autowired
-    private CollectionDao collectionDao;
-
-    @Autowired
-    private SecurityService securityService;
 
     public List<CollectionData> getCollectionsWithProductsIds() throws AccessDeniedException, Exception {
         

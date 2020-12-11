@@ -17,6 +17,9 @@ public class ProductData {
 	private String itemClass;
 	private String wkt;
 	private boolean offline;
+	private OrderData order;
+	private TransformationData transformation;
+	
 	public ProductData() {
 	}
 
@@ -172,7 +175,23 @@ public class ProductData {
 	public boolean getOffline() {
 		return this.offline;
 	}
+		
+	public OrderData getOrder() {
+		return order;
+	}
+
+	public void setOrder(OrderData order) {
+		this.order = order;
+	}
 	
+	public TransformationData getTransformation() {
+		return transformation;
+	}
+
+	public void setTransformation(TransformationData transformation) {
+		this.transformation = transformation;
+	}
+
 	
 
 }

@@ -78,7 +78,7 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                             scope.showcart = ApplicationService.settings.showcart;
                             if (!scope.user || !scope.user.username) {
                                 scope.getUser();
-                            } else if (Session.getSessionUsername() && scope.user.username.localeCompare(Session.getSessionUsername()) != 0 ) {
+                            } else if (Session.getSessionUsername() && scope.user.username.localeCompare(Session.getSessionUsername()) != 0) {
                                 scope.getUser();
                             }
                             else {
@@ -119,7 +119,7 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                     scope.loadSearches = function () {
                         $('.callout').css('display', 'none');
                         $('.notch').css('display', 'none');
-                        CartStatusService.setIsUserDialog(true);
+                        // CartStatusService.setIsUserDialog(true);
                         location.href = '#/user-searches';
                     };
                     scope.loadManagement = function () {
@@ -142,8 +142,10 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                     };
 
                     scope.userDialogGoCart = function () {
+                        // console.log('userDialogGoCart, CartStatusService.getIsUserDialog() is ', CartStatusService.getIsUserDialog());
+
                         if (CartStatusService.getIsUserDialog() === true) {
-                            scope.closeBadge();
+                            scope.closeBadge(); 
                             window.location.replace("#/home");
                         } else {
                             if (CartMenuService.model.hidden)
@@ -168,7 +170,7 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                                     UserService.setUserRolesModel(res);
                                     scope.manageLoginResult();
                                     ToastManager.success("Login successful!");
-
+                                    CartStatusService.setIsUserDialog(false);
                                     //Routing to #/home
                                     window.location.replace("#/home");
                                 },

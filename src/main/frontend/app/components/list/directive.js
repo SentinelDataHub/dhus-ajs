@@ -155,6 +155,7 @@ angular.module('DHuS-webclient')
                   ApplicationService = data;
                   scope.options = ApplicationService.settings.pagination_limit;
                   SearchService.setErrorMessage(ApplicationService.settings.search_error_message);
+                  SearchService.setInvalidGeometryMessage(ApplicationService.settings.invalid_geometry_message);
                   SearchService.setErrorTitle(ApplicationService.settings.search_error_title);
                   if (scope.options[0] !== null && angular.isNumber(scope.options[0]) && scope.options[0] >= 0) {
                     scope.productsPerPage = scope.options[0];
@@ -179,6 +180,7 @@ angular.module('DHuS-webclient')
               scope.options = ApplicationService.settings.pagination_limit;
               scope.showcart = ApplicationService.settings.showcart;
               SearchService.setErrorMessage(ApplicationService.settings.search_error_message);
+              SearchService.setInvalidGeometryMessage(ApplicationService.settings.invalid_geometry_message);                  
               SearchService.setErrorTitle(ApplicationService.settings.search_error_title);
               if (scope.options[0] !== null && angular.isNumber(scope.options[0]) && scope.options[0] >= 0) {
                 scope.productsPerPage = scope.options[0];

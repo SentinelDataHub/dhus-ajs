@@ -181,6 +181,14 @@ public class FootprintUtility {
 				ctx.verifyY(coord.x);
 				sequence.add(new Coordinate(coord.y, coord.x));
 			}
+
+			if (sequence.size()==1){
+                                Coordinate coord = sequence.get(0);
+                                wkt = "POINT ("+coord.x+" "+coord.y+")";
+                                logger.debug("Output WKT: " + wkt);
+                                return wkt;
+                        }
+
 			LinearRing linear = new GeometryFactory().createLinearRing(sequence
 					.toArray(new Coordinate[sequence.size()]));
 			 Polygon poly = new Polygon(linear, null, fact);

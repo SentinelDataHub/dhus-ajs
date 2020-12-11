@@ -306,6 +306,8 @@
       .onoffswitch-label {
           display: block; overflow: hidden; cursor: pointer;
           border: 2px solid #808080; border-radius: 20px;
+          top: 0px !important; 
+          bottom: 0px !important;
       }
       .onoffswitch-inner {
           display: block; width: 200%; margin-left: -100%;
@@ -334,8 +336,8 @@
           margin: 2px;
           background: #FFFFFF;
           position: absolute;
-          top: 0;
-          bottom: 0;
+          top: 0px !important;
+          bottom: 0!important;
           right: 46px;
           border: 2px solid #808080;
           border-radius: 30px;
@@ -348,7 +350,12 @@
           right: 0px; 
       }
 
-
+      #map label {
+          display: inline-block !important;
+          max-width: 100% !important;
+          margin-bottom: 5px !important;
+          position: unset !important;
+      }
       /**/
     </style>
 
@@ -387,9 +394,6 @@
               <span class="onoffswitch-switch"></span>
           </label>
       </div>
-    </div>
-    <info-badge></info-badge>
-    <info-element></info-element>
-    <map-graticule></map-graticule>
+    </div>    
   </div>
 </div>
