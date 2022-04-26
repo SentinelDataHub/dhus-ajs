@@ -24,10 +24,10 @@ angular
   .module('DHuS-webclient')
 .factory('VersionService', function($http){
   return {
-    versionUrl: 'api/stub/version',
+    versionUrl: 'api/ui/version',
     getVersion: function(){
       var self = this;               
-       return $http({url: ApplicationConfig.baseUrl + 'api/stub/version', method: "GET"})
+       return $http({url: ApplicationConfig.baseUrl + 'api/ui/version', method: "GET"})
         .then(function(response) {              
           return (response.status == 200)?response.data:{};
         });     

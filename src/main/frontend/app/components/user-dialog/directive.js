@@ -40,6 +40,12 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                 pre: function (scope, iElem, iAttrs) {
                     scope.showsignup = ApplicationService.settings.signup;
                     scope.forgotpassword = ApplicationService.settings.forgotpassword;
+                    scope.gdpr = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+					scope.showUsername = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.showUsername : true;
+					scope.gdpr.gdprEditProfileUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.editProfileUrl : "#/home";
+					scope.gdpr.gdprForgotUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.forgotPasswordUrl : "#/home";
+					scope.gdpr.gdprSignupUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.signupdUrl : "#/home";
+					scope.gdpr.target = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
                     if (!ConfigurationService.isLoaded()) {
                         ConfigurationService.getConfiguration().then(function (data) {
                             if (data) { // promise fulfilled
@@ -48,13 +54,27 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                                 scope.forgotpassword = ApplicationService.settings.forgotpassword;
                                 scope.hideLoginTitle = ApplicationService.settings.hide_login_title;
                                 scope.loginTitle = ApplicationService.settings.login_title ? ApplicationService.settings.login_title : "Please login to access our services…";
+                                scope.gdpr = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+								scope.showUsername = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.showUsername : true;
+								scope.gdprEditProfileUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.editProfileUrl : "#/home";
+								scope.gdprForgotUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.forgotPasswordUrl : "#/home";
+								scope.gdprSignupUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.signupUrl : "#/home";
+								scope.target = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
+                    
                             } else { }
                         }, function (error) { // promise rejected, could log the error with: console.log('error', error);
                         });
                     }
-                    else
+                    else {
                         scope.showsignup = ApplicationService.settings.signup;
-                    scope.forgotpassword = ApplicationService.settings.forgotpassword;
+						scope.forgotpassword = ApplicationService.settings.forgotpassword;
+                    	scope.gdpr = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+						scope.showUsername = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.showUsername : true;
+						scope.gdprEditProfileUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.editProfileUrl : "#/home";
+						scope.gdprForgotUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.forgotPasswordUrl : "#/home";
+						scope.gdprSignupUrl = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.signupUrl : "#/home";
+						scope.target = ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
+					}
                 },
                 post: function (scope, iElem, iAttrs) {
                     scope.userInfo = UserInfoService.userInfo;
@@ -66,12 +86,14 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                     scope.forgotpassword = false;
                     scope.username;
                     scope.password;
+                    scope.samlUrl = ApplicationConfig.baseUrl + "saml"
 
                     function init() {
                         UserDetailsManager.setUserDetails(function () { scope.getUserDetails(); });
                     }
 
                     scope.getUserDetails = function () {
+                        $('.clean-username').val("");
                         if (scope.userInfo.isLogged) {
                             scope.user = UserService.model;
                             scope.editprofile = ApplicationService.settings.editprofile;
@@ -197,6 +219,51 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
                         }
                     };
 
+					scope.loginGdpr = function () {
+                        var self = this;
+                        if (scope.username !== null) { //Username field not null
+                            scope.username = scope.username.toLowerCase();
+							
+                            AuthenticationService.loginGdpr(scope.username, scope.password, self).success(function (response) {
+								//console.log(response);
+								UserService.getODataUser(response.username).then(function (res) {
+
+                                    AuthenticationService.logged = true;
+                                    AuthenticationService.basicAuth = window.btoa(response.username + ':' + scope.password);
+                                    Session.setSessionUsername(response.username);
+                                    Session.updateSession();
+                                    UserService.setUserModel(res);
+                                    UserService.setUserRolesModel(res);
+                                    scope.manageLoginResult();
+                                    ToastManager.success("Login successful!");
+                                    CartStatusService.setIsUserDialog(false);
+                                    //Routing to #/home
+                                    window.location.replace("#/home");
+                                },
+
+                                    function (data) {
+                                        AuthenticationService.logout()
+                                            .success(function () {
+                                                ToastManager.error("Login failed");
+                                                $('#wronglogin').html('Login failed.\n Please try again.');
+                                            })
+                                            .error(function () {
+                                                ToastManager.error("Login failed");
+                                                $('#wronglogin').html('Login failed.\n Please try again.');
+                                            });
+                                    });
+                            })
+                                .error(function (response) {
+                                    ToastManager.error("Login failed");
+                                    $('#wronglogin').html('The username and password you entered don\'t match.');
+                                });
+                        } else { //Username field is empty
+                            ToastManager.error("Login failed");
+                            $('#wronglogin').html('The username and password you entered don\'t match.');
+                        }
+                    };
+
+
                     scope.signup = function () {
                         location.href = '#/self-registration';
                     };
@@ -218,6 +285,20 @@ angular.module('DHuS-webclient').directive('userDialog', function ($location, Us
 
                     scope.logout = function () {
                         AuthenticationService.logout()
+                            .success(function (response) {
+                                CartMenuService.hide();
+                                ToastManager.success("Logout successful");
+                                scope.closeBadge();
+                                scope.userInfo.isLogged = false;
+                                window.location.replace("#/home");
+                            })
+                            .error(function (response) {
+                                ToastManager.error("Logout failed");
+                            });
+                    };
+
+					scope.logoutGdpr = function () {
+                        AuthenticationService.logoutGdpr()
                             .success(function (response) {
                                 CartMenuService.hide();
                                 ToastManager.success("Logout successful");

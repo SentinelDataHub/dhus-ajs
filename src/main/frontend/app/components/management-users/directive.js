@@ -24,7 +24,7 @@
 
 angular.module('DHuS-webclient')
 
-.directive('managementUsers', function(UIUtils, $document,$window, UserModel, AdminUserService ) {
+.directive('managementUsers', function(UIUtils, $document,$window, UserModel, AdminUserService, ConfigurationService ) {
   var PAGE_LABEL_ID = '#page-label-id',
       PAGE_COUNT_ID = '#page-count-id',
       PAGE_NUM_ID = '#page-num-id',
@@ -86,6 +86,26 @@ angular.module('DHuS-webclient')
             setTimeout(function(){angular.element($document).ready(showHideLabel);},0);
           },
           post: function(scope, iElem, iAttrs){
+			angular.element($document).ready(function(){
+                if(!ConfigurationService.isLoaded()) {
+                    ConfigurationService.getConfiguration().then(function(data) {
+                        if (data) {
+                            ApplicationService=data;
+                            scope.gdpr=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+							scope.adminConsoleUrl=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.adminConsoleUrl : "#/home";
+							scope.target=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
+                        } else {
+
+                        }
+                    }, function(error) {
+
+                    });
+                } else {
+                    scope.gdpr=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+					scope.adminConsoleUrl=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.adminConsoleUrl : "#/home";
+					scope.target=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
+                }
+            });
              self.usersPerPagePristine   = true;
              self.currentPagePristine       = true;
              scope.currentPage = 1;
@@ -139,6 +159,9 @@ angular.module('DHuS-webclient')
 
               AdminUserDetailsManager.getUserDetails(-1, UserModel.model.list, true);
              };
+			 scope.showAdminConsole = function() {
+				window.open(scope.adminConsoleUrl, scope.target);		
+			 };
              scope.usersPerPage = '25';
              scope.$watch('usersPerPage', function(usersPerPage){
                 if(self.usersPerPagePristine){

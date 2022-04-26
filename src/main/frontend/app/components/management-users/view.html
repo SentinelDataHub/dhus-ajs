@@ -286,7 +286,8 @@
                         &gt;&gt;
                     </span>
 
-                    <button  class="btn btn-default mngusers-button" ng-click="showCreateUser()" >CREATE USER</button>
+                    <button  ng-show="!gdpr" class="btn btn-default mngusers-button" ng-click="showCreateUser()" >CREATE USER</button>
+                    <button  ng-show="gdpr" class="btn btn-default mngusers-button" ng-click="showAdminConsole()" >CREATE USER</button>
 
 
                     <!--<div   id="show-download-button" class="fab-cart pan glyphicon glyphicon-download-alt dhus-button" ng-click="downloadCart()"  title="Download Cart" ng-class="{'fab-cart-disabled': ( productCount == 0)}">-->

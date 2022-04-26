@@ -28,7 +28,7 @@ angular
   return {
     getCountries: function(){
       var self = this;
-       return $http({url: ApplicationConfig.baseUrl + 'api/stub/countries', method: "GET"})
+       return $http({url: ApplicationConfig.baseUrl + 'api/ui/countries', method: "GET"})
         .then(function(response) {
           return (response.status == 200)?response.data:{};
         });

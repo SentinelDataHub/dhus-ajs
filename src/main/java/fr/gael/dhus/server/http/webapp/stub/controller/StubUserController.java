@@ -23,6 +23,7 @@ import fr.gael.dhus.server.http.webapp.stub.controller.stub_share.exceptions.Use
 import fr.gael.dhus.service.SecurityService;
 import fr.gael.dhus.service.UserService;
 import fr.gael.dhus.service.exception.EmailNotSentException;
+import fr.gael.dhus.service.exception.GDPREnabledException;
 import fr.gael.dhus.service.exception.RequiredFieldMissingException;
 import fr.gael.dhus.service.exception.RootNotModifiableException;
 import fr.gael.dhus.service.exception.UserBadEncryptionException;
@@ -53,7 +54,8 @@ public class StubUserController {
 	@PreAuthorize("isAuthenticated ()")
 	@RequestMapping(value = "/users/{userid}", method = RequestMethod.PUT)
 	public int updateUserProfile(@RequestBody UserRequestBody body,
-			@PathVariable(value = "userid") String userid) throws RequiredFieldMissingException, RootNotModifiableException {
+			@PathVariable(value = "userid") String userid) throws RequiredFieldMissingException, 
+			RootNotModifiableException, GDPREnabledException {
 		logger.info("******** updateUserProfile()");
 		int responseCode = 0;
 		UserData user = body.getUser();

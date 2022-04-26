@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.gael.dhus.database.object.Search;
 import fr.gael.dhus.database.object.User;
 import fr.gael.dhus.service.SecurityService;
+import fr.gael.dhus.service.exception.GDPREnabledException;
 import fr.gael.dhus.service.exception.UserNotExistingException;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
 
@@ -147,7 +148,7 @@ public class StubSavedSearchController
    final String userid, @PathVariable(value = "searchid")
    final String searchid, @RequestParam(value = "id", defaultValue = "")
    final String id, @RequestParam(value = "notify", defaultValue = "")
-   final boolean notify)
+   final boolean notify)  throws GDPREnabledException
    {
       final fr.gael.dhus.service.UserService userService =
          ApplicationContextProvider

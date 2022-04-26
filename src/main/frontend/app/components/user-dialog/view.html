@@ -47,6 +47,9 @@
         .user-h4 {
             font-size: 20px;
             text-align: left;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .user-h5 {
@@ -303,8 +306,8 @@
         <div id="userBadge" class="callout border-callout">
             <div ng-show="userInfo.isLogged">
                 <div class="row">
-                    <h4 class="user-h4">{{user.username}}</h4>
-                    <h5 class="user-h5">{{user.email}}</h5>
+                    <h4 ng-show="showUsername" class="user-h4">{{user.username}}</h4>
+                    <h5 ng-show="!gdpr" class="user-h5">{{user.email}}</h5>
                     <div id="roles">
                         <div class="user-badge">Allowed functions</div>
                         <div class="user-badge glyphicon glyphicon-search" title="Search" style="display:none;" id="role_SEARCH"></div>
@@ -327,16 +330,6 @@
                     <div title="Saved Searches" class="col-md-2 glyphicon glyphicon-floppy-disk" ng-click="loadSearches()"></div>
                     <div class="col-md-10" ng-click="loadSearches()">Saved Searches</div>
                 </div>
-
-                <!-- <div ng-show="showcart" class="row user-badge" style="color:blue;">
-                    <div title="Cart" class="col-md-2 glyphicon glyphicon-shopping-cart" ng-click="loadCart()"></div>
-                    <div class="col-md-10" ng-click="toggleCart()">New Cart</div>
-                </div> -->
-
-                <!-- <div ng-if="isUploadUser" class="row user-badge">
-        <div title="Uploaded Products" class="col-md-2 glyphicon glyphicon-open-file" ng-click="loadUploadedProducts()"></div>
-        <div class="col-md-10" ng-click="loadUploadedProducts()">Uploaded Products</div>
-      </div> -->
                 <hr/>
                 <div ng-if="isManagement" class="row user-badge">
                     <div title="Management" class="col-md-2 glyphicon glyphicon-user" ng-click="loadManagement()"></div>
@@ -350,51 +343,89 @@
                     <div title="Upload" class="col-md-2 glyphicon glyphicon-open" ng-click="loadUpload()"></div>
                     <div class="col-md-10" ng-click="loadUpload()">Upload</div>
                 </div>
-                <div class="row badge-footer">
+                <div ng-show="!gdpr" class="row badge-footer">
                     <button ng-show="editprofile && !isRootUser" class="btn btn-default badge-button" ng-click="editProfile()">EDIT PROFILE</button>
                     <button class="btn btn-default badge-button" ng-click="logout()">LOGOUT</button>
+                </div>
+                <div ng-show="gdpr" class="row badge-footer">
+                    <button ng-show="editprofile && !isRootUser" class="btn btn-default badge-button" ng-click="closeBadge()">
+                    <a href="{{gdprEditProfileUrl}}" target="{{target}}" style="color: white !important; text-decoration: none;">EDIT PROFILE</a>
+                    </button>
+                    <button class="btn btn-default badge-button" ng-click="logoutGdpr()">LOGOUT</button>
                 </div>
                 <b class="border-notch notch"></b>
                 <b class="notch"></b>
             </div>
             <div ng-show="!userInfo.isLogged">
-            <div class="row" ng-hide="hideLoginTitle">
-                <h4 class="login-h4">{{loginTitle}}</h4>
-            </div>
-            <br/>
-            <form name="form">
-              <div id="wronglogin"></div>
-              <div class="row">
-                  <div class="group">
-                      <input auto-complete  id="loginUsername" type="text" ng-model="username" class="form-control" placeholder="Username" value=""  name="username">
-                      <span class="highlight"></span>
-                      <span class="bar"></span>
-                  </div>
-              </div>
-              <div class="row">
-                  <div class="group">
-                      <input type="password" auto-complete ng-model="password" class="form-control" placeholder="Password"  name="password">
-                      <span class="highlight"></span>
-                      <span class="bar"></span>
-                  </div>
-              </div>
-              <div class="row">
-                  <button class="btn btn-default login-btn" ng-click="login()" type="submit">LOGIN</button>
-              </div>
-              <div class="row">
-                <div class="col-md-6 forgot" ng-if="forgotpassword" ng-click="closeBadge()">
-                    <a href="#/forgot-password">Forgot password?</a>
-                </div>
-                <div class="col-md-6 signup" ng-show="showsignup" ng-model="showsignup" ng-click="closeBadge()">
-                    <a href="#/self-registration">Sign up</a>
-                </div>
-
-              </div>
-
-            </form>
-            <b class="border-notch notch"></b>
-            <b class="notch"></b>
-        </div>
-    </div>
+	            <div class="row" ng-hide="hideLoginTitle">
+	                <h4 class="login-h4">{{loginTitle}}</h4>
+	            </div>
+	            <br/>
+	            <form ng-show="!gdpr" name="form">
+	              <div id="wronglogin"></div>
+	              <div class="row">
+	                  <div class="group">
+	                      <input auto-complete  id="loginUsername" type="text" ng-model="username" class="form-control" placeholder="Username" value=""  name="username">
+	                      <span class="highlight"></span>
+	                      <span class="bar"></span>
+	                  </div>
+	              </div>
+	              <div class="row">
+	                  <div class="group">
+	                      <input type="password" auto-complete ng-model="password" class="form-control" placeholder="Password"  name="password">
+	                      <span class="highlight"></span>
+	                      <span class="bar"></span>
+	                  </div>
+	              </div>
+	              <div class="row">
+	                  <button class="btn btn-default login-btn" ng-click="login()" type="submit">LOGIN</button>
+	              </div>
+	              <div class="row">
+	                <div class="col-md-6 forgot" ng-if="forgotpassword" ng-click="closeBadge()">
+	                    <a href="#/forgot-password">Forgot password?</a>
+	                </div>
+	                <div class="col-md-6 signup" ng-show="showsignup" ng-model="showsignup" ng-click="closeBadge()">
+	                    <a href="#/self-registration">Sign up</a>
+	                </div>
+	
+	              </div>
+	
+	            </form>
+	            
+	            <form ng-show="gdpr" name="gdprform">
+	              <div id="wronglogin"></div>
+	              <div class="row">
+	                  <div class="group">
+	                      <input id="loginUsername" type="text" ng-model="username" class="form-control clean-username" placeholder="Username" value="" autocomplete="off" >
+	                      <span class="highlight"></span>
+	                      <span class="bar"></span>
+	                  </div>
+	              </div>
+	              <div class="row">
+	                  <div class="group">
+	                      <input type="password" auto-complete ng-model="password" class="form-control" placeholder="Password"  name="password">
+	                      <span class="highlight"></span>
+	                      <span class="bar"></span>
+	                  </div>
+	              </div>
+	              <div class="row">
+	                  <button class="btn btn-default login-btn" ng-click="loginGdpr()" type="submit">LOGIN</button>
+	              </div>
+	              <div class="row">
+	                <div class="col-md-6 forgot" ng-if="forgotpassword" ng-click="closeBadge()">
+	                    <a href="{{gdprForgotUrl}}" target="{{target}}">Forgot password?</a>
+	                </div>
+	                <div class="col-md-6 signup" ng-show="showsignup" ng-model="showsignup" ng-click="closeBadge()">
+	                    <a href="{{gdprSignupUrl}}" target="{{target}}">Sign up</a>
+	                </div>
+	
+	              </div>
+	
+	            </form>
+	            
+	            <b class="border-notch notch"></b>
+	            <b class="notch"></b>
+        	</div>
+    	</div>
     </div>
 </div>

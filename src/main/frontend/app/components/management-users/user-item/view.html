@@ -132,13 +132,20 @@
 		    </div>
 	    </div>
 	    <!-- buttons -->
-		<div class="item-buttons" ng-show="visibleItemButton">
-			<div class="glyphicon glyphicon-pencil item-button" ng-click="showUserDetails()" title="Edit User"></div>
-			<div class="glyphicon glyphicon-wrench item-button" ng-if="show_admin_change_password" ng-click="showChangePassword()" title="Edit User Password"></div>
-			<div class="glyphicon glyphicon-remove item-button" ng-click="removeUser()" title="Delete User"></div>			
+	    <div ng-show="!gdpr">
+			<div class="item-buttons" ng-show="visibleItemButton">
+				<div class="glyphicon glyphicon-pencil item-button" ng-click="showUserDetails()" title="Edit User"></div>
+				<div class="glyphicon glyphicon-wrench item-button" ng-if="show_admin_change_password" ng-click="showChangePassword()" title="Edit User Password"></div>
+				<div class="glyphicon glyphicon-remove item-button" ng-click="removeUser()" title="Delete User"></div>			
 			</div>
 		</div>
-    </div>
-
-</div>
+		<div ng-show="gdpr">
+			<div class="item-buttons" ng-show="visibleItemButton">
+				<div class="glyphicon glyphicon-pencil item-button" ng-click="showAdminConsole()" title="Edit User"></div>
+				<div class="glyphicon glyphicon-wrench item-button" ng-if="show_admin_change_password" ng-click="showAdminConsole()" title="Edit User Password"></div>
+				<div class="glyphicon glyphicon-remove item-button" ng-click="showAdminConsole()" title="Delete User"></div>			
+			</div>
+		</div>
+	</div>
+   </div>
 </div>

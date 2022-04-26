@@ -1,4 +1,4 @@
-package fr.gael.dhus.server.http.webapp.stub.controller;
+package fr.gael.dhus.server.http.webapp.ui.controller;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import fr.gael.dhus.database.object.Country;
 import fr.gael.dhus.spring.context.ApplicationContextProvider;
 
 @RestController
-public class StubCountriesController
+public class AppCountriesController
 {
 
    @RequestMapping(value = "/countries", method = RequestMethod.GET)

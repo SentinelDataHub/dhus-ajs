@@ -37,7 +37,7 @@ angular
                 //$http API is based on deferred/promise APIs exposed by the $q service, returns a promise by default
                 var self = this;
                 return $http({
-                    url: ApplicationConfig.baseUrl + 'api/stub/configuration',
+                    url: ApplicationConfig.baseUrl + 'api/ui/configuration',
                     method: "GET"})
 
                     .then(function(response) {

@@ -1,4 +1,4 @@
-package fr.gael.dhus.server.http.webapp.stub.controller;
+package fr.gael.dhus.server.http.webapp.ui.controller;
 
 import org.json.JSONException;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class StubVersionController
+public class AppVersionController
 {
 
    @RequestMapping(value = "/version", method = RequestMethod.GET)
