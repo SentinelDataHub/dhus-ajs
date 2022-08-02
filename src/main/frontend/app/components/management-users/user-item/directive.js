@@ -85,6 +85,9 @@ angular.module('DHuS-webclient')
                         if (data) {
                             ApplicationService=data;
                             scope.show_admin_change_password=ApplicationService.settings.show_admin_change_password;
+							scope.gdpr=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+							scope.adminConsoleUrl=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.adminConsoleUrl : "#/home";
+							scope.target=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
                         } else {
 
                         }
@@ -93,6 +96,9 @@ angular.module('DHuS-webclient')
                     });
                 } else {
                     scope.show_admin_change_password=ApplicationService.settings.show_admin_change_password;
+					scope.gdpr=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.enabled : false;
+					scope.adminConsoleUrl=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.adminConsoleUrl : "#/home";
+					scope.target=ApplicationService.settings.gdpr ? ApplicationService.settings.gdpr.target : "_blank";
                 }
             });
 
@@ -147,6 +153,10 @@ angular.module('DHuS-webclient')
                 ToastManager.error("user deletion failed");
               });
             };
+
+			scope.showAdminConsole = function() {
+				window.open(scope.adminConsoleUrl, scope.target);			
+			};
           }
         }
       }

@@ -31,7 +31,9 @@ angular
     logged: false,
     basicAuth: '',
     loginUrl: '/login',
+    loginGdprUrl: '/api/ui/login',
     logoutUrl: '/logout',
+	logoutGdprUrl: 'saml/saml/logout',
 
     odataAuthTest: function(){
       var self = this;
@@ -49,6 +51,18 @@ angular
         contentType: 'application/x-www-form-urlencoded',
         data: $.param({ "login_username" : username, "login_password" : password}),
         headers: {'Content-Type': 'application/x-www-form-urlencoded', 'Authorization' : "Basic " + window.btoa(username+':'+password) }
+      });
+    },
+
+	loginGdpr: function(username, password, delegate){
+      var self = this;
+      return http({
+        url: ApplicationConfig.baseUrl + self.loginGdprUrl,
+        method: "POST",
+		contentType: 'application/json',
+		data: JSON.stringify({ "username" : username, "password" : password}),   
+		headers: {'Content-Type': 'application/json',
+	                  'Accept':'application/json'}  
       });
     },
 
@@ -81,6 +95,22 @@ angular
        $(document).trigger("closeSession");
        return http({
         url: ApplicationConfig.baseUrl + self.logoutUrl,
+        method: "POST"
+       }) ;
+    },
+
+	logoutGdpr: function(){
+      var Session = $injector.get('Session');
+      
+      var self = this;
+       self.basicAuth = '';
+       self.logged = false;
+       Session.removeSession();
+       SearchModel.createModel([]);
+       self.clearSearchFilters();       
+       $(document).trigger("closeSession");
+       return http({
+        url: ApplicationConfig.baseUrl + self.logoutGdprUrl,
         method: "POST"
        }) ;
     },

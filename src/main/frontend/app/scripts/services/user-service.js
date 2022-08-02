@@ -25,7 +25,7 @@ angular.module('DHuS-webclient').factory('UserService', function($http, $q){
 
     return{
         model: null,
-        signUpUrl:'api/stub/signup',
+        signUpUrl:'api/ui/signup',
         userRequestUrl: "api/stub/users/0",
         signup: function(userModel){
             var self = this;
@@ -187,7 +187,7 @@ angular.module('DHuS-webclient').factory('UserService', function($http, $q){
     retrievePassword: function(user, delegate) {
       var self = this;      
       return $http({
-        url: ApplicationConfig.baseUrl + "api/stub/forgotpwd",
+        url: ApplicationConfig.baseUrl + "api/ui/forgotpwd",
         method: "POST", 
         contentType: 'application/json',         
         data: JSON.stringify(user),       
@@ -208,7 +208,7 @@ angular.module('DHuS-webclient').factory('UserService', function($http, $q){
       var self = this;   
       var encoded = encodeURIComponent(password).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");   
       return $http({
-        url: ApplicationConfig.baseUrl + "api/stub/resetpwd?code="
+        url: ApplicationConfig.baseUrl + "api/ui/resetpwd?code="
             +code+"&password="+encoded,
         method: "POST" 
       });

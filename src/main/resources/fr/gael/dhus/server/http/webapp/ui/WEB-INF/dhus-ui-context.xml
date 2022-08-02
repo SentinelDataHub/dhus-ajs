@@ -41,17 +41,20 @@
    </bean>
 
    <bean id="defaultEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-    <property name="realmName" value="#{ configurationManager.getNameConfiguration ().getLongName () } Stub"/>
+    <property name="realmName" value="#{ configurationManager.getNameConfiguration ().getLongName () } UI"/>
    </bean>
 		 	 	
 	
    <security:http use-expressions="true" entry-point-ref="customEntryPoint" create-session="never">
       <security:custom-filter position="PRE_AUTH_FILTER" ref="preAuthFilter" />
-      <security:custom-filter before="BASIC_AUTH_FILTER" ref="gdprAuthFilter" />
-      <security:custom-filter position="BASIC_AUTH_FILTER" ref="basicAuthFilter" />
-
-      <security:intercept-url pattern="/**" access="isAuthenticated()" />
-
+      
+      <security:intercept-url pattern="/signup" access="permitAll"/>
+      <security:intercept-url pattern="/configuration" access="permitAll"/>
+      <security:intercept-url pattern="/version" access="permitAll"/>
+      <security:intercept-url pattern="/forgotpwd" access="permitAll"/>     
+      <security:intercept-url pattern="/resetpwd" access="permitAll"/>
+	   <security:intercept-url pattern="/countries" access="permitAll"/>
+      
       <security:session-management session-fixation-protection="none" />
       <security:csrf disabled="true" />
    </security:http>

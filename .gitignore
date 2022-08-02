@@ -68,3 +68,4 @@ local_dhus_test/
 # others
 client/webclient/install/
 client/webclient/node_modules/
+.yarn*

@@ -7,14 +7,14 @@
    <modelVersion>4.0.0</modelVersion>
 
    <properties>
-      <dhus.core>1.11.0-osf</dhus.core>
+      <dhus.core>2.1.10-osf</dhus.core>
       <tomcat.port>8080</tomcat.port>
    </properties>
 
    <artifactId>dhus-web-client</artifactId>
    <groupId>fr.gael.dhus</groupId>
    <packaging>jar</packaging>
-   <version>1.0.3-osf</version>
+   <version>1.2.0-osf</version>
    <name>DHuS - Web Client</name>
 
    <dependencies>
@@ -180,11 +180,10 @@
 
    <repositories>
       <repository>
-         <id>external dependencies</id>
-<!-- repository https://copernicus.serco.eu/repository/nexus/content/repositories/releases
-     used to proxy gael's resources requires credentials
-     Using alternative source repository. -->
-         <url>https://repository.gael-systems.com/repository/public</url>
+         <id>osf-public</id>
+         <name>OSF Public Repository</name>
+         <url>https://nexus-repository.onda-dias.eu/repository/Public_Repositories/</url>
+         <layout>default</layout>      
       </repository>
    </repositories>
 
@@ -193,9 +192,7 @@
          <uniqueVersion>true</uniqueVersion>
          <id>osf-delivery</id>
          <name>OSF Releases Repository</name>
-         <url>
-            https://copernicus.serco.eu/repository/nexus/content/repositories/OSF_releases
-         </url>
+         <url>https://nexus-repository.onda-dias.eu/repository/OSF_releases/</url>
          <layout>default</layout>
       </repository>
    </distributionManagement>

@@ -30,7 +30,7 @@ angular
       usersCountRequestUrl: "api/stub/admin/users/count?filter=:filter",
       editRemoveUserRequestUrl: "api/stub/admin/users/:userid",
       createUserRequestUrl: "api/stub/admin/users",
-      getCountriesUrl: "api/stub/countries",
+      getCountriesUrl: "api/ui/countries",
       updatePasswordUrl: "odata/v1/Users(':username')",
       jsonParameter: "$format=json",
       requestHeaders: { 'Content-Type': 'application/atom+xml', 'Accept': 'application/json' },

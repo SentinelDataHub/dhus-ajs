@@ -28,7 +28,7 @@
 
 angular
   .module('DHuS-webclient')
-  .factory('AuthorizationInterceptor', function($q, $injector,Logger,UserInfoService) {
+  .factory('AuthorizationInterceptor', function($q, $injector, $location, Logger,UserInfoService) {
 
   var exceptions = [
     {url: /components\/.*\/view.html/g, method: "GET"},
@@ -41,12 +41,12 @@ angular
     {url:/.*\/\/logout/g,method: "POST"},
     {url: /ngToast\/toast.html/g,method: "GET"},
     {url: /ngToast\/toastMessage.html/g,method: "GET"},
-    {url:/.*api\/stub\/signup/g,method: "POST"},
-    {url:/.*api\/stub\/version/g,method: "GET"},
-    {url:/.*api\/stub\/configuration/g,method: "GET"},
-    {url:/.*api\/stub\/countries/g,method: "GET"},
-    {url:/.*api\/stub\/forgotpwd/g,method: "POST"},
-    {url:/.*api\/stub\/resetpwd/g,method: "POST"}
+    {url:/.*api\/ui\/signup/g,method: "POST"},
+	{url:/.*api\/ui\/version/g,method: "GET"},
+    {url:/.*api\/ui\/configuration/g,method: "GET"},
+    {url:/.*api\/ui\/countries/g,method: "GET"},
+    {url:/.*api\/ui\/forgotpwd/g,method: "POST"},
+    {url:/.*api\/ui\/resetpwd/g,method: "POST"}
   ];
 
   return {
@@ -73,7 +73,7 @@ angular
 
       //Log config
       //console.log("http-filter", config);
-
+	  
       if(AuthenticationService.logged && Session.isSessionPresent()){
         return config;
       }
@@ -106,10 +106,25 @@ angular
     },
 
     response: function(response) {
-
+	  var AuthenticationService = $injector.get('AuthenticationService');
+      var Session = $injector.get('Session');
+      var SearchModel = $injector.get('SearchModel');	
       Logger.log("http","http response:" + JSON.stringify(response));
       SpinnerManager.off();
-      return response;
+      if(ApplicationService.settings.gdpr && ApplicationService.settings.gdpr.enabled  
+			&& response.status == 200 && response.data && (JSON.stringify(response.data)).indexOf("SAMLRequest") >= 0) {
+	    AuthenticationService.showLogin();
+		Session.setUserLoggedOut();
+		SearchModel.createModel({});
+		if(Session.isSessionPresent()) {
+			Session.removeSession();
+		}
+        $(document).trigger("closeSession");
+		window.location.reload();
+        return $q.reject(response);
+	  } else {
+        return response; 
+	  }
     },
 
     responseError: function(rejection) {
@@ -123,7 +138,7 @@ angular
         Session.setUserLoggedOut();
         SearchModel.createModel({});
         $(document).trigger("closeSession");
-        return $q.reject(rejection);
+		return $q.reject(rejection);
       }
       return $q.reject(rejection);
 

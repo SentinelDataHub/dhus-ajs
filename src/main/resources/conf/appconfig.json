@@ -88,7 +88,14 @@
             "disable_filters": true
         }],
         "orderOptions": [{ "name": "Descending", "value": "desc" }, { "name": "Ascending", "value": "asc" }],
-
+        "gdpr": {
+            "enabled": false,
+            "showUsername": true,
+        	"signupUrl": "http://127.0.0.1:8180/auth/realms/dhus/login-actions/registration?client_id=dhus_client",
+        	"forgotPasswordUrl": "http://127.0.0.1:8180/auth/realms/dhus/login-actions/reset-credentials?client_id=dhus_client",
+        	"editProfileUrl": "http://127.0.0.1:8180/auth/realms/dhus/login-actions/authenticate?client_id=dhus_client",
+    		"adminConsoleUrl": "http://127.0.0.1:8180/auth/realms/master/protocol/openid-connect/auth?client_id=security-admin-console"
+        },
         "isMapLayerSwitcherVisible": true,
         "map": {
             "Satellite": {
